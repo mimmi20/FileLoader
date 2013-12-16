@@ -1,5 +1,5 @@
 {
-    "name": "mimmi20/FileLoader",
+    "name": "mimmi20/file-loader",
     "type": "library",
     "description": "a class to load remote or local files",
     "homepage": "http://github.com/mimmi20/FileLoader",
