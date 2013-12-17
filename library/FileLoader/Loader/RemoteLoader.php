@@ -43,7 +43,7 @@ use FileLoader\Loader;
 use FileLoader\Exception;
 
 /**
- * the loader class for requests via fopen/file_get_contents
+ * the loader class for requests via curl
  *
  * @package    Browscap
  * @author     Jonathan Stoppani <jonathan@stoppani.name>
@@ -54,8 +54,100 @@ use FileLoader\Exception;
  * @license    http://www.opensource.org/licenses/MIT MIT License
  * @link       https://github.com/mimmi20/FileLoader/
  */
-class FopenLoader extends RemoteLoader
+abstract class RemoteLoader
 {
+    /**
+     * an logger instance
+     *
+     * @var \Psr\Log\LoggerInterface
+     */
+    protected $logger = null;
+
+    /**
+     * an logger instance
+     *
+     * @var Loader
+     */
+    protected $loader = null;
+
+    /**
+     * Constructor class, checks for the existence of (and loads) the cache and
+     * if needed updated the definitions
+     *
+     * @param Loader $loader
+     */
+    public function __construct(Loader $loader)
+    {
+        $this->loader = $loader;
+    }
+
+    /**
+     * sets the logger
+     *
+     * @param \Psr\Log\LoggerInterface $logger
+     *
+     * @return \FileLoader\Loader\Curl
+     */
+    public function setLogger(\Psr\Log\LoggerInterface $logger)
+    {
+        $this->logger = $logger;
+
+        return $this;
+    }
+
+    /**
+     * XXX save
+     *
+     * loads the ini file from a remote location
+     *
+     * @return string the file content
+     * @throws Exception
+     */
+    public function load()
+    {
+        // Choose the right url
+        $file = $this->getRemoteData($this->getUri());
+
+        if ($file !== false) {
+            return $file;
+        }
+
+        throw new Exception('Cannot load the remote file');
+    }
+
+    /**
+     * returns the uri, used for download
+     *
+     * @return string
+     */
+    public function getUri()
+    {
+        return $this->loader->getRemoteDataUrl();
+    }
+
+    /**
+     * Gets the remote file update timestamp
+     *
+     * @throws Exception
+     * @return int the remote modification timestamp
+     */
+    public function getMTime()
+    {
+        $remoteDataUrl = $this->loader->getRemoteVerUrl();
+
+        $remoteDatetime  = $this->getRemoteData($remoteDataUrl);
+        $remoteTimestamp = strtotime($remoteDatetime);
+
+        if (!$remoteTimestamp) {
+            throw new Exception(
+                'Bad datetime format from ' . $remoteDataUrl,
+                Exception::INVALID_DATETIME
+            );
+        }
+
+        return $remoteTimestamp;
+    }
+
     /**
      * Retrieve the data identified by the URL
      *
@@ -63,14 +155,5 @@ class FopenLoader extends RemoteLoader
      * @throws Exception
      * @return string|boolean the retrieved data
      */
-    protected function getRemoteData($url)
-    {
-        $file = file_get_contents($url, false, $this->loader->getStreamContext());
-
-        if ($file !== false) {
-            return $file;
-        }
-
-        return false;
-    }
+    abstract protected function getRemoteData($url);
 }

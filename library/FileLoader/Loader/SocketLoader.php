@@ -54,100 +54,8 @@ use FileLoader\Exception;
  * @license    http://www.opensource.org/licenses/MIT MIT License
  * @link       https://github.com/mimmi20/FileLoader/
  */
-class SocketLoader
+class SocketLoader extends RemoteLoader
 {
-    /**
-     * an logger instance
-     *
-     * @var \Psr\Log\LoggerInterface
-     */
-    private $logger = null;
-
-    /**
-     * an logger instance
-     *
-     * @var Loader
-     */
-    private $loader = null;
-
-    /**
-     * Constructor class, checks for the existence of (and loads) the cache and
-     * if needed updated the definitions
-     *
-     * @param \FileLoader\Loader $loader
-     */
-    public function __construct(Loader $loader)
-    {
-        $this->loader = $loader;
-    }
-
-    /**
-     * sets the logger
-     *
-     * @param \Psr\Log\LoggerInterface $logger
-     *
-     * @return \FileLoader\Loader\SocketLoader
-     */
-    public function setLogger(\Psr\Log\LoggerInterface $logger)
-    {
-        $this->logger = $logger;
-
-        return $this;
-    }
-
-    /**
-     * XXX save
-     *
-     * loads the file from a remote or local location
-     *
-     * @return string the file content
-     */
-    public function load()
-    {
-        // Choose the right url
-        $file = $this->getRemoteData($this->getUri());
-
-
-        if ($file !== false) {
-            return $file;
-        }
-
-        throw new Exception('Cannot open the local file');
-    }
-    
-    /**
-     * returns the uri, used for download
-     *
-     * @return string
-     */
-    public function getUri()
-    {
-        return $this->loader->getRemoteDataUrl();
-    }
-
-    /**
-     * Gets the remote ini file update timestamp
-     *
-     * @throws Exception
-     * @return int the remote modification timestamp
-     */
-    private function getMTime()
-    {
-        $remoteDataUrl = $this->loader->getRemoteVerUrl();
-
-        $remote_datetime = $this->getRemoteData($remoteDataUrl);
-        $remote_tmstp    = strtotime($remote_datetime);
-
-        if (!$remote_tmstp) {
-            throw new Exception(
-                'Bad datetime format from ' . $remoteDataUrl,
-                Exception::INVALID_DATETIME
-            );
-        }
-
-        return $remote_tmstp;
-    }
-
     /**
      * Retrieve the data identified by the URL
      *
@@ -155,35 +63,35 @@ class SocketLoader
      * @throws Exception
      * @return string|boolean the retrieved data
      */
-    private function getRemoteData($url)
+    protected function getRemoteData($url)
     {
-        $remote_url     = parse_url($url);
-        $remote_handler = fsockopen($remote_url['host'], 80, $errno, $errstr, $this->loader->getTimeout());
+        $remoteUrl     = parse_url($url);
+        $remoteHandler = fsockopen($remoteUrl['host'], 80, $errno, $errstr, $this->loader->getTimeout());
 
-        if (!$remote_handler) {
+        if (!$remoteHandler) {
             return false;
         }
 
-        stream_set_timeout($remote_handler, $this->loader->getTimeout());
+        stream_set_timeout($remoteHandler, $this->loader->getTimeout());
 
-        if (isset($remote_url['query'])) {
-            $remote_url['path'] .= '?' . $remote_url['query'];
+        if (isset($remoteUrl['query'])) {
+            $remoteUrl['path'] .= '?' . $remoteUrl['query'];
         }
 
         $out = sprintf(
             self::REQUEST_HEADERS,
-            $remote_url['path'],
-            $remote_url['host'],
+            $remoteUrl['path'],
+            $remoteUrl['host'],
             $this->loader->getUserAgent()()
         );
 
-        fwrite($remote_handler, $out);
+        fwrite($remoteHandler, $out);
 
-        $response = fgets($remote_handler);
+        $response = fgets($remoteHandler);
         if (strpos($response, '200 OK') !== false) {
             $file = '';
-            while (!feof($remote_handler)) {
-                $file .= fgets($remote_handler);
+            while (!feof($remoteHandler)) {
+                $file .= fgets($remoteHandler);
             }
 
             $file = str_replace("\r\n", "\n", $file);
@@ -193,7 +101,7 @@ class SocketLoader
             $file = implode("\n\n", $file);
         }
 
-        fclose($remote_handler);
+        fclose($remoteHandler);
 
         if ($file !== false) {
             return $file;

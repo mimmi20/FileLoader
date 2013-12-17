@@ -59,9 +59,6 @@ class Loader
      * Options for auto update capabilities
      *
      * $timeout: The timeout for the requests.
-     * $updateInterval: The update interval in seconds.
-     * $errorInterval: The next update interval in seconds in case of an error.
-     * $doAutoUpdate: Flag to disable the automatic interval based update.
      * $updateMethod: The method to use to update the file, has to be a value of
      *                an UPDATE_* constant, null or false.
      *
@@ -69,8 +66,7 @@ class Loader
      * is MINIMAL, so there is no reason to use the standard file whatsoever. Either go for light,
      * which is blazing fast, or get the full one. (note: light version doesn't work, a fix is on its way)
      */
-    private $timeout = 5;
-    private $doAutoUpdate = true;
+    private $timeout      = 5;
     private $updateMethod = null;
 
     /**
@@ -129,24 +125,24 @@ class Loader
      * Constructor class, checks for the existence of (and loads) the cache and
      * if needed updated the definitions
      *
-     * @param string $cache_dir
+     * @param string $cacheDir
      * @throws Exception
      */
-    public function __construct($cache_dir)
+    public function __construct($cacheDir)
     {
-        if (!isset($cache_dir)) {
+        if (!isset($cacheDir)) {
             throw new Exception(
                 'You have to provide a path to read/store the browscap cache file',
                 Exception::CACHE_DIR_MISSING
             );
         }
 
-        $old_cache_dir = $cache_dir;
-        $cache_dir     = realpath($cache_dir);
+        $oldCacheDir = $cacheDir;
+        $cacheDir    = realpath($cacheDir);
 
-        if (false === $cache_dir) {
+        if (false === $cacheDir) {
             throw new Exception(
-                'The cache path "' . $old_cache_dir . '" is invalid. '
+                'The cache path "' . $oldCacheDir . '" is invalid. '
                 . 'Are you sure that it exists and that you have permission '
                 . 'to access it?',
                 Exception::CACHE_DIR_INVALID
@@ -154,14 +150,14 @@ class Loader
         }
 
         // Is the cache dir really the directory or is it directly the file?
-        if (is_file($cache_dir) && substr($cache_dir, -4) === '.php') {
-            $this->cacheFilename = basename($cache_dir);
-            $this->cacheDir = dirname($cache_dir);
-        } elseif (is_dir($cache_dir)) {
-            $this->cacheDir = $cache_dir;
+        if (is_file($cacheDir) && substr($cacheDir, -4) === '.php') {
+            $this->cacheFilename = basename($cacheDir);
+            $this->cacheDir = dirname($cacheDir);
+        } elseif (is_dir($cacheDir)) {
+            $this->cacheDir = $cacheDir;
         } else {
             throw new Exception(
-                'The cache path "' . $old_cache_dir . '" is invalid. '
+                'The cache path "' . $oldCacheDir . '" is invalid. '
                 . 'Are you sure that it exists and that you have permission '
                 . 'to access it?',
                 Exception::CACHE_DIR_INVALID
@@ -171,7 +167,7 @@ class Loader
         if (!is_readable($this->cacheDir)) {
             throw new Exception(
                 'Its not possible to read from the given cache path "'
-                . $old_cache_dir . '"',
+                . $oldCacheDir . '"',
                 Exception::CACHE_DIR_NOT_READABLE
             );
         }
@@ -179,7 +175,7 @@ class Loader
         if (!is_writable($this->cacheDir)) {
             throw new Exception(
                 'Its not possible to write to the given cache path "'
-                . $old_cache_dir . '"',
+                . $oldCacheDir . '"',
                 Exception::CACHE_DIR_NOT_WRITABLE
             );
         }
@@ -212,7 +208,8 @@ class Loader
     {
         if (empty($filename)) {
             throw new Exception(
-                'the filename can not be empty', Exception::LOCAL_FILE_MISSING
+                'the filename can not be empty', 
+                Exception::LOCAL_FILE_MISSING
             );
         }
 
@@ -232,7 +229,8 @@ class Loader
     {
         if (empty($ininame)) {
             throw new Exception(
-                'the filename can not be empty', Exception::INI_FILE_MISSING
+                'the filename can not be empty', 
+                Exception::INI_FILE_MISSING
             );
         }
 
@@ -357,7 +355,7 @@ class Loader
         foreach ($wrappers as $wrapper) {
             // remove wrapper options related to proxy settings
             if (isset($this->streamContextOptions[$wrapper]['proxy'])) {
-                foreach ($options as $option){
+                foreach ($options as $option) {
                     unset($this->streamContextOptions[$wrapper][$option]);
                 }
 
@@ -424,12 +422,12 @@ class Loader
              * the ini file is already available locally
              * -> check if version has changed remote
              */
-            $local_tmstp = filemtime($path);
+            $localTimestamp = filemtime($path);
 
             try {
-                $remote_tmstp = $internalLoader->getMTime();
+                $remoteTimestamp = $internalLoader->getMTime();
 
-                if ($remote_tmstp <= $local_tmstp) {
+                if ($remoteTimestamp <= $localTimestamp) {
                     // No update needed
                     touch($path);
 
@@ -443,7 +441,8 @@ class Loader
                 if (null !== $this->logger) {
                     $e = new Exception(
                         'it was not possible to detect the age of the remote file',
-                        $ex->getCode(), $ex
+                        $ex->getCode(), 
+                        $ex
                     );
                     $this->logger->warn($e);
                 }
@@ -563,9 +562,9 @@ class Loader
      */
     public function getUserAgent()
     {
-        $ua = str_replace('%v', self::VERSION, $this->userAgent);
-        $ua = str_replace('%m', $this->getUpdateMethod(), $ua);
+        $userAgent = str_replace('%v', self::VERSION, $this->userAgent);
+        $userAgent = str_replace('%m', $this->getUpdateMethod(), $userAgent);
 
-        return $ua;
+        return $userAgent;
     }
 }
