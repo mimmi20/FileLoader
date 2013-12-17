@@ -58,18 +58,9 @@ class Loader
     const REQUEST_HEADERS = "GET %s HTTP/1.0\r\nHost: %s\r\nUser-Agent: %s\r\nConnection: Close\r\n\r\n";
 
     /**
-     * Options for auto update capabilities
-     *
-     * $timeout: The timeout for the requests.
-     * $updateMethod: The method to use to update the file, has to be a value of
-     *                an UPDATE_* constant, null or false.
-     *
-     * The default source file type is changed from normal to full. The performance difference
-     * is MINIMAL, so there is no reason to use the standard file whatsoever. Either go for light,
-     * which is blazing fast, or get the full one. (note: light version doesn't work, a fix is on its way)
+     * The timeout for the requests.
      */
-    private $timeout      = 5;
-    private $updateMethod = null;
+    private $timeout = 5;
 
     /**
      * The useragent to include in the requests made by the class during the

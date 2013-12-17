@@ -55,7 +55,7 @@ class Factory
      * @return RemoteLoader the loader to use
      * @throws \FileLoader\Exception
      */
-    static public function build(Loader $loader, $localeFile = null)
+    public static function build(Loader $loader, $localeFile = null)
     {
         // Caches the result
         if ($localeFile !== null) {
