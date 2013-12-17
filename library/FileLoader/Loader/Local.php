@@ -63,7 +63,7 @@ class Local
      * @var string
      */
     private $localFile = null;
-    
+
     /**
      * an logger instance
      *
@@ -81,7 +81,7 @@ class Local
     public function setLogger(\Psr\Log\LoggerInterface $logger)
     {
         $this->logger = $logger;
-        
+
         return $this;
     }
 
@@ -96,7 +96,8 @@ class Local
     {
         if (empty($filename)) {
             throw new Exception(
-                'the filename can not be empty', Exception::LOCAL_FILE_MISSING
+                'the filename can not be empty',
+                Exception::LOCAL_FILE_MISSING
             );
         }
 
@@ -108,7 +109,7 @@ class Local
     /**
      * XXX save
      *
-     * loads the ini file from a remote or local location and stores it into 
+     * loads the ini file from a remote or local location and stores it into
      * the cache dir, parses the ini file
      *
      * @return string the content of the local ini file
@@ -121,10 +122,10 @@ class Local
         if ($file !== false) {
             return $file;
         }
-        
+
         throw new Exception('Cannot open the local file');
     }
-    
+
     /**
      * returns the uri, used for download
      *

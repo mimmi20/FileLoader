@@ -65,7 +65,10 @@ class SocketLoader extends RemoteLoader
      */
     protected function getRemoteData($url)
     {
-        $remoteUrl     = parse_url($url);
+        $remoteUrl = parse_url($url);
+        $errno     = 0;
+        $errstr    = '';
+        
         $remoteHandler = fsockopen($remoteUrl['host'], 80, $errno, $errstr, $this->loader->getTimeout());
 
         if (!$remoteHandler) {

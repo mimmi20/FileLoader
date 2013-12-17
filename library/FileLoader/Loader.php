@@ -1,8 +1,10 @@
 <?php
 namespace FileLoader;
 
+use WurflCache\Adapter\AdapterInterface;
+
 /**
- * class to load the browscap.ini
+ * class to load a file from a local or remote source
  *
  * PHP version 5
  *
@@ -75,7 +77,7 @@ class Loader
      *
      * @var string
      */
-    private $userAgent = 'Browser Capabilities Project - PHP Browscap/%v %m';
+    private $userAgent = 'File Loader/%v %m';
 
     /**
      * An associative array of associative arrays in the format
@@ -100,11 +102,11 @@ class Loader
     private $streamContext = null;
 
     /**
-     * Path to the cache directory
+     * a \WurflCache\Adapter\AdapterInterface object
      *
-     * @var string
+     * @var CacheInterface
      */
-    private $cacheDir = null;
+    private $cache = null;
 
     /**
      * The path of the local version of the browscap.ini file from which to
@@ -113,7 +115,21 @@ class Loader
      * @var string
      */
     private $localFile = null;
-    
+
+    /**
+     * The path there
+     *
+     * @var string
+     */
+    private $cacheDir = null;
+
+    /**
+     * the name of the cache entry where the loaded file is stored
+     *
+     * @var string
+     */
+    private $filename = null;
+
     /**
      * an logger instance
      *
@@ -126,74 +142,97 @@ class Loader
      * if needed updated the definitions
      *
      * @param string $cacheDir
+     *
      * @throws Exception
      */
-    public function __construct($cacheDir)
+    public function __construct($cacheDir = null)
     {
-        if (!isset($cacheDir)) {
-            throw new Exception(
-                'You have to provide a path to read/store the browscap cache file',
-                Exception::CACHE_DIR_MISSING
-            );
-        }
-
-        $oldCacheDir = $cacheDir;
-        $cacheDir    = realpath($cacheDir);
-
-        if (false === $cacheDir) {
-            throw new Exception(
-                'The cache path "' . $oldCacheDir . '" is invalid. '
-                . 'Are you sure that it exists and that you have permission '
-                . 'to access it?',
-                Exception::CACHE_DIR_INVALID
-            );
-        }
-
-        // Is the cache dir really the directory or is it directly the file?
-        if (is_file($cacheDir) && substr($cacheDir, -4) === '.php') {
-            $this->cacheFilename = basename($cacheDir);
-            $this->cacheDir = dirname($cacheDir);
-        } elseif (is_dir($cacheDir)) {
-            $this->cacheDir = $cacheDir;
+        if (null === $cacheDir) {
+            $this->cache = new \WurflCache\Adapter\NullStorage();
         } else {
-            throw new Exception(
-                'The cache path "' . $oldCacheDir . '" is invalid. '
-                . 'Are you sure that it exists and that you have permission '
-                . 'to access it?',
-                Exception::CACHE_DIR_INVALID
-            );
-        }
-        
-        if (!is_readable($this->cacheDir)) {
-            throw new Exception(
-                'Its not possible to read from the given cache path "'
-                . $oldCacheDir . '"',
-                Exception::CACHE_DIR_NOT_READABLE
-            );
-        }
-        
-        if (!is_writable($this->cacheDir)) {
-            throw new Exception(
-                'Its not possible to write to the given cache path "'
-                . $oldCacheDir . '"',
-                Exception::CACHE_DIR_NOT_WRITABLE
-            );
-        }
+            if (!is_string($cacheDir)) {
+                throw new Exception(
+                    'You have to provide a path to read/store the browscap cache file',
+                    Exception::CACHE_DIR_MISSING
+                );
+            }
 
-        $this->cacheDir .= DIRECTORY_SEPARATOR;
+            $oldCacheDir = $cacheDir;
+            $cacheDir    = realpath($cacheDir);
+
+            if (false === $cacheDir) {
+                throw new Exception(
+                    'The cache path "' . $oldCacheDir . '" is invalid. '
+                    . 'Are you sure that it exists and that you have permission '
+                    . 'to access it?',
+                    Exception::CACHE_DIR_INVALID
+                );
+            }
+
+            // Is the cache dir really the directory or is it directly the file?
+            if (is_file($cacheDir) && substr($cacheDir, -4) === '.php') {
+                $this->filename = basename($cacheDir);
+                $this->cacheDir = dirname($cacheDir);
+            } elseif (is_dir($cacheDir)) {
+                $this->cacheDir = $cacheDir;
+            } else {
+                throw new Exception(
+                    'The cache path "' . $oldCacheDir . '" is invalid. '
+                    . 'Are you sure that it exists and that you have permission '
+                    . 'to access it?',
+                    Exception::CACHE_DIR_INVALID
+                );
+            }
+
+            if (!is_readable($this->cacheDir)) {
+                throw new Exception(
+                    'Its not possible to read from the given cache path "'
+                    . $oldCacheDir . '"',
+                    Exception::CACHE_DIR_NOT_READABLE
+                );
+            }
+
+            if (!is_writable($this->cacheDir)) {
+                throw new Exception(
+                    'Its not possible to write to the given cache path "'
+                    . $oldCacheDir . '"',
+                    Exception::CACHE_DIR_NOT_WRITABLE
+                );
+            }
+
+            $this->cacheDir .= DIRECTORY_SEPARATOR;
+
+            $this->cache = new \WurflCache\Adapter\File(
+                array(\WurflCache\Adapter\File::DIR => $this->cacheDir)
+            );
+        }
     }
-    
+
     /**
      * sets the logger
      *
      * @param \Psr\Log\LoggerInterface $logger
      *
-     * @return \FileLoader\Browscap\Loader
+     * @return \FileLoader\Loader
      */
     public function setLogger(\Psr\Log\LoggerInterface $logger)
     {
         $this->logger = $logger;
-        
+
+        return $this;
+    }
+
+    /**
+     * sets the cache used to make the detection faster
+     *
+     * @param \WurflCache\Adapter\AdapterInterface $cache
+     *
+     * @return BrowserDetector
+     */
+    public function setCache(AdapterInterface $cache)
+    {
+        $this->cache = $cache;
+
         return $this;
     }
 
@@ -202,13 +241,13 @@ class Loader
      *
      * @param string $filename the file name
      *
-     * @return \FileLoader\Browscap\Loader
+     * @return \FileLoader\Loader
      */
     public function setLocaleFile($filename)
     {
         if (empty($filename)) {
             throw new Exception(
-                'the filename can not be empty', 
+                'the filename can not be empty',
                 Exception::LOCAL_FILE_MISSING
             );
         }
@@ -221,24 +260,24 @@ class Loader
     /**
      * sets the name of the local ini file
      *
-     * @param string $ininame the file name
+     * @param string $filename the file name
      *
-     * @return \FileLoader\Browscap\Loader
+     * @return \FileLoader\Loader
      */
-    public function setFile($ininame)
+    public function setFile($filename)
     {
-        if (empty($ininame)) {
+        if (empty($filename)) {
             throw new Exception(
-                'the filename can not be empty', 
+                'the filename can not be empty',
                 Exception::INI_FILE_MISSING
             );
         }
 
-        $this->filename = $ininame;
+        $this->filename = $filename;
 
         return $this;
     }
-    
+
     /**
      * returns the of the remote location for updating the ini file
      *
@@ -248,7 +287,7 @@ class Loader
     {
         return $this->remoteDataUrl;
     }
-    
+
     /**
      * returns the of the remote location for checking the version of the ini file
      *
@@ -258,7 +297,7 @@ class Loader
     {
         return $this->remoteVerUrl;
     }
-    
+
     /**
      * returns the timeout
      *
@@ -272,7 +311,7 @@ class Loader
     /**
      * Load (auto-set) proxy settings from environment variables.
      *
-     * @return \FileLoader\Browscap\Loader
+     * @return \FileLoader\Loader
      */
     public function autodetectProxySettings()
     {
@@ -280,21 +319,21 @@ class Loader
 
         foreach ($wrappers as $wrapper) {
             $url = getenv($wrapper . '_proxy');
-            
+
             if (!empty($url)) {
                 $params = array_merge(
                     array(
                         'port'  => null,
                         'user'  => null,
                         'pass'  => null,
-                    ), 
+                    ),
                     parse_url($url)
                 );
-                
+
                 $this->addProxySettings($params['host'], $params['port'], $wrapper, $params['user'], $params['pass']);
             }
         }
-        
+
         return $this;
     }
 
@@ -307,7 +346,7 @@ class Loader
      * @param string $username  Username (when requiring authentication)
      * @param string $password  Password (when requiring authentication)
      *
-     * @return \FileLoader\Browscap\Loader
+     * @return \FileLoader\Loader
      */
     public function addProxySettings($server, $port = 3128, $wrapper = 'http', $username = null, $password = null)
     {
@@ -351,7 +390,7 @@ class Loader
 
         $clearedWrappers = array();
         $options         = array('proxy', 'request_fulluri', 'header');
-        
+
         foreach ($wrappers as $wrapper) {
             // remove wrapper options related to proxy settings
             if (isset($this->streamContextOptions[$wrapper]['proxy'])) {
@@ -384,18 +423,18 @@ class Loader
     /**
      * XXX save
      *
-     * loads the ini file from a remote or local location and stores it into 
+     * loads the ini file from a remote or local location and stores it into
      * the cache dir, parses the ini file
      *
      * @return array the parsed ini file
      */
     public function load()
     {
-        $path = $this->cacheDir . $this->filename;
-        
+        $path = $this->filename;
+
         switch ($this->getUpdateMethod()) {
             case self::UPDATE_LOCAL:
-                $path = $this->cacheDir . basename($this->localFile);
+                $path = basename($this->localFile);
                 $internalLoader = new Loader\Local($this);
                 $internalLoader->setLocaleFile($this->localFile);
                 break;
@@ -410,49 +449,15 @@ class Loader
                 break;
             default:
         }
-        
+
         if (null !== $this->logger) {
             $internalLoader->setLogger($this->logger);
         }
-        
-        $needUpdated = true;
-        
-        if (file_exists($path) && filesize($path)) {
-            /*
-             * the ini file is already available locally
-             * -> check if version has changed remote
-             */
-            $localTimestamp = filemtime($path);
 
-            try {
-                $remoteTimestamp = $internalLoader->getMTime();
+        $success = null;
+        $content = $this->cache->getItem($path, $success);
 
-                if ($remoteTimestamp <= $localTimestamp) {
-                    // No update needed
-                    touch($path);
-
-                    $needUpdated = false;
-                }
-            } catch (Exception $ex) {
-                /*
-                 * do nothing here
-                 * if its not possible to get the age of the file load it again
-                 */
-                if (null !== $this->logger) {
-                    $e = new Exception(
-                        'it was not possible to detect the age of the remote file',
-                        $ex->getCode(), 
-                        $ex
-                    );
-                    $this->logger->warn($e);
-                }
-                
-                // force update
-                $needUpdated = true;
-            }
-        }
-
-        if ($needUpdated) {
+        if (!$success) {
             // Get updated .ini file
             $browscap = $internalLoader->load();
             $browscap = explode("\n", $browscap);
@@ -476,36 +481,24 @@ class Loader
              * store the content into the local cached ini file
              * but only if its not the same as the remote file
              */
-            if ($internalLoader->getUri() != $path) {
-                if (!file_put_contents($path, $content)) {
-                    throw new Exception(
-                        'Could not write .ini content to $path',
-                        Exception::CACHE_DIR_NOT_WRITABLE
-                    );
-                }
-            }
-            
-            /*
-             * we have the ini content available as string
-             * -> parse the string
-             */
-            if (version_compare(PHP_VERSION, '5.3.0', '>=')) {
-                $browsers = parse_ini_string($content, true, INI_SCANNER_RAW);
-            } else {
-                $browsers = parse_ini_string($content, true);
-            }
-        } else {
-            /*
-             * the local cached ini file dont need to be updated
-             * -> parse the file
-             */
-            if (version_compare(PHP_VERSION, '5.3.0', '>=')) {
-                $browsers = parse_ini_file($path, true, INI_SCANNER_RAW);
-            } else {
-                $browsers = parse_ini_file($path, true);
+            if (!$this->cache->setItem($path, $content)) {
+                throw new Exception(
+                    'Could not write file content to cache',
+                    Exception::CACHE_DIR_NOT_WRITABLE
+                );
             }
         }
-        
+
+        /*
+         * we have the ini content available as string
+         * -> parse the string
+         */
+        if (version_compare(PHP_VERSION, '5.3.0', '>=')) {
+            $browsers = parse_ini_string($content, true, INI_SCANNER_RAW);
+        } else {
+            $browsers = parse_ini_string($content, true);
+        }
+
         return $browsers;
     }
 
