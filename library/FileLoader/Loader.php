@@ -77,7 +77,7 @@ class Loader
      *
      * @var string
      */
-    private $userAgent = 'File Loader/%v %m';
+    private $userAgent = 'File Loader/%v';
 
     /**
      * An associative array of associative arrays in the format
@@ -117,13 +117,6 @@ class Loader
     private $localFile = null;
 
     /**
-     * The path there
-     *
-     * @var string
-     */
-    private $cacheDir = null;
-
-    /**
      * the name of the cache entry where the loaded file is stored
      *
      * @var string
@@ -147,9 +140,10 @@ class Loader
      */
     public function __construct($cacheDir = null)
     {
-        if (null === $cacheDir) {
-            $this->cache = new \WurflCache\Adapter\NullStorage();
-        } else {
+        $this->logger = new \Psr\Log\NullLogger();
+        $this->cache  = new \WurflCache\Adapter\NullStorage();
+
+        if (null !== $cacheDir) {
             if (!is_string($cacheDir)) {
                 throw new Exception(
                     'You have to provide a path to read/store the browscap cache file',
@@ -157,53 +151,8 @@ class Loader
                 );
             }
 
-            $oldCacheDir = $cacheDir;
-            $cacheDir    = realpath($cacheDir);
-
-            if (false === $cacheDir) {
-                throw new Exception(
-                    'The cache path "' . $oldCacheDir . '" is invalid. '
-                    . 'Are you sure that it exists and that you have permission '
-                    . 'to access it?',
-                    Exception::CACHE_DIR_INVALID
-                );
-            }
-
-            // Is the cache dir really the directory or is it directly the file?
-            if (is_file($cacheDir) && substr($cacheDir, -4) === '.php') {
-                $this->filename = basename($cacheDir);
-                $this->cacheDir = dirname($cacheDir);
-            } elseif (is_dir($cacheDir)) {
-                $this->cacheDir = $cacheDir;
-            } else {
-                throw new Exception(
-                    'The cache path "' . $oldCacheDir . '" is invalid. '
-                    . 'Are you sure that it exists and that you have permission '
-                    . 'to access it?',
-                    Exception::CACHE_DIR_INVALID
-                );
-            }
-
-            if (!is_readable($this->cacheDir)) {
-                throw new Exception(
-                    'Its not possible to read from the given cache path "'
-                    . $oldCacheDir . '"',
-                    Exception::CACHE_DIR_NOT_READABLE
-                );
-            }
-
-            if (!is_writable($this->cacheDir)) {
-                throw new Exception(
-                    'Its not possible to write to the given cache path "'
-                    . $oldCacheDir . '"',
-                    Exception::CACHE_DIR_NOT_WRITABLE
-                );
-            }
-
-            $this->cacheDir .= DIRECTORY_SEPARATOR;
-
             $this->cache = new \WurflCache\Adapter\File(
-                array(\WurflCache\Adapter\File::DIR => $this->cacheDir)
+                array(\WurflCache\Adapter\File::DIR => $cacheDir)
             );
         }
     }
@@ -264,7 +213,7 @@ class Loader
      *
      * @return \FileLoader\Loader
      */
-    public function setFile($filename)
+    public function setCacheFile($filename)
     {
         if (empty($filename)) {
             throw new Exception(
@@ -359,7 +308,7 @@ class Loader
 
         // Proxy authentication (optional)
         if (isset($username) && isset($password)) {
-            $settings[$wrapper]['header'] = 'Proxy-Authorization: Basic '.base64_encode($username.':'.$password);
+            $settings[$wrapper]['header'] = 'Proxy-Authorization: Basic ' . base64_encode($username . ':' . $password);
         }
 
         // Add these new settings to the stream context options array
@@ -421,85 +370,26 @@ class Loader
     }
 
     /**
-     * XXX save
+     * loads the file from a remote or local location and stores it into the cache
      *
-     * loads the ini file from a remote or local location and stores it into
-     * the cache dir, parses the ini file
-     *
-     * @return array the parsed ini file
+     * @return string the file content
      */
     public function load()
     {
-        $path = $this->filename;
-
-        switch ($this->getUpdateMethod()) {
-            case self::UPDATE_LOCAL:
-                $path = basename($this->localFile);
-                $internalLoader = new Loader\Local($this);
-                $internalLoader->setLocaleFile($this->localFile);
-                break;
-            case self::UPDATE_FOPEN:
-                $internalLoader = new Loader\FopenLoader($this);
-                break;
-            case self::UPDATE_FSOCKOPEN:
-                $internalLoader = new Loader\SocketLoader($this);
-                break;
-            case self::UPDATE_CURL:
-                $internalLoader = new Loader\Curl($this);
-                break;
-            default:
-        }
-
-        if (null !== $this->logger) {
-            $internalLoader->setLogger($this->logger);
-        }
+        $internalLoader = Loader\Factory::build($this, $this->localFile);
+        $internalLoader->setLogger($this->logger);
 
         $success = null;
-        $content = $this->cache->getItem($path, $success);
+        $content = $this->cache->getItem($this->filename, $success);
 
         if (!$success) {
-            // Get updated .ini file
-            $browscap = $internalLoader->load();
-            $browscap = explode("\n", $browscap);
+            // Get file content
+            $content = $internalLoader->load();
 
-            // quote the values for the data kyes Browser and Parent
-            $pattern = Browscap::REGEX_DELIMITER
-                     . '('
-                     . Browscap::VALUES_TO_QUOTE
-                     . ')="?([^"]*)"?$'
-                     . Browscap::REGEX_DELIMITER;
-
-
-            // Ok, lets read the file
-            $content = '';
-            foreach ($browscap as $subject) {
-                $subject  = trim($subject);
-                $content .= preg_replace($pattern, '$1="$2"', $subject) . "\n";
-            }
-
-            /*
-             * store the content into the local cached ini file
-             * but only if its not the same as the remote file
-             */
-            if (!$this->cache->setItem($path, $content)) {
-                throw new Exception(
-                    'Could not write file content to cache',
-                    Exception::CACHE_DIR_NOT_WRITABLE
-                );
-            }
+            $this->cache->setItem($this->filename, $content);
         }
 
-        /*
-         * we have the ini content available as string
-         * -> parse the string
-         */
-        if (version_compare(PHP_VERSION, '5.3.0', '>=')) {
-            $browsers = parse_ini_string($content, true, INI_SCANNER_RAW);
-        } else {
-            $browsers = parse_ini_string($content, true);
-        }
-
-        return $browsers;
+        return $content;
     }
 
     /**
@@ -522,32 +412,6 @@ class Loader
     }
 
     /**
-     * Checks for the various possibilities offered by the current configuration
-     * of PHP to retrieve external HTTP data
-     *
-     * @return string the name of function to use to retrieve the file
-     */
-    public function getUpdateMethod()
-    {
-        // Caches the result
-        if ($this->updateMethod === null) {
-            if ($this->localFile !== null) {
-                $this->updateMethod = self::UPDATE_LOCAL;
-            } elseif (ini_get('allow_url_fopen') && function_exists('file_get_contents')) {
-                $this->updateMethod = self::UPDATE_FOPEN;
-            } elseif (function_exists('fsockopen')) {
-                $this->updateMethod = self::UPDATE_FSOCKOPEN;
-            } elseif (extension_loaded('curl')) {
-                $this->updateMethod = self::UPDATE_CURL;
-            } else {
-                $this->updateMethod = false;
-            }
-        }
-
-        return $this->updateMethod;
-    }
-
-    /**
      * Format the useragent string to be used in the remote requests made by the
      * class during the update process.
      *
@@ -555,9 +419,6 @@ class Loader
      */
     public function getUserAgent()
     {
-        $userAgent = str_replace('%v', self::VERSION, $this->userAgent);
-        $userAgent = str_replace('%m', $this->getUpdateMethod(), $userAgent);
-
-        return $userAgent;
+        return str_replace('%v', self::VERSION, $this->userAgent);
     }
 }
