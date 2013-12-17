@@ -15,7 +15,7 @@ a class to load remote or local files
 [![Latest Stable Version](https://poser.pugx.org/mimmi20/file-loader/v/stable.png)](https://packagist.org/packages/mimmi20/file-loader)
 [![Latest Unstable Version](https://poser.pugx.org/mimmi20/file-loader/v/unstable.png)](https://packagist.org/packages/mimmi20/file-loader)
 
-[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/mimmi20/FileLoader/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/mimmi20/fileloader/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
 [![Total views](https://sourcegraph.com/api/repos/github.com/mimmi20/FileLoader/counters/views.png)](https://sourcegraph.com/github.com/mimmi20/FileLoader)
 
 
