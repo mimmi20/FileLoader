@@ -66,20 +66,20 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
 
         $this->object = null;
     }
-    
+
     public function testConstruct()
     {
         $object = new \FileLoader\Loader();
         self::assertInstanceOf('\\FileLoader\\Loader', $object);
     }
-    
+
     public function testConstructWithPath()
     {
         $object = new \FileLoader\Loader(sys_get_temp_dir());
         self::assertInstanceOf('\\FileLoader\\Loader', $object);
         self::assertInstanceOf('\\WurflCache\\Adapter\\File', $object->getCache());
     }
-    
+
     /**
      * @expectedException \FileLoader\Exception
      */
@@ -87,7 +87,7 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
     {
         new \FileLoader\Loader(false);
     }
-    
+
     /**
      * @expectedException \PHPUnit_Framework_Error
      */
@@ -95,14 +95,14 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
     {
         $this->object->setLogger();
     }
-    
+
     public function testSetLogger()
     {
         $return = $this->object->setLogger(new \Monolog\Logger('test'));
         self::assertInstanceOf('\\FileLoader\\Loader', $return);
         self::assertSame($this->object, $return);
     }
-    
+
     /**
      * @expectedException \PHPUnit_Framework_Error
      */
@@ -110,7 +110,7 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
     {
         $this->object->setCache();
     }
-    
+
     public function testSetCache()
     {
         $cache  = new \WurflCache\Adapter\Memory();
@@ -119,7 +119,7 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
         self::assertSame($this->object, $return);
         self::assertSame($cache, $this->object->getCache());
     }
-    
+
     /**
      * @expectedException \PHPUnit_Framework_Error_Warning
      */
@@ -127,7 +127,7 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
     {
         $this->object->setLocaleFile();
     }
-    
+
     /**
      * @expectedException \FileLoader\Exception
      */
@@ -135,14 +135,14 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
     {
         $this->object->setLocaleFile('');
     }
-    
+
     public function testSetLocalFile()
     {
         $return = $this->object->setLocaleFile('x');
         self::assertInstanceOf('\\FileLoader\\Loader', $return);
         self::assertSame($this->object, $return);
     }
-    
+
     /**
      * @expectedException \PHPUnit_Framework_Error_Warning
      */
@@ -150,7 +150,7 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
     {
         $this->object->setCacheFile();
     }
-    
+
     /**
      * @expectedException \FileLoader\Exception
      */
@@ -158,14 +158,14 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
     {
         $this->object->setCacheFile('');
     }
-    
+
     public function testSetCacheFile()
     {
         $return = $this->object->setCacheFile('y');
         self::assertInstanceOf('\\FileLoader\\Loader', $return);
         self::assertSame($this->object, $return);
     }
-    
+
     /**
      * @expectedException \PHPUnit_Framework_Error_Warning
      */
@@ -173,7 +173,7 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
     {
         $this->object->setRemoteDataUrl();
     }
-    
+
     /**
      * @expectedException \FileLoader\Exception
      */
@@ -181,7 +181,7 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
     {
         $this->object->setRemoteDataUrl('');
     }
-    
+
     public function testSetRemoteDataUrl()
     {
         $remoteDataUrl  = 'aa';
@@ -190,7 +190,7 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
         self::assertSame($this->object, $return);
         self::assertSame($remoteDataUrl, $this->object->getRemoteDataUrl());
     }
-    
+
     /**
      * @expectedException \PHPUnit_Framework_Error_Warning
      */
@@ -198,7 +198,7 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
     {
         $this->object->setRemoteVerUrl();
     }
-    
+
     /**
      * @expectedException \FileLoader\Exception
      */
@@ -206,7 +206,7 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
     {
         $this->object->setRemoteVerUrl('');
     }
-    
+
     public function testSetRemoteVerUrl()
     {
         $remoteVerUrl  = 'aa';
@@ -215,7 +215,7 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
         self::assertSame($this->object, $return);
         self::assertSame($remoteVerUrl, $this->object->getRemoteVerUrl());
     }
-    
+
     /**
      * @expectedException \PHPUnit_Framework_Error_Warning
      */
@@ -223,7 +223,7 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
     {
         $this->object->setTimeout();
     }
-    
+
     public function testSetTimeout()
     {
         $timeout = 900;
@@ -232,13 +232,24 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
         self::assertSame($this->object, $return);
         self::assertSame($timeout, $this->object->getTimeout());
     }
-    
+
     public function testSetTimeoutNeedInteger()
     {
         $return  = $this->object->setTimeout('abc');
         self::assertInstanceOf('\\FileLoader\\Loader', $return);
         self::assertSame($this->object, $return);
         self::assertSame(0, $this->object->getTimeout());
+    }
+
+    public function testSetMode()
+    {
+        $return = $this->object->setMode();
+        self::assertInstanceOf('\\FileLoader\\Loader', $return);
+        self::assertSame($this->object, $return);
+        
+        $return = $this->object->setMode(\FileLoader\Loader::UPDATE_FOPEN);
+        self::assertInstanceOf('\\FileLoader\\Loader', $return);
+        self::assertSame($this->object, $return);
     }
 
     /**
@@ -257,13 +268,13 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
             $this->fail('proxy settings not detected');
         }
 
-        self::assertEquals($options['http']['proxy'], 'tcp://proxy.example.com:3128');
+        self::assertSame($options['http']['proxy'], 'tcp://proxy.example.com:3128');
         self::assertTrue($options['http']['request_fulluri']);
 
-        self::assertEquals($options['https']['proxy'], 'tcp://proxy.example.com:3128');
+        self::assertSame($options['https']['proxy'], 'tcp://proxy.example.com:3128');
         self::assertTrue($options['https']['request_fulluri']);
 
-        self::assertEquals($options['ftp']['proxy'], 'tcp://proxy.example.com:3128');
+        self::assertSame($options['ftp']['proxy'], 'tcp://proxy.example.com:3128');
         self::assertTrue($options['ftp']['request_fulluri']);
     }
 
@@ -281,7 +292,7 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
             $this->fail('proxy settings not added');
         }
 
-        self::assertEquals($options['http']['proxy'], 'tcp://proxy.example.com:3128');
+        self::assertSame($options['http']['proxy'], 'tcp://proxy.example.com:3128');
         self::assertTrue($options['http']['request_fulluri']);
 
         return $this->object;
@@ -298,7 +309,7 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
     {
         $username = 'testname';
         $password = 'testPassword';
-        
+
         $object->addProxySettings('proxy.example.com', 3128, 'http', $username, $password);
         $options = $object->getStreamContextOptions();
 
@@ -306,8 +317,11 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
             $this->fail('proxy settings not added');
         }
 
-        self::assertEquals($options['http']['proxy'], 'tcp://proxy.example.com:3128');
-        self::assertEquals($options['http']['header'], 'Proxy-Authorization: Basic ' . base64_encode($username . ':' . $password));
+        self::assertSame($options['http']['proxy'], 'tcp://proxy.example.com:3128');
+        self::assertSame(
+            $options['http']['header'],
+            'Proxy-Authorization: Basic ' . base64_encode($username . ':' . $password)
+        );
         self::assertTrue($options['http']['request_fulluri']);
 
         return $object;
@@ -326,7 +340,7 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
         $options = $object->getStreamContextOptions();
 
         self::assertEmpty($options);
-        self::assertEquals($clearedWrappers, array('http'));
+        self::assertSame($clearedWrappers, array('http'));
     }
 
     /**
@@ -341,5 +355,15 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
         $resource = $object->getStreamContext();
 
         self::assertTrue(is_resource($resource));
+
+        $resource = $object->getStreamContext(true);
+
+        self::assertTrue(is_resource($resource));
+    }
+
+    public function testGetUserAgent()
+    {
+        $userAgent = $this->object->getUserAgent();
+        self::assertSame('File Loader/0.1.0', $userAgent);
     }
 }

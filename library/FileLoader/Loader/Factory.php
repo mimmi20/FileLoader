@@ -50,25 +50,42 @@ class Factory
      * the cache dir, parses the ini file
      *
      * @param \FileLoader\Loader $loader
+     * @param string             $mode
      * @param string             $localeFile
      *
      * @return RemoteLoader the loader to use
      * @throws \FileLoader\Exception
      */
-    public static function build(Loader $loader, $localeFile = null)
+    public static function build(Loader $loader, $mode = null, $localeFile = null)
     {
-        // Caches the result
-        if ($localeFile !== null) {
-            $internalLoader = new Local($loader);
-            $internalLoader->setLocaleFile($localeFile);
-        } elseif (ini_get('allow_url_fopen') && function_exists('file_get_contents')) {
-            $internalLoader = new FopenLoader($loader);
-        } elseif (function_exists('fsockopen')) {
-            $internalLoader = new SocketLoader($loader);
-        } elseif (extension_loaded('curl')) {
-            $internalLoader = new Curl($loader);
-        } else {
-            throw new Exception('no valid loader found');
+        switch ($mode) {
+            case \FileLoader\Loader::UPDATE_FOPEN:
+                $internalLoader = new FopenLoader($loader);
+                break;
+            case \FileLoader\Loader::UPDATE_FSOCKOPEN:
+                $internalLoader = new SocketLoader($loader);
+                break;
+            case \FileLoader\Loader::UPDATE_CURL:
+                $internalLoader = new Curl($loader);
+                break;
+            case \FileLoader\Loader::UPDATE_LOCAL:
+                $internalLoader = new Local($loader);
+                $internalLoader->setLocaleFile($localeFile);
+                break;
+            default:
+                // no mode forced -> try to detect a possible way
+                if ($localeFile !== null) {
+                    $internalLoader = new Local($loader);
+                    $internalLoader->setLocaleFile($localeFile);
+                } elseif (function_exists('fsockopen')) {
+                    $internalLoader = new SocketLoader($loader);
+                } elseif (ini_get('allow_url_fopen') && function_exists('file_get_contents')) {
+                    $internalLoader = new FopenLoader($loader);
+                } elseif (extension_loaded('curl')) {
+                    $internalLoader = new Curl($loader);
+                } else {
+                    throw new Exception('no valid loader found');
+                }
         }
 
         return $internalLoader;

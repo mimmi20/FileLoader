@@ -40,6 +40,11 @@ use WurflCache\Adapter\AdapterInterface;
 class Loader
 {
     /**
+     * The library version
+     */
+    const VERSION = '0.1.0';
+
+    /**
      * Different ways to access remote and local files.
      *
      * UPDATE_FOPEN: Uses the fopen url wrapper (use file_get_contents).
@@ -120,20 +125,27 @@ class Loader
      * @var \Psr\Log\LoggerInterface
      */
     private $logger = null;
-    
+
     /**
      * The Url where the remote file can be found
      *
      * @var string
      */
     private $remoteDataUrl = null;
-    
+
     /**
      * The Url where the version of the remote file can be found
      *
      * @var string
      */
     private $remoteVerUrl = null;
+    
+    /**
+     * the mode what defines which way the remote file is loaded
+     *
+     * @var string
+     */
+    private $mode = null;
 
     /**
      * Constructor class, checks for the existence of (and loads) the cache and
@@ -259,7 +271,7 @@ class Loader
         }
 
         $this->remoteDataUrl = $remoteDataUrl;
-        
+
         return $this;
     }
 
@@ -290,7 +302,7 @@ class Loader
         }
 
         $this->remoteVerUrl = $remoteVerUrl;
-        
+
         return $this;
     }
 
@@ -314,7 +326,7 @@ class Loader
     public function setTimeout($timeout)
     {
         $this->timeout = (int) $timeout;
-        
+
         return $this;
     }
 
@@ -326,6 +338,24 @@ class Loader
     public function getTimeout()
     {
         return $this->timeout;
+    }
+
+    /**
+     * sets the mode to load the remote file
+     *
+     * @param string $mode
+     *
+     * @return \FileLoader\Loader
+     */
+    public function setMode($mode = null)
+    {
+        if (empty($mode)) {
+            return $this;
+        }
+
+        $this->mode = $mode;
+
+        return $this;
     }
 
     /**
@@ -447,13 +477,13 @@ class Loader
      */
     public function load()
     {
-        $internalLoader = Loader\Factory::build($this, $this->localFile);
-        $internalLoader->setLogger($this->logger);
-
         $success = null;
         $content = $this->cache->getItem($this->filename, $success);
 
         if (!$success) {
+            $internalLoader = Loader\Factory::build($this, $this->mode, $this->localFile);
+            $internalLoader->setLogger($this->logger);
+
             // Get file content
             $content = $internalLoader->load();
 
