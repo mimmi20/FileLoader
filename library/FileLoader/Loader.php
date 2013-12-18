@@ -95,7 +95,7 @@ class Loader
     /**
      * a \WurflCache\Adapter\AdapterInterface object
      *
-     * @var CacheInterface
+     * @var \WurflCache\Adapter\AdapterInterface
      */
     private $cache = null;
 
@@ -174,6 +174,16 @@ class Loader
         $this->cache = $cache;
 
         return $this;
+    }
+
+    /**
+     * returns the cache used to make the detection faster
+     *
+     * @return \WurflCache\Adapter\AdapterInterface
+     */
+    public function getCache()
+    {
+        return $this->cache;
     }
 
     /**
