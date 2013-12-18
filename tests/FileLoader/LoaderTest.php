@@ -85,7 +85,7 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
      */
     public function testConstructException()
     {
-        $object = new \FileLoader\Loader(false);
+        new \FileLoader\Loader(false);
     }
     
     /**
@@ -128,6 +128,14 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
         $this->object->setLocaleFile();
     }
     
+    /**
+     * @expectedException \FileLoader\Exception
+     */
+    public function testSetLocalFileException()
+    {
+        $this->object->setLocaleFile('');
+    }
+    
     public function testSetLocalFile()
     {
         $return = $this->object->setLocaleFile('x');
@@ -143,6 +151,14 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
         $this->object->setCacheFile();
     }
     
+    /**
+     * @expectedException \FileLoader\Exception
+     */
+    public function testSetCacheFileException()
+    {
+        $this->object->setCacheFile('');
+    }
+    
     public function testSetCacheFile()
     {
         $return = $this->object->setCacheFile('y');
@@ -156,6 +172,14 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
     public function testSetRemoteDataUrlFail()
     {
         $this->object->setRemoteDataUrl();
+    }
+    
+    /**
+     * @expectedException \FileLoader\Exception
+     */
+    public function testSetRemoteDataUrlExceptiom()
+    {
+        $this->object->setRemoteDataUrl('');
     }
     
     public function testSetRemoteDataUrl()
@@ -175,6 +199,14 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
         $this->object->setRemoteVerUrl();
     }
     
+    /**
+     * @expectedException \FileLoader\Exception
+     */
+    public function testSetRemoteVerUrlException()
+    {
+        $this->object->setRemoteVerUrl('');
+    }
+    
     public function testSetRemoteVerUrl()
     {
         $remoteVerUrl  = 'aa';
@@ -182,6 +214,31 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
         self::assertInstanceOf('\\FileLoader\\Loader', $return);
         self::assertSame($this->object, $return);
         self::assertSame($remoteVerUrl, $this->object->getRemoteVerUrl());
+    }
+    
+    /**
+     * @expectedException \PHPUnit_Framework_Error_Warning
+     */
+    public function testSetTimeoutFail()
+    {
+        $this->object->setTimeout();
+    }
+    
+    public function testSetTimeout()
+    {
+        $timeout = 900;
+        $return  = $this->object->setTimeout($timeout);
+        self::assertInstanceOf('\\FileLoader\\Loader', $return);
+        self::assertSame($this->object, $return);
+        self::assertSame($timeout, $this->object->getTimeout());
+    }
+    
+    public function testSetTimeoutNeedInteger()
+    {
+        $return  = $this->object->setTimeout('abc');
+        self::assertInstanceOf('\\FileLoader\\Loader', $return);
+        self::assertSame($this->object, $return);
+        self::assertSame(0, $this->object->getTimeout());
     }
 
     /**
@@ -231,11 +288,37 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * tests if the proxy settings are added
+     *
+     * @return Browscap
+     *
+     * @depends testAddProxySettings
+     */
+    public function testAddProxySettingsWithUserPassword($object)
+    {
+        $username = 'testname';
+        $password = 'testPassword';
+        
+        $object->addProxySettings('proxy.example.com', 3128, 'http', $username, $password);
+        $options = $object->getStreamContextOptions();
+
+        if (!isset($options['http'])) {
+            $this->fail('proxy settings not added');
+        }
+
+        self::assertEquals($options['http']['proxy'], 'tcp://proxy.example.com:3128');
+        self::assertEquals($options['http']['header'], 'Proxy-Authorization: Basic ' . base64_encode($username . ':' . $password));
+        self::assertTrue($options['http']['request_fulluri']);
+
+        return $object;
+    }
+
+    /**
      * tests if the proxy settings are deleted
      *
      * @param Browscap $object
      *
-     * @depends testAddProxySettings
+     * @depends testAddProxySettingsWithUserPassword
      */
     public function testClearProxySettings($object)
     {

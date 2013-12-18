@@ -307,6 +307,20 @@ class Loader
     /**
      * returns the timeout
      *
+     * @param integer $timeout
+     *
+     * @return \FileLoader\Loader
+     */
+    public function setTimeout($timeout)
+    {
+        $this->timeout = (int) $timeout;
+        
+        return $this;
+    }
+
+    /**
+     * returns the timeout
+     *
      * @return integer
      */
     public function getTimeout()

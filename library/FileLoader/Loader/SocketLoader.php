@@ -68,7 +68,7 @@ class SocketLoader extends RemoteLoader
         $remoteUrl = parse_url($url);
         $errno     = 0;
         $errstr    = '';
-        
+
         if (isset($remoteUrl['port'])) {
             $port = (int) $remoteUrl['port'];
         } elseif (isset($remoteUrl['scheme']) && $remoteUrl['scheme'] === 'https') {
@@ -76,15 +76,15 @@ class SocketLoader extends RemoteLoader
         } else {
             $port = 80;
         }
-        
+
         $fullRemoteUrl = $remoteUrl['scheme'] . '://' . $remoteUrl['host'] . ':' . $port;
-        
+
         $remoteHandler = stream_socket_client(
-            $fullRemoteUrl, 
-            $errno, 
-            $errstr, 
-            $this->loader->getTimeout(), 
-            STREAM_CLIENT_CONNECT, 
+            $fullRemoteUrl,
+            $errno,
+            $errstr,
+            $this->loader->getTimeout(),
+            STREAM_CLIENT_CONNECT,
             $this->loader->getStreamContext()
         );
 
@@ -95,7 +95,7 @@ class SocketLoader extends RemoteLoader
         stream_set_timeout($remoteHandler, $this->loader->getTimeout());
         stream_set_blocking($remoteHandler, 1);
 
-        
+
         if (isset($remoteUrl['query'])) {
             $remoteUrl['path'] .= '?' . $remoteUrl['query'];
         }
@@ -111,7 +111,7 @@ class SocketLoader extends RemoteLoader
 
         $response = fgets($remoteHandler);
         $file     = null;
-        
+
         if (strpos($response, '200 OK') !== false) {
             $file = '';
             while (!feof($remoteHandler)) {
