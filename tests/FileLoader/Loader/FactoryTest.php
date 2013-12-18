@@ -39,7 +39,7 @@ use FileLoader\Loader;
 class FactoryTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @var Browscap
+     * @var Loader
      */
     private $object = null;
 

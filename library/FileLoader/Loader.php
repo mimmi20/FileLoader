@@ -197,7 +197,7 @@ class Loader
      *
      * @param \WurflCache\Adapter\AdapterInterface $cache
      *
-     * @return BrowserDetector
+     * @return Loader
      */
     public function setCache(AdapterInterface $cache)
     {
