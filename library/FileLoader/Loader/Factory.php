@@ -58,34 +58,26 @@ class Factory
      */
     public static function build(Loader $loader, $mode = null, $localeFile = null)
     {
-        switch ($mode) {
-            case \FileLoader\Loader::UPDATE_FOPEN:
-                $internalLoader = new FopenLoader($loader);
-                break;
-            case \FileLoader\Loader::UPDATE_FSOCKOPEN:
-                $internalLoader = new SocketLoader($loader);
-                break;
-            case \FileLoader\Loader::UPDATE_CURL:
-                $internalLoader = new Curl($loader);
-                break;
-            case \FileLoader\Loader::UPDATE_LOCAL:
-                $internalLoader = new Local($loader);
-                $internalLoader->setLocaleFile($localeFile);
-                break;
-            default:
-                // no mode forced -> try to detect a possible way
-                if ($localeFile !== null) {
-                    $internalLoader = new Local($loader);
-                    $internalLoader->setLocaleFile($localeFile);
-                } elseif (function_exists('fsockopen')) {
-                    $internalLoader = new SocketLoader($loader);
-                } elseif (ini_get('allow_url_fopen') && function_exists('file_get_contents')) {
-                    $internalLoader = new FopenLoader($loader);
-                } elseif (extension_loaded('curl')) {
-                    $internalLoader = new Curl($loader);
-                } else {
-                    throw new Exception('no valid loader found');
-                }
+        if ($localeFile !== null
+            && (null === $mode || \FileLoader\Loader::UPDATE_LOCAL === $mode)
+        ) {
+            $internalLoader = new Local($loader);
+            $internalLoader->setLocaleFile($localeFile);
+        } elseif (function_exists('fsockopen')
+            && (null === $mode || \FileLoader\Loader::UPDATE_FSOCKOPEN === $mode)
+        ) {
+            $internalLoader = new SocketLoader($loader);
+        } elseif (ini_get('allow_url_fopen')
+            && function_exists('file_get_contents')
+            && (null === $mode || \FileLoader\Loader::UPDATE_FOPEN === $mode)
+        ) {
+            $internalLoader = new FopenLoader($loader);
+        } elseif (extension_loaded('curl')
+            && (null === $mode || \FileLoader\Loader::UPDATE_CURL === $mode)
+        ) {
+            $internalLoader = new Curl($loader);
+        } else {
+            throw new Exception('no valid loader found');
         }
 
         return $internalLoader;
