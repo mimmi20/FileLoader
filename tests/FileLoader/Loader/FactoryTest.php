@@ -78,7 +78,7 @@ class FactoryTest extends \PHPUnit_Framework_TestCase
     public function testBuildLocaleFile()
     {
         $result = \FileLoader\Loader\Factory::build($this->object, null, 'xxx');
-        
+
         self::assertInstanceOf('\\FileLoader\\Loader\\Local', $result);
     }
 
@@ -93,14 +93,14 @@ class FactoryTest extends \PHPUnit_Framework_TestCase
     public function testBuildSocketLoader()
     {
         $result = \FileLoader\Loader\Factory::build($this->object);
-        
+
         self::assertInstanceOf('\\FileLoader\\Loader\\SocketLoader', $result);
     }
 
     public function testBuildForcedLocaleFile()
     {
         $result = \FileLoader\Loader\Factory::build($this->object, \FileLoader\Loader::UPDATE_LOCAL, 'xxx');
-        
+
         self::assertInstanceOf('\\FileLoader\\Loader\\Local', $result);
     }
 
@@ -115,21 +115,21 @@ class FactoryTest extends \PHPUnit_Framework_TestCase
     public function testBuildForcedSocketLoader()
     {
         $result = \FileLoader\Loader\Factory::build($this->object, \FileLoader\Loader::UPDATE_FSOCKOPEN);
-        
+
         self::assertInstanceOf('\\FileLoader\\Loader\\SocketLoader', $result);
     }
 
     public function testBuildForcedFopenLoader()
     {
         $result = \FileLoader\Loader\Factory::build($this->object, \FileLoader\Loader::UPDATE_FOPEN);
-        
+
         self::assertInstanceOf('\\FileLoader\\Loader\\FopenLoader', $result);
     }
 
     public function testBuildForcedCurlLoader()
     {
         $result = \FileLoader\Loader\Factory::build($this->object, \FileLoader\Loader::UPDATE_CURL);
-        
+
         self::assertInstanceOf('\\FileLoader\\Loader\\Curl', $result);
     }
 }

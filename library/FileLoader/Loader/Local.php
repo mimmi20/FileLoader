@@ -116,7 +116,7 @@ class Local
      */
     public function load()
     {
-        // Get updated .ini file
+        // Get file content
         $file = file_get_contents($this->localFile);
 
         if ($file !== false) {

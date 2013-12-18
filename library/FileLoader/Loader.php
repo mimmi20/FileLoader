@@ -139,7 +139,7 @@ class Loader
      * @var string
      */
     private $remoteVerUrl = null;
-    
+
     /**
      * the mode what defines which way the remote file is loaded
      *
