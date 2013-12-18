@@ -1,13 +1,11 @@
 <?php
 namespace FileLoader\Loader;
 
-use WurflCache\Adapter\AdapterInterface;
-
 /** the main loader class */
-use FileLoader\Loader;
 
 /** @var \FileLoader\Exception */
 use FileLoader\Exception;
+use FileLoader\Loader;
 
 /**
  * class to load a file from a local or remote source
@@ -49,9 +47,9 @@ class Factory
      * loads the ini file from a remote or local location and stores it into
      * the cache dir, parses the ini file
      *
-     * @param \FileLoader\Loader $loader
-     * @param string             $mode
-     * @param string             $localeFile
+     * @param Loader $loader
+     * @param string $mode
+     * @param string $localeFile
      *
      * @return RemoteLoader the loader to use
      * @throws \FileLoader\Exception
@@ -59,21 +57,21 @@ class Factory
     public static function build(Loader $loader, $mode = null, $localeFile = null)
     {
         if ($localeFile !== null
-            && (null === $mode || \FileLoader\Loader::UPDATE_LOCAL === $mode)
+            && (null === $mode || Loader::UPDATE_LOCAL === $mode)
         ) {
             $internalLoader = new Local($loader);
             $internalLoader->setLocaleFile($localeFile);
         } elseif (function_exists('fsockopen')
-            && (null === $mode || \FileLoader\Loader::UPDATE_FSOCKOPEN === $mode)
+            && (null === $mode || Loader::UPDATE_FSOCKOPEN === $mode)
         ) {
             $internalLoader = new SocketLoader($loader);
         } elseif (ini_get('allow_url_fopen')
             && function_exists('file_get_contents')
-            && (null === $mode || \FileLoader\Loader::UPDATE_FOPEN === $mode)
+            && (null === $mode || Loader::UPDATE_FOPEN === $mode)
         ) {
             $internalLoader = new FopenLoader($loader);
         } elseif (extension_loaded('curl')
-            && (null === $mode || \FileLoader\Loader::UPDATE_CURL === $mode)
+            && (null === $mode || Loader::UPDATE_CURL === $mode)
         ) {
             $internalLoader = new Curl($loader);
         } else {

@@ -4,5 +4,6 @@
 vendor/
 build/
 /.project
+/.idea
 /tests/output
 result.txt

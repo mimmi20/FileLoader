@@ -2,6 +2,8 @@
 
 namespace FileLoaderTest\Loader;
 
+use FileLoader\Loader;
+
 /**
  * Browscap.ini parsing class with caching and update capabilities
  *
@@ -49,7 +51,7 @@ class FactoryTest extends \PHPUnit_Framework_TestCase
     {
         parent::setUp();
 
-        $this->object = new \FileLoader\Loader();
+        $this->object = new Loader();
     }
 
     /**
@@ -72,12 +74,12 @@ class FactoryTest extends \PHPUnit_Framework_TestCase
      */
     public function testBuildFailsWithoutLoader()
     {
-        \FileLoader\Loader\Factory::build();
+        Loader\Factory::build();
     }
 
     public function testBuildLocaleFile()
     {
-        $result = \FileLoader\Loader\Factory::build($this->object, null, 'xxx');
+        $result = Loader\Factory::build($this->object, null, 'xxx');
 
         self::assertInstanceOf('\\FileLoader\\Loader\\Local', $result);
     }
@@ -87,19 +89,19 @@ class FactoryTest extends \PHPUnit_Framework_TestCase
      */
     public function testBuildLocaleFileException()
     {
-        \FileLoader\Loader\Factory::build($this->object, null, '');
+        Loader\Factory::build($this->object, null, '');
     }
 
     public function testBuildSocketLoader()
     {
-        $result = \FileLoader\Loader\Factory::build($this->object);
+        $result = Loader\Factory::build($this->object);
 
         self::assertInstanceOf('\\FileLoader\\Loader\\SocketLoader', $result);
     }
 
     public function testBuildForcedLocaleFile()
     {
-        $result = \FileLoader\Loader\Factory::build($this->object, \FileLoader\Loader::UPDATE_LOCAL, 'xxx');
+        $result = Loader\Factory::build($this->object, Loader::UPDATE_LOCAL, 'xxx');
 
         self::assertInstanceOf('\\FileLoader\\Loader\\Local', $result);
     }
@@ -109,26 +111,26 @@ class FactoryTest extends \PHPUnit_Framework_TestCase
      */
     public function testBuildForcedLocaleFileException()
     {
-        \FileLoader\Loader\Factory::build($this->object, \FileLoader\Loader::UPDATE_LOCAL, '');
+        Loader\Factory::build($this->object, Loader::UPDATE_LOCAL, '');
     }
 
     public function testBuildForcedSocketLoader()
     {
-        $result = \FileLoader\Loader\Factory::build($this->object, \FileLoader\Loader::UPDATE_FSOCKOPEN);
+        $result = Loader\Factory::build($this->object, Loader::UPDATE_FSOCKOPEN);
 
         self::assertInstanceOf('\\FileLoader\\Loader\\SocketLoader', $result);
     }
 
     public function testBuildForcedFopenLoader()
     {
-        $result = \FileLoader\Loader\Factory::build($this->object, \FileLoader\Loader::UPDATE_FOPEN);
+        $result = Loader\Factory::build($this->object, Loader::UPDATE_FOPEN);
 
         self::assertInstanceOf('\\FileLoader\\Loader\\FopenLoader', $result);
     }
 
     public function testBuildForcedCurlLoader()
     {
-        $result = \FileLoader\Loader\Factory::build($this->object, \FileLoader\Loader::UPDATE_CURL);
+        $result = Loader\Factory::build($this->object, Loader::UPDATE_CURL);
 
         self::assertInstanceOf('\\FileLoader\\Loader\\Curl', $result);
     }

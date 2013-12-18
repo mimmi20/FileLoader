@@ -1,7 +1,11 @@
 <?php
 namespace FileLoader;
 
+use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 use WurflCache\Adapter\AdapterInterface;
+use WurflCache\Adapter\File;
+use WurflCache\Adapter\NullStorage;
 
 /**
  * class to load a file from a local or remote source
@@ -52,10 +56,10 @@ class Loader
      * UPDATE_CURL: Uses the cURL extension.
      * UPDATE_LOCAL: Updates from a local file (file_get_contents).
      */
-    const UPDATE_FOPEN = 'URL-wrapper';
+    const UPDATE_FOPEN     = 'URL-wrapper';
     const UPDATE_FSOCKOPEN = 'socket';
-    const UPDATE_CURL = 'cURL';
-    const UPDATE_LOCAL = 'local';
+    const UPDATE_CURL      = 'cURL';
+    const UPDATE_LOCAL     = 'local';
 
     /**
      * The headers to be sent for checking the version and requesting the file.
@@ -122,7 +126,7 @@ class Loader
     /**
      * an logger instance
      *
-     * @var \Psr\Log\LoggerInterface
+     * @var LoggerInterface
      */
     private $logger = null;
 
@@ -157,8 +161,8 @@ class Loader
      */
     public function __construct($cacheDir = null)
     {
-        $this->logger = new \Psr\Log\NullLogger();
-        $this->cache  = new \WurflCache\Adapter\NullStorage();
+        $this->logger = new NullLogger();
+        $this->cache  = new NullStorage();
 
         if (null !== $cacheDir) {
             if (!is_string($cacheDir)) {
@@ -168,8 +172,8 @@ class Loader
                 );
             }
 
-            $this->cache = new \WurflCache\Adapter\File(
-                array(\WurflCache\Adapter\File::DIR => $cacheDir)
+            $this->cache = new File(
+                array(File::DIR => $cacheDir)
             );
         }
     }
@@ -177,11 +181,11 @@ class Loader
     /**
      * sets the logger
      *
-     * @param \Psr\Log\LoggerInterface $logger
+     * @param LoggerInterface $logger
      *
      * @return \FileLoader\Loader
      */
-    public function setLogger(\Psr\Log\LoggerInterface $logger)
+    public function setLogger(LoggerInterface $logger)
     {
         $this->logger = $logger;
 
@@ -217,6 +221,7 @@ class Loader
      *
      * @param string $filename the file name
      *
+     * @throws Exception
      * @return \FileLoader\Loader
      */
     public function setLocaleFile($filename)
@@ -238,6 +243,7 @@ class Loader
      *
      * @param string $filename the file name
      *
+     * @throws Exception
      * @return \FileLoader\Loader
      */
     public function setCacheFile($filename)
@@ -259,6 +265,7 @@ class Loader
      *
      * @param string $remoteDataUrl
      *
+     * @throws Exception
      * @return \FileLoader\Loader
      */
     public function setRemoteDataUrl($remoteDataUrl)
@@ -290,6 +297,7 @@ class Loader
      *
      * @param string $remoteVerUrl
      *
+     * @throws Exception
      * @return \FileLoader\Loader
      */
     public function setRemoteVerUrl($remoteVerUrl)
@@ -325,7 +333,7 @@ class Loader
      */
     public function setTimeout($timeout)
     {
-        $this->timeout = (int) $timeout;
+        $this->timeout = (int)$timeout;
 
         return $this;
     }
@@ -373,9 +381,9 @@ class Loader
             if (!empty($url)) {
                 $params = array_merge(
                     array(
-                        'port'  => null,
-                        'user'  => null,
-                        'pass'  => null,
+                         'port' => null,
+                         'user' => null,
+                         'pass' => null,
                     ),
                     parse_url($url)
                 );
@@ -390,11 +398,11 @@ class Loader
     /**
      * Add proxy settings to the stream context array.
      *
-     * @param string $server    Proxy server/host
-     * @param int    $port      Port
-     * @param string $wrapper   Wrapper: "http", "https", "ftp", others...
-     * @param string $username  Username (when requiring authentication)
-     * @param string $password  Password (when requiring authentication)
+     * @param string $server   Proxy server/host
+     * @param int    $port     Port
+     * @param string $wrapper  Wrapper: "http", "https", "ftp", others...
+     * @param string $username Username (when requiring authentication)
+     * @param string $password Password (when requiring authentication)
      *
      * @return \FileLoader\Loader
      */

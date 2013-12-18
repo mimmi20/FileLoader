@@ -2,6 +2,10 @@
 
 namespace FileLoaderTest;
 
+use FileLoader\Loader;
+use Monolog\Logger;
+use WurflCache\Adapter\Memory;
+
 /**
  * Browscap.ini parsing class with caching and update capabilities
  *
@@ -49,7 +53,7 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
     {
         parent::setUp();
 
-        $this->object = new \FileLoader\Loader();
+        $this->object = new Loader();
     }
 
     /**
@@ -69,13 +73,13 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
 
     public function testConstruct()
     {
-        $object = new \FileLoader\Loader();
+        $object = new Loader();
         self::assertInstanceOf('\\FileLoader\\Loader', $object);
     }
 
     public function testConstructWithPath()
     {
-        $object = new \FileLoader\Loader(sys_get_temp_dir());
+        $object = new Loader(sys_get_temp_dir());
         self::assertInstanceOf('\\FileLoader\\Loader', $object);
         self::assertInstanceOf('\\WurflCache\\Adapter\\File', $object->getCache());
     }
@@ -85,7 +89,7 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
      */
     public function testConstructException()
     {
-        new \FileLoader\Loader(false);
+        new Loader(false);
     }
 
     /**
@@ -98,7 +102,7 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
 
     public function testSetLogger()
     {
-        $return = $this->object->setLogger(new \Monolog\Logger('test'));
+        $return = $this->object->setLogger(new Logger('test'));
         self::assertInstanceOf('\\FileLoader\\Loader', $return);
         self::assertSame($this->object, $return);
     }
@@ -113,7 +117,7 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
 
     public function testSetCache()
     {
-        $cache  = new \WurflCache\Adapter\Memory();
+        $cache  = new Memory();
         $return = $this->object->setCache($cache);
         self::assertInstanceOf('\\FileLoader\\Loader', $return);
         self::assertSame($this->object, $return);
@@ -246,8 +250,8 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
         $return = $this->object->setMode();
         self::assertInstanceOf('\\FileLoader\\Loader', $return);
         self::assertSame($this->object, $return);
-        
-        $return = $this->object->setMode(\FileLoader\Loader::UPDATE_FOPEN);
+
+        $return = $this->object->setMode(Loader::UPDATE_FOPEN);
         self::assertInstanceOf('\\FileLoader\\Loader', $return);
         self::assertSame($this->object, $return);
     }
@@ -300,6 +304,8 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
 
     /**
      * tests if the proxy settings are added
+     *
+     * @param Loader $object
      *
      * @return Browscap
      *
@@ -370,10 +376,10 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
     public function testLoad()
     {
         $this->object
-            ->setMode(\FileLoader\Loader::UPDATE_LOCAL)
+            ->setMode(Loader::UPDATE_LOCAL)
             ->setLocaleFile(__DIR__ . '/../data/test.txt')
         ;
-        
+
         self::assertSame('This is a test', $this->object->load());
     }
 }
