@@ -69,28 +69,49 @@ class SocketLoader extends RemoteLoader
         $errno     = 0;
         $errstr    = '';
         
-        $remoteHandler = fsockopen($remoteUrl['host'], 80, $errno, $errstr, $this->loader->getTimeout());
+        if (isset($remoteUrl['port'])) {
+            $port = (int) $remoteUrl['port'];
+        } elseif (isset($remoteUrl['scheme']) && $remoteUrl['scheme'] === 'https') {
+            $port = 443;
+        } else {
+            $port = 80;
+        }
+        
+        $fullRemoteUrl = $remoteUrl['scheme'] . '://' . $remoteUrl['host'] . ':' . $port;
+        
+        $remoteHandler = stream_socket_client(
+            $fullRemoteUrl, 
+            $errno, 
+            $errstr, 
+            $this->loader->getTimeout(), 
+            STREAM_CLIENT_CONNECT, 
+            $this->loader->getStreamContext()
+        );
 
         if (!$remoteHandler) {
             return false;
         }
 
         stream_set_timeout($remoteHandler, $this->loader->getTimeout());
+        stream_set_blocking($remoteHandler, 1);
 
+        
         if (isset($remoteUrl['query'])) {
             $remoteUrl['path'] .= '?' . $remoteUrl['query'];
         }
 
         $out = sprintf(
-            self::REQUEST_HEADERS,
+            \FileLoader\Loader::REQUEST_HEADERS,
             $remoteUrl['path'],
             $remoteUrl['host'],
-            $this->loader->getUserAgent()()
+            $this->loader->getUserAgent()
         );
 
         fwrite($remoteHandler, $out);
 
         $response = fgets($remoteHandler);
+        $file     = null;
+        
         if (strpos($response, '200 OK') !== false) {
             $file = '';
             while (!feof($remoteHandler)) {
@@ -106,7 +127,7 @@ class SocketLoader extends RemoteLoader
 
         fclose($remoteHandler);
 
-        if ($file !== false) {
+        if ($file !== null) {
             return $file;
         }
 

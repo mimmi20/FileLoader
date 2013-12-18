@@ -120,6 +120,20 @@ class Loader
      * @var \Psr\Log\LoggerInterface
      */
     private $logger = null;
+    
+    /**
+     * The Url where the remote file can be found
+     *
+     * @var string
+     */
+    private $remoteDataUrl = null;
+    
+    /**
+     * The Url where the version of the remote file can be found
+     *
+     * @var string
+     */
+    private $remoteVerUrl = null;
 
     /**
      * Constructor class, checks for the existence of (and loads) the cache and
@@ -229,7 +243,28 @@ class Loader
     }
 
     /**
-     * returns the of the remote location for updating the ini file
+     * sets the remote location to get the remote file
+     *
+     * @param string $remoteDataUrl
+     *
+     * @return \FileLoader\Loader
+     */
+    public function setRemoteDataUrl($remoteDataUrl)
+    {
+        if (empty($remoteDataUrl)) {
+            throw new Exception(
+                'the parameter $remoteDataUrl can not be empty',
+                Exception::DATA_URL_MISSING
+            );
+        }
+
+        $this->remoteDataUrl = $remoteDataUrl;
+        
+        return $this;
+    }
+
+    /**
+     * returns the remote location to get the remote file
      *
      * @return string
      */
@@ -239,7 +274,28 @@ class Loader
     }
 
     /**
-     * returns the of the remote location for checking the version of the ini file
+     * sets the remote location to get the remote file
+     *
+     * @param string $remoteVerUrl
+     *
+     * @return \FileLoader\Loader
+     */
+    public function setRemoteVerUrl($remoteVerUrl)
+    {
+        if (empty($remoteVerUrl)) {
+            throw new Exception(
+                'the parameter $remoteVerUrl can not be empty',
+                Exception::VERSION_URL_MISSING
+            );
+        }
+
+        $this->remoteVerUrl = $remoteVerUrl;
+        
+        return $this;
+    }
+
+    /**
+     * returns the remote location to get the version of the remote file
      *
      * @return string
      */
@@ -404,7 +460,7 @@ class Loader
     {
         if (!isset($this->streamContext)
             || !is_resource($this->streamContext)
-            || true === $recreate
+            || $recreate
         ) {
             $this->streamContext = stream_context_create($this->getStreamContextOptions());
         }

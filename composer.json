@@ -32,7 +32,8 @@
         "squizlabs/php_codesniffer": "dev-master",
         "phpmd/phpmd": "dev-master",
         "sebastian/phpcpd": "2.0.*@dev",
-        "pdepend/pdepend": "dev-master"
+        "pdepend/pdepend": "dev-master",
+        "monolog/monolog": "1.*@dev"
     },
     "suggest": {
         "ext-curl": "to use curl requests to get the file"

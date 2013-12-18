@@ -24,4 +24,6 @@ class Exception extends \Exception
     const LOCAL_FILE_NOT_READABLE = 700;
     const REMOTE_UPDATE_NOT_POSSIBLE = 800;
     const INI_FILE_MISSING = 900;
+    const VERSION_URL_MISSING = 1000;
+    const DATA_URL_MISSING = 1100;
 }
