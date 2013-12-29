@@ -130,23 +130,21 @@ abstract class RemoteLoader
      * Gets the remote file update timestamp
      *
      * @throws Exception
-     * @return int the remote modification timestamp
+     * @return int|string the remote modification timestamp
      */
     public function getMTime()
     {
-        $remoteDataUrl = $this->loader->getRemoteVerUrl();
+        $remoteDataUrl  = $this->loader->getRemoteVerUrl();
+        $remoteDatetime = $this->getRemoteData($remoteDataUrl);
 
-        $remoteDatetime  = $this->getRemoteData($remoteDataUrl);
-        $remoteTimestamp = strtotime($remoteDatetime);
-
-        if (!$remoteTimestamp) {
+        if (!$remoteDatetime) {
             throw new Exception(
                 'Bad datetime format from ' . $remoteDataUrl,
                 Exception::INVALID_DATETIME
             );
         }
 
-        return $remoteTimestamp;
+        return $remoteDatetime;
     }
 
     /**

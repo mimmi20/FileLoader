@@ -502,6 +502,29 @@ class Loader
     }
 
     /**
+     * loads the file from a remote or local location and stores it into the cache
+     *
+     * @return string the file content
+     */
+    public function getMTime()
+    {
+        $success = null;
+        $content = $this->cache->getItem($this->filename . '.version', $success);
+
+        if (!$success) {
+            $internalLoader = Loader\Factory::build($this, $this->mode, $this->localFile);
+            $internalLoader->setLogger($this->logger);
+
+            // Get file content
+            $content = $internalLoader->getMTime();
+
+            $this->cache->setItem($this->filename, $content);
+        }
+
+        return $content;
+    }
+
+    /**
      * Lazy getter for the stream context resource.
      *
      * @param bool $recreate
