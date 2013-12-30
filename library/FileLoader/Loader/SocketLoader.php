@@ -80,14 +80,26 @@ class SocketLoader extends RemoteLoader
 
         $fullRemoteUrl = $remoteUrl['scheme'] . '://' . $remoteUrl['host'] . ':' . $port;
 
-        $remoteHandler = stream_socket_client(
-            $fullRemoteUrl,
-            $errno,
-            $errstr,
-            $this->loader->getTimeout(),
-            STREAM_CLIENT_CONNECT,
-            $this->loader->getStreamContext()
-        );
+        $options = $this->loader->getStreamContextOptions();
+
+        if (empty($options)) {
+            $remoteHandler = stream_socket_client(
+                $fullRemoteUrl,
+                $errno,
+                $errstr,
+                $this->loader->getTimeout(),
+                STREAM_CLIENT_CONNECT
+            );
+        } else {
+            $remoteHandler = stream_socket_client(
+                $fullRemoteUrl,
+                $errno,
+                $errstr,
+                $this->loader->getTimeout(),
+                STREAM_CLIENT_CONNECT,
+                $this->loader->getStreamContext()
+            );
+        }
 
         if (!$remoteHandler) {
             return false;

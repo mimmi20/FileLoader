@@ -66,7 +66,13 @@ class FopenLoader extends RemoteLoader
      */
     protected function getRemoteData($url)
     {
-        $file = file_get_contents($url, false, $this->loader->getStreamContext());
+        $options = $this->loader->getStreamContextOptions();
+
+        if (empty($options)) {
+            $file = file_get_contents($url, false);
+        } else {
+            $file = file_get_contents($url, false, $this->loader->getStreamContext());
+        }
 
         if ($file !== false) {
             return $file;
