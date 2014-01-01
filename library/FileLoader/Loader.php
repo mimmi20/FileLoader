@@ -193,6 +193,16 @@ class Loader
     }
 
     /**
+     * sets the logger
+     *
+     * @return LoggerInterface
+     */
+    public function getLogger()
+    {
+        return $this->logger;
+    }
+
+    /**
      * sets the cache used to make the detection faster
      *
      * @param \WurflCache\Adapter\AdapterInterface $cache

@@ -375,13 +375,21 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
 
     public function testLoad()
     {
-        $this->markTestSkipped('not ready yet');
-
         $this->object
             ->setMode(Loader::UPDATE_LOCAL)
             ->setLocaleFile(__DIR__ . '/../data/test.txt')
         ;
 
         self::assertSame('This is a test', $this->object->load());
+    }
+
+    public function testGetMtime()
+    {
+        $this->object
+            ->setMode(Loader::UPDATE_LOCAL)
+            ->setLocaleFile(__DIR__ . '/../data/test.txt')
+        ;
+
+        self::assertSame(1387397098, $this->object->getMTime());
     }
 }

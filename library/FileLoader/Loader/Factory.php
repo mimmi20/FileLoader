@@ -61,12 +61,9 @@ class Factory
         ) {
             $internalLoader = new Local($loader);
             $internalLoader->setLocaleFile($localeFile);
-        } elseif (function_exists('fsockopen')
-            && (null === $mode || Loader::UPDATE_FSOCKOPEN === $mode)
-        ) {
+        } elseif (null === $mode || Loader::UPDATE_FSOCKOPEN === $mode) {
             $internalLoader = new SocketLoader($loader);
         } elseif (ini_get('allow_url_fopen')
-            && function_exists('file_get_contents')
             && (null === $mode || Loader::UPDATE_FOPEN === $mode)
         ) {
             $internalLoader = new FopenLoader($loader);
@@ -76,6 +73,12 @@ class Factory
             $internalLoader = new Curl($loader);
         } else {
             throw new Exception('no valid loader found');
+        }
+
+        $logger = $loader->getLogger();
+
+        if (null !== $logger) {
+            $internalLoader->setLogger($logger);
         }
 
         return $internalLoader;

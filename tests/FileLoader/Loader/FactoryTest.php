@@ -134,4 +134,14 @@ class FactoryTest extends \PHPUnit_Framework_TestCase
 
         self::assertInstanceOf('\\FileLoader\\Loader\\Curl', $result);
     }
+
+    /**
+     * @expectedException \FileLoader\Exception
+     * @expectedExceptionMessage no valid loader found
+     * @expectedExceptionCode 0
+     */
+    public function testBuildForcedInvalid()
+    {
+        Loader\Factory::build($this->object, 1);
+    }
 }
