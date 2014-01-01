@@ -36,7 +36,7 @@ namespace FileLoader\Loader;
      * @link       https://github.com/mimmi20/FileLoader/
      */
 
-/** the main loader class */
+    /** the main loader class */
 
 /** @var \FileLoader\Exception */
 use FileLoader\Exception;
@@ -81,21 +81,22 @@ class SocketLoader extends RemoteLoader
         $fullRemoteUrl = $remoteUrl['scheme'] . '://' . $remoteUrl['host'] . ':' . $port;
 
         $options = $this->loader->getStreamContextOptions();
+        $timeout = $this->loader->getTimeout();
 
         if (empty($options)) {
-            $remoteHandler = stream_socket_client(
-                $fullRemoteUrl,
+            $remoteHandler = fsockopen(
+                $remoteUrl['host'],
+                $port,
                 $errno,
                 $errstr,
-                $this->loader->getTimeout(),
-                STREAM_CLIENT_CONNECT
+                $timeout
             );
         } else {
             $remoteHandler = stream_socket_client(
                 $fullRemoteUrl,
                 $errno,
                 $errstr,
-                $this->loader->getTimeout(),
+                $timeout,
                 STREAM_CLIENT_CONNECT,
                 $this->loader->getStreamContext()
             );
@@ -105,7 +106,7 @@ class SocketLoader extends RemoteLoader
             return false;
         }
 
-        stream_set_timeout($remoteHandler, $this->loader->getTimeout());
+        stream_set_timeout($remoteHandler, $timeout);
         stream_set_blocking($remoteHandler, 1);
 
         if (isset($remoteUrl['query'])) {
