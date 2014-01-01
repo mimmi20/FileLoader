@@ -390,6 +390,6 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
             ->setLocaleFile(__DIR__ . '/../data/test.txt')
         ;
 
-        self::assertSame(1387397098, $this->object->getMTime());
+        self::assertInternalType('integer', $this->object->getMTime());
     }
 }
