@@ -70,13 +70,7 @@ class SocketLoader extends RemoteLoader
         $errno     = 0;
         $errstr    = '';
 
-        if (isset($remoteUrl['port'])) {
-            $port = (int)$remoteUrl['port'];
-        } elseif (isset($remoteUrl['scheme']) && $remoteUrl['scheme'] === 'https') {
-            $port = 443;
-        } else {
-            $port = 80;
-        }
+        $port = $this->getPort($remoteUrl);
 
         $fullRemoteUrl = $remoteUrl['scheme'] . '://' . $remoteUrl['host'] . ':' . $port;
 
@@ -123,7 +117,26 @@ class SocketLoader extends RemoteLoader
         fwrite($remoteHandler, $out);
 
         $response = fgets($remoteHandler);
-        $file     = null;
+        $file     = $this->getFile($response, $remoteHandler);
+
+        fclose($remoteHandler);
+
+        if ($file !== null) {
+            return $file;
+        }
+
+        return false;
+    }
+
+    /**
+     * @param string   $response
+     * @param resource $remoteHandler
+     *
+     * @return string|null
+     */
+    private function getFile($response, $remoteHandler)
+    {
+        $file = null;
 
         if (strpos($response, '200 OK') !== false) {
             $file = '';
@@ -138,12 +151,24 @@ class SocketLoader extends RemoteLoader
             $file = implode("\n\n", $file);
         }
 
-        fclose($remoteHandler);
+        return $file;
+    }
 
-        if ($file !== null) {
-            return $file;
+    /**
+     * @param $remoteUrl
+     *
+     * @return integer
+     */
+    private function getPort($remoteUrl)
+    {
+        if (isset($remoteUrl['port'])) {
+            return (int) $remoteUrl['port'];
         }
 
-        return false;
+        if (isset($remoteUrl['scheme']) && $remoteUrl['scheme'] === 'https') {
+            return 443;
+        }
+
+        return 80;
     }
 }
