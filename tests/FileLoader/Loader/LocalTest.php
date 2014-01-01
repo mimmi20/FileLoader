@@ -96,10 +96,26 @@ class LocalTest extends \PHPUnit_Framework_TestCase
         self::assertSame('This is a test', $this->object->load());
     }
 
+    /**
+     * @expectedException \FileLoader\Exception
+     */
+    public function testLoadFileMissing()
+    {
+        self::assertSame('This is a test', $this->object->load());
+    }
+
     public function testGetMtime()
     {
         $this->object->setLocaleFile(__DIR__ . '/../../data/test.txt');
 
         self::assertInternalType('integer', $this->object->getMTime());
+    }
+
+    /**
+     * @expectedException \FileLoader\Exception
+     */
+    public function testGetMtimeFileMissing()
+    {
+        self::assertSame('This is a test', $this->object->getMTime());
     }
 }

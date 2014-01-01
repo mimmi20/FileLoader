@@ -119,6 +119,13 @@ class Local
      */
     public function load()
     {
+        if (!is_readable($this->localFile) || !is_file($this->localFile)) {
+            throw new Exception(
+                'Local file is not readable',
+                Exception::LOCAL_FILE_NOT_READABLE
+            );
+        }
+
         // Get file content
         $file = file_get_contents($this->localFile);
 
