@@ -26,8 +26,6 @@
     "require-dev": {
         "phpunit/phpunit": "*",
         "mikey179/vfsStream": "1.3.*@dev",
-        "satooshi/php-coveralls": "dev-master",
-        "phpunit/phpcov": "2.0.*@dev",
         "monolog/monolog": "1.*@dev"
     },
     "suggest": {
