@@ -7,16 +7,16 @@
     "packages": [
         {
             "name": "mimmi20/wurflcache",
-            "version": "1.2.0",
+            "version": "1.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/mimmi20/WurflCache.git",
-                "reference": "ca240ca01aa1244d7cc3e49ccd3cf14a4866a00d"
+                "reference": "46ae0d00884a3112384929db3870b83e9ff38b14"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mimmi20/WurflCache/zipball/ca240ca01aa1244d7cc3e49ccd3cf14a4866a00d",
-                "reference": "ca240ca01aa1244d7cc3e49ccd3cf14a4866a00d",
+                "url": "https://api.github.com/repos/mimmi20/WurflCache/zipball/46ae0d00884a3112384929db3870b83e9ff38b14",
+                "reference": "46ae0d00884a3112384929db3870b83e9ff38b14",
                 "shasum": ""
             },
             "require": {
@@ -28,7 +28,7 @@
                 "doctrine/cache": "1.4.*@dev",
                 "mikey179/vfsstream": "1.3.*@dev",
                 "phpunit/phpunit": "*",
-                "zendframework/zend-cache": "2.2.*",
+                "zendframework/zend-cache": "2.3.*",
                 "zetacomponents/cache": "dev-master"
             },
             "suggest": {
@@ -65,7 +65,7 @@
                 "Wurfl",
                 "cache"
             ],
-            "time": "2014-04-18 12:49:24"
+            "time": "2014-05-02 13:52:06"
         },
         {
             "name": "psr/log",
