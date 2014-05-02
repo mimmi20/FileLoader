@@ -33,7 +33,7 @@
     },
     "autoload": {
         "psr-4": {
-            "FileLoader\\": "arc/",
+            "FileLoader\\": "src/",
             "FileLoaderTest\\": "tests/FileLoaderTest/"
         }
     }
