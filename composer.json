@@ -32,9 +32,9 @@
         "ext-curl": "to use curl requests to get the file"
     },
     "autoload": {
-        "psr-0": {
-            "FileLoader\\": "library/",
-            "FileLoaderTest\\": "tests/"
+        "psr-4": {
+            "FileLoader\\": "arc/",
+            "FileLoaderTest\\": "tests/FileLoaderTest/"
         }
     }
 }

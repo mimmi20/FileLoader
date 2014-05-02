@@ -2,12 +2,12 @@
 <phpunit bootstrap="./tests/bootstrap.php">
     <testsuites>
         <testsuite name="File Loader Tests">
-            <directory>./tests/FileLoader/</directory>
+            <directory>./tests/FileLoaderTest/</directory>
         </testsuite>
     </testsuites>
     <filter>
         <whitelist>
-            <directory suffix=".php">./library/FileLoader</directory>
+            <directory suffix=".php">./arc</directory>
         </whitelist>
     </filter>
     <logging>
