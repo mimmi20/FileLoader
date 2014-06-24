@@ -69,14 +69,6 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
     /**
      * @expectedException \FileLoader\Exception
      */
-    public function testConstructException()
-    {
-        new Loader(false);
-    }
-
-    /**
-     * @expectedException \FileLoader\Exception
-     */
     public function testSetLocalFileException()
     {
         $this->object->setLocaleFile('');
@@ -239,7 +231,7 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
     public function testGetUserAgent()
     {
         $userAgent = $this->object->getUserAgent();
-        self::assertSame('File Loader/0.1.0', $userAgent);
+        self::assertSame('File Loader/1.2.0', $userAgent);
     }
 
     public function testLoad()
