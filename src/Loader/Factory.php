@@ -75,12 +75,6 @@ class Factory
             throw new Exception('no valid loader found');
         }
 
-        $logger = $loader->getLogger();
-
-        if (null !== $logger) {
-            $internalLoader->setLogger($logger);
-        }
-
         return $internalLoader;
     }
 }

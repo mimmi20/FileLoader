@@ -19,9 +19,7 @@
         "source": "https://github.com/mimmi20/FileLoader"
     },
     "require": {
-        "php": ">=5.3.0",
-        "mimmi20/wurflcache": "1.2.*",
-        "psr/log": "~1.0"
+        "php": ">=5.3.0"
     },
     "require-dev": {
         "phpunit/phpunit": "*",

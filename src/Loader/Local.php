@@ -41,7 +41,6 @@ namespace FileLoader\Loader;
 /** @var \FileLoader\Exception */
 use FileLoader\Exception;
 use FileLoader\Loader;
-use Psr\Log\LoggerInterface;
 
 /**
  * the loader class for requests via curl
@@ -64,27 +63,6 @@ class Local
      * @var string
      */
     private $localFile = null;
-
-    /**
-     * an logger instance
-     *
-     * @var LoggerInterface
-     */
-    private $logger = null;
-
-    /**
-     * sets the logger
-     *
-     * @param LoggerInterface $logger
-     *
-     * @return \FileLoader\Loader\Local
-     */
-    public function setLogger(LoggerInterface $logger)
-    {
-        $this->logger = $logger;
-
-        return $this;
-    }
 
     /**
      * sets the name of the local file

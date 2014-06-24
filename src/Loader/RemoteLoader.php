@@ -41,7 +41,6 @@ namespace FileLoader\Loader;
 /** @var \FileLoader\Exception */
 use FileLoader\Exception;
 use FileLoader\Loader;
-use Psr\Log\LoggerInterface;
 
 /**
  * the loader class for requests via curl
@@ -58,16 +57,9 @@ use Psr\Log\LoggerInterface;
 abstract class RemoteLoader
 {
     /**
-     * an logger instance
+     * an Loader instance
      *
-     * @var LoggerInterface
-     */
-    protected $logger = null;
-
-    /**
-     * an logger instance
-     *
-     * @var Loader
+     * @var \FileLoader\Loader
      */
     protected $loader = null;
 
@@ -75,25 +67,11 @@ abstract class RemoteLoader
      * Constructor class, checks for the existence of (and loads) the cache and
      * if needed updated the definitions
      *
-     * @param Loader $loader
+     * @param \FileLoader\Loader $loader
      */
     public function __construct(Loader $loader)
     {
         $this->loader = $loader;
-    }
-
-    /**
-     * sets the logger
-     *
-     * @param LoggerInterface $logger
-     *
-     * @return \FileLoader\Loader\Curl
-     */
-    public function setLogger(LoggerInterface $logger)
-    {
-        $this->logger = $logger;
-
-        return $this;
     }
 
     /**

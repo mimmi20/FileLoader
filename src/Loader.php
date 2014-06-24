@@ -1,8 +1,6 @@
 <?php
 namespace FileLoader;
 
-use Psr\Log\LoggerInterface;
-use Psr\Log\NullLogger;
 use WurflCache\Adapter\AdapterInterface;
 use WurflCache\Adapter\File;
 use WurflCache\Adapter\NullStorage;
@@ -46,7 +44,7 @@ class Loader
     /**
      * The library version
      */
-    const VERSION = '0.1.0';
+    const VERSION = '1.2.0';
 
     /**
      * Different ways to access remote and local files.
@@ -102,13 +100,6 @@ class Loader
     private $streamContext = null;
 
     /**
-     * a \WurflCache\Adapter\AdapterInterface object
-     *
-     * @var \WurflCache\Adapter\AdapterInterface
-     */
-    private $cache = null;
-
-    /**
      * The path of the local version of the browscap.ini file from which to
      * update (to be set only if used).
      *
@@ -122,13 +113,6 @@ class Loader
      * @var string
      */
     private $filename = null;
-
-    /**
-     * an logger instance
-     *
-     * @var LoggerInterface
-     */
-    private $logger = null;
 
     /**
      * The Url where the remote file can be found
@@ -150,81 +134,6 @@ class Loader
      * @var string
      */
     private $mode = null;
-
-    /**
-     * Constructor class, checks for the existence of (and loads) the cache and
-     * if needed updated the definitions
-     *
-     * @param string $cacheDir
-     *
-     * @throws Exception
-     */
-    public function __construct($cacheDir = null)
-    {
-        $this->logger = new NullLogger();
-        $this->cache  = new NullStorage();
-
-        if (null !== $cacheDir) {
-            if (!is_string($cacheDir)) {
-                throw new Exception(
-                    'You have to provide a path to read/store the browscap cache file',
-                    Exception::CACHE_DIR_MISSING
-                );
-            }
-
-            $this->cache = new File(
-                array(File::DIR => $cacheDir)
-            );
-        }
-    }
-
-    /**
-     * sets the logger
-     *
-     * @param LoggerInterface $logger
-     *
-     * @return \FileLoader\Loader
-     */
-    public function setLogger(LoggerInterface $logger)
-    {
-        $this->logger = $logger;
-
-        return $this;
-    }
-
-    /**
-     * sets the logger
-     *
-     * @return LoggerInterface
-     */
-    public function getLogger()
-    {
-        return $this->logger;
-    }
-
-    /**
-     * sets the cache used to make the detection faster
-     *
-     * @param \WurflCache\Adapter\AdapterInterface $cache
-     *
-     * @return Loader
-     */
-    public function setCache(AdapterInterface $cache)
-    {
-        $this->cache = $cache;
-
-        return $this;
-    }
-
-    /**
-     * returns the cache used to make the detection faster
-     *
-     * @return \WurflCache\Adapter\AdapterInterface
-     */
-    public function getCache()
-    {
-        return $this->cache;
-    }
 
     /**
      * sets the name of the local file
@@ -377,35 +286,6 @@ class Loader
     }
 
     /**
-     * Load (auto-set) proxy settings from environment variables.
-     *
-     * @return \FileLoader\Loader
-     */
-    public function autodetectProxySettings()
-    {
-        $wrappers = array('http', 'https', 'ftp');
-
-        foreach ($wrappers as $wrapper) {
-            $url = getenv($wrapper . '_proxy');
-
-            if (!empty($url)) {
-                $params = array_merge(
-                    array(
-                         'port' => null,
-                         'user' => null,
-                         'pass' => null,
-                    ),
-                    parse_url($url)
-                );
-
-                $this->addProxySettings($params['host'], $params['port'], $wrapper, $params['user'], $params['pass']);
-            }
-        }
-
-        return $this;
-    }
-
-    /**
      * Add proxy settings to the stream context array.
      *
      * @param string $server   Proxy server/host
@@ -436,12 +316,6 @@ class Loader
             $settings
         );
 
-        /* Return $this so we can chain addProxySettings() calls like this:
-         * $browscap->
-         *   addProxySettings('http')->
-         *   addProxySettings('https')->
-         *   addProxySettings('ftp');
-         */
         return $this;
     }
 
@@ -495,20 +369,10 @@ class Loader
      */
     public function load()
     {
-        $success = null;
-        $content = $this->cache->getItem($this->filename, $success);
+        $internalLoader = Loader\Factory::build($this, $this->mode, $this->localFile);
 
-        if (!$success) {
-            $internalLoader = Loader\Factory::build($this, $this->mode, $this->localFile);
-            $internalLoader->setLogger($this->logger);
-
-            // Get file content
-            $content = $internalLoader->load();
-
-            $this->cache->setItem($this->filename, $content);
-        }
-
-        return $content;
+        // Get file content
+        return $internalLoader->load();
     }
 
     /**
@@ -518,20 +382,10 @@ class Loader
      */
     public function getMTime()
     {
-        $success = null;
-        $content = $this->cache->getItem($this->filename . '.version', $success);
+        $internalLoader = Loader\Factory::build($this, $this->mode, $this->localFile);
 
-        if (!$success) {
-            $internalLoader = Loader\Factory::build($this, $this->mode, $this->localFile);
-            $internalLoader->setLogger($this->logger);
-
-            // Get file content
-            $content = $internalLoader->getMTime();
-
-            $this->cache->setItem($this->filename, $content);
-        }
-
-        return $content;
+        // Get file content
+        return $internalLoader->getMTime();
     }
 
     /**

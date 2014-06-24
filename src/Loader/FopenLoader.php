@@ -37,10 +37,10 @@ namespace FileLoader\Loader;
      */
 
 /** the main loader class */
+use FileLoader\Loader;
 
 /** @var \FileLoader\Exception */
 use FileLoader\Exception;
-use FileLoader\Loader;
 
 /**
  * the loader class for requests via fopen/file_get_contents
@@ -69,15 +69,9 @@ class FopenLoader extends RemoteLoader
         $options = $this->loader->getStreamContextOptions();
 
         if (empty($options)) {
-            $file = file_get_contents($url, false);
+            return file_get_contents($url, false);
         } else {
-            $file = file_get_contents($url, false, $this->loader->getStreamContext());
+            return file_get_contents($url, false, $this->loader->getStreamContext());
         }
-
-        if ($file !== false) {
-            return $file;
-        }
-
-        return false;
     }
 }
