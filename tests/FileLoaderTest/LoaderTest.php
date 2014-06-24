@@ -92,21 +92,6 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
     /**
      * @expectedException \FileLoader\Exception
      */
-    public function testSetCacheFileException()
-    {
-        $this->object->setCacheFile('');
-    }
-
-    public function testSetCacheFile()
-    {
-        $return = $this->object->setCacheFile('y');
-        self::assertInstanceOf('\\FileLoader\\Loader', $return);
-        self::assertSame($this->object, $return);
-    }
-
-    /**
-     * @expectedException \FileLoader\Exception
-     */
     public function testSetRemoteDataUrlExceptiom()
     {
         $this->object->setRemoteDataUrl('');

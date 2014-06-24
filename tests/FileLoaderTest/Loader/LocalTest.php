@@ -65,14 +65,6 @@ class LocalTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException \PHPUnit_Framework_Error_Warning
-     */
-    public function testSetLocalFileFail()
-    {
-        $this->object->setLocaleFile();
-    }
-
-    /**
      * @expectedException \FileLoader\Exception
      */
     public function testSetLocalFileException()

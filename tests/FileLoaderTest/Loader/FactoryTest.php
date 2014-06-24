@@ -54,29 +54,6 @@ class FactoryTest extends \PHPUnit_Framework_TestCase
         $this->object = new Loader();
     }
 
-    /**
-     * Tears down the fixture, for example, closes a network connection.
-     * This method is called after a test is executed.
-     */
-    public function tearDown()
-    {
-        $this->object->getCache()->flush();
-
-        unset($this->object);
-
-        parent::tearDown();
-
-        $this->object = null;
-    }
-
-    /**
-     * @expectedException \PHPUnit_Framework_Error
-     */
-    public function testBuildFailsWithoutLoader()
-    {
-        Loader\Factory::build();
-    }
-
     public function testBuildLocaleFile()
     {
         $result = Loader\Factory::build($this->object, null, 'xxx');

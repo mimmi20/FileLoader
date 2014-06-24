@@ -56,14 +56,6 @@ class SocketloaderTest extends \PHPUnit_Framework_TestCase
         $this->object = new Loader\Socketloader($object);
     }
 
-    /**
-     * @expectedException \PHPUnit_Framework_Error
-     */
-    public function testConstructFail()
-    {
-        new Loader\Socketloader();
-    }
-
     public function testConstruct()
     {
         $object = new Loader();

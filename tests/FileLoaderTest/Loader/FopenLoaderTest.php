@@ -56,14 +56,6 @@ class FopenLoaderTest extends \PHPUnit_Framework_TestCase
         $this->object = new Loader\FopenLoader($object);
     }
 
-    /**
-     * @expectedException \PHPUnit_Framework_Error
-     */
-    public function testConstructFail()
-    {
-        new Loader\FopenLoader();
-    }
-
     public function testConstruct()
     {
         $object = new Loader();

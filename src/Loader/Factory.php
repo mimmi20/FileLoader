@@ -47,7 +47,7 @@ class Factory
      * loads the ini file from a remote or local location and stores it into
      * the cache dir, parses the ini file
      *
-     * @param Loader $loader
+     * @param \FileLoader\Loader $loader
      * @param string $mode
      * @param string $localeFile
      *

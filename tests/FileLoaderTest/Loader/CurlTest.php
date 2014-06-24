@@ -60,14 +60,6 @@ class CurlTest extends \PHPUnit_Framework_TestCase
         $this->object = new Loader\Curl($object);
     }
 
-    /**
-     * @expectedException \PHPUnit_Framework_Error
-     */
-    public function testConstructFail()
-    {
-        new Loader\Curl();
-    }
-
     public function testConstruct()
     {
         $object = new Loader();
