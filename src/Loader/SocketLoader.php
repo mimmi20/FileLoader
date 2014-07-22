@@ -74,27 +74,17 @@ class SocketLoader extends RemoteLoader
 
         $fullRemoteUrl = $remoteUrl['scheme'] . '://' . $remoteUrl['host'] . ':' . $port;
 
-        $options = $this->loader->getStreamContextOptions();
+        $context = $this->getStreamContext();
         $timeout = $this->loader->getTimeout();
 
-        if (empty($options)) {
-            $remoteHandler = fsockopen(
-                $remoteUrl['host'],
-                $port,
-                $errno,
-                $errstr,
-                $timeout
-            );
-        } else {
-            $remoteHandler = stream_socket_client(
-                $fullRemoteUrl,
-                $errno,
-                $errstr,
-                $timeout,
-                STREAM_CLIENT_CONNECT,
-                $this->loader->getStreamContext()
-            );
-        }
+        $remoteHandler = stream_socket_client(
+            $fullRemoteUrl,
+            $errno,
+            $errstr,
+            $timeout,
+            STREAM_CLIENT_CONNECT,
+            $context
+        );
 
         if (!$remoteHandler) {
             return false;
@@ -117,15 +107,11 @@ class SocketLoader extends RemoteLoader
         fwrite($remoteHandler, $out);
 
         $response = fgets($remoteHandler);
-        $file     = $this->getFile($response, $remoteHandler);
+        $response = $this->getFile($response, $remoteHandler);
 
         fclose($remoteHandler);
 
-        if ($file !== null) {
-            return $file;
-        }
-
-        return false;
+        return $response;
     }
 
     /**

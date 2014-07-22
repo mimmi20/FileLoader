@@ -49,18 +49,18 @@ class Factory
      *
      * @param \FileLoader\Loader $loader
      * @param string $mode
-     * @param string $localeFile
+     * @param string $localFile
      *
      * @return RemoteLoader the loader to use
      * @throws \FileLoader\Exception
      */
-    public static function build(Loader $loader, $mode = null, $localeFile = null)
+    public static function build(Loader $loader, $mode = null, $localFile = null)
     {
         if ($localeFile !== null
             && (null === $mode || Loader::UPDATE_LOCAL === $mode)
         ) {
             $internalLoader = new Local($loader);
-            $internalLoader->setLocaleFile($localeFile);
+            $internalLoader->setLocalFile($localFile);
         } elseif (null === $mode || Loader::UPDATE_FSOCKOPEN === $mode) {
             $internalLoader = new SocketLoader($loader);
         } elseif (ini_get('allow_url_fopen')

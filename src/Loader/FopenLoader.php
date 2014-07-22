@@ -61,17 +61,32 @@ class FopenLoader extends RemoteLoader
      *
      * @param string $url the url of the data
      *
-     * @throws Exception
+     * @throws \RuntimeException
      * @return string|boolean the retrieved data
      */
     protected function getRemoteData($url)
     {
-        $options = $this->loader->getStreamContextOptions();
+        $context  = $this->getStreamContext();
+        $response = file_get_contents($url, false, $context);
 
-        if (empty($options)) {
-            return file_get_contents($url, false);
-        } else {
-            return file_get_contents($url, false, $this->loader->getStreamContext());
+        // $http_response_header is a predefined variables,
+        // automatically created by PHP after the call above
+        //
+        // @see http://php.net/manual/en/reserved.variables.httpresponseheader.php
+        if (isset($http_response_header)) {
+            // extract status from first array entry, e.g. from 'HTTP/1.1 200 OK'
+            if (is_array($http_response_header) && isset($http_response_header[0])) {
+                $tmp_status_parts = explode(" ", $http_response_header[0], 3);
+                $http_code = $tmp_status_parts[1];
+
+                // check for HTTP error
+                $http_exception = $this->getHttpErrorException($http_code);
+                if ($http_exception !== null) {
+                    throw $http_exception;
+                }
+            }
         }
+
+        return $response;
     }
 }

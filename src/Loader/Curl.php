@@ -61,7 +61,7 @@ class Curl extends RemoteLoader
      *
      * @param string $url the url of the data
      *
-     * @throws Exception
+     * @throws \RuntimeException
      * @return string|boolean the retrieved data
      */
     protected function getRemoteData($url)
@@ -72,14 +72,70 @@ class Curl extends RemoteLoader
         curl_setopt($ressource, CURLOPT_CONNECTTIMEOUT, $this->loader->getTimeout());
         curl_setopt($ressource, CURLOPT_USERAGENT, $this->loader->getUserAgent());
 
-        $file = curl_exec($ressource);
+        // check and set proxy settings
+        $proxy_host = $this->loader->getOption('ProxyHost');
+        if ($proxy_host !== null) {
+            // check for supported protocol
+            $proxy_protocol = $this->loader->getOption('ProxyProtocol');
+            if ($proxy_protocol !== null) {
+                if (!in_array($proxy_protocol, array(self::PROXY_PROTOCOL_HTTP, self::PROXY_PROTOCOL_HTTPS))) {
+                    throw new \RuntimeException("Invalid/unsupported value '$proxy_protocol' for option 'ProxyProtocol'.");
+                }
+            } else {
+                $proxy_protocol = self::PROXY_PROTOCOL_HTTP;
+            }
+
+            $proxy_port = $this->loader->getOption('ProxyPort');
+
+            // set basic proxy options
+            curl_setopt($ressource, CURLOPT_PROXY, $proxy_protocol . "://" . $proxy_host);
+            if ($proxy_port !== null) {
+                curl_setopt($ressource, CURLOPT_PROXYPORT, $proxy_port);
+            }
+
+            // check auth settings
+            $proxy_user = $this->loader->getOption('ProxyUser');
+
+            // set proxy auth options
+            if ($proxy_user !== null) {
+                $proxy_password = $this->loader->getOption('ProxyPassword');
+
+                $proxy_auth = $this->loader->getOption('ProxyAuth');
+                if ($proxy_auth !== null) {
+                    if (!in_array($proxy_auth, array(self::PROXY_AUTH_BASIC, self::PROXY_AUTH_NTLM))) {
+                        throw new \RuntimeException("Invalid/unsupported value '$proxy_auth' for option 'ProxyAuth'.");
+                    }
+                } else {
+                    $proxy_auth = self::PROXY_AUTH_BASIC;
+                }
+
+                $proxy_auth = $this->loader->getOption('ProxyAuth');
+                if ($proxy_auth !== null) {
+                    if (!in_array($proxy_auth, array(self::PROXY_AUTH_BASIC, self::PROXY_AUTH_NTLM))) {
+                        throw new \RuntimeException("Invalid/unsupported value '$proxy_auth' for option 'ProxyAuth'.");
+                    }
+                } else {
+                    $proxy_auth = self::PROXY_AUTH_BASIC;
+                }
+
+                if ($proxy_auth === self::PROXY_AUTH_NTLM) {
+                    curl_setopt($ressource, CURLOPT_PROXYAUTH, CURLAUTH_NTLM);
+                }
+                curl_setopt($ressource, CURLOPT_PROXYUSERPWD, $proxy_user . ":" . $proxy_password);
+            }
+        }
+
+        $response  = curl_exec($ressource);
+        $http_code = curl_getinfo($ressource, CURLINFO_HTTP_CODE);
 
         curl_close($ressource);
 
-        if ($file !== false) {
-            return $file;
+        // check for HTTP error
+        $http_exception = $this->getHttpErrorException($http_code);
+        if ($http_exception !== null) {
+            throw $http_exception;
         }
 
-        return false;
+        return $response;
     }
 }

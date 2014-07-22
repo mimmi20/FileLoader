@@ -72,7 +72,7 @@ class Local
      * @throws \FileLoader\Exception
      * @return \FileLoader\Loader\Local
      */
-    public function setLocaleFile($filename)
+    public function setLocalFile($filename)
     {
         if (empty($filename)) {
             throw new Exception(
