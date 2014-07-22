@@ -56,7 +56,7 @@ class Factory
      */
     public static function build(Loader $loader, $mode = null, $localFile = null)
     {
-        if ($localeFile !== null
+        if ($localFile !== null
             && (null === $mode || Loader::UPDATE_LOCAL === $mode)
         ) {
             $internalLoader = new Local($loader);

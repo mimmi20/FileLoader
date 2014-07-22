@@ -69,13 +69,13 @@ class LocalTest extends \PHPUnit_Framework_TestCase
      */
     public function testSetLocalFileException()
     {
-        $this->object->setLocaleFile('');
+        $this->object->setLocalFile('');
     }
 
     public function testSetLocalFile()
     {
         $file   = 'x';
-        $return = $this->object->setLocaleFile($file);
+        $return = $this->object->setLocalFile($file);
         self::assertInstanceOf('\\FileLoader\\Loader\\Local', $return);
         self::assertSame($this->object, $return);
         self::assertSame($file, $this->object->getUri());
@@ -83,7 +83,7 @@ class LocalTest extends \PHPUnit_Framework_TestCase
 
     public function testLoad()
     {
-        $this->object->setLocaleFile(__DIR__ . '/../../data/test.txt');
+        $this->object->setLocalFile(__DIR__ . '/../../data/test.txt');
 
         self::assertSame('This is a test', $this->object->load());
     }
@@ -98,7 +98,7 @@ class LocalTest extends \PHPUnit_Framework_TestCase
 
     public function testGetMtime()
     {
-        $this->object->setLocaleFile(__DIR__ . '/../../data/test.txt');
+        $this->object->setLocalFile(__DIR__ . '/../../data/test.txt');
 
         self::assertInternalType('integer', $this->object->getMTime());
     }

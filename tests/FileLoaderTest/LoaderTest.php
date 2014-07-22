@@ -60,23 +60,17 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
         self::assertInstanceOf('\\FileLoader\\Loader', $object);
     }
 
-    public function testConstructWithPath()
-    {
-        $object = new Loader(sys_get_temp_dir());
-        self::assertInstanceOf('\\FileLoader\\Loader', $object);
-    }
-
     /**
      * @expectedException \FileLoader\Exception
      */
     public function testSetLocalFileException()
     {
-        $this->object->setLocaleFile('');
+        $this->object->setLocalFile('');
     }
 
     public function testSetLocalFile()
     {
-        $return = $this->object->setLocaleFile('x');
+        $return = $this->object->setLocalFile('x');
         self::assertInstanceOf('\\FileLoader\\Loader', $return);
         self::assertSame($this->object, $return);
     }
@@ -143,91 +137,6 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
         self::assertSame($this->object, $return);
     }
 
-    /**
-     * tests if the proxy settings are added
-     *
-     * @return Loader
-     */
-    public function testAddProxySettings()
-    {
-        $this->object->addProxySettings('proxy.example.com', 3128, 'http');
-        $options = $this->object->getStreamContextOptions();
-
-        if (!isset($options['http'])) {
-            $this->fail('proxy settings not added');
-        }
-
-        self::assertSame($options['http']['proxy'], 'tcp://proxy.example.com:3128');
-        self::assertTrue($options['http']['request_fulluri']);
-
-        return $this->object;
-    }
-
-    /**
-     * tests if the proxy settings are added
-     *
-     * @param Loader $object
-     *
-     * @return Loader
-     *
-     * @depends testAddProxySettings
-     */
-    public function testAddProxySettingsWithUserPassword(Loader $object)
-    {
-        $username = 'testname';
-        $password = 'testPassword';
-
-        $object->addProxySettings('proxy.example.com', 3128, 'http', $username, $password);
-        $options = $object->getStreamContextOptions();
-
-        if (!isset($options['http'])) {
-            $this->fail('proxy settings not added');
-        }
-
-        self::assertSame($options['http']['proxy'], 'tcp://proxy.example.com:3128');
-        self::assertSame(
-            $options['http']['header'],
-            'Proxy-Authorization: Basic ' . base64_encode($username . ':' . $password)
-        );
-        self::assertTrue($options['http']['request_fulluri']);
-
-        return $object;
-    }
-
-    /**
-     * tests if the proxy settings are deleted
-     *
-     * @param Loader $object
-     *
-     * @depends testAddProxySettingsWithUserPassword
-     */
-    public function testClearProxySettings(Loader $object)
-    {
-        $clearedWrappers = $object->clearProxySettings();
-        $options = $object->getStreamContextOptions();
-
-        self::assertEmpty($options);
-        self::assertSame($clearedWrappers, array('http'));
-    }
-
-    /**
-     * tests if the steam context is an resource
-     *
-     * @param Loader $object
-     *
-     * @depends testAddProxySettings
-     */
-    public function testGetStreamContext(Loader $object)
-    {
-        $resource = $object->getStreamContext();
-
-        self::assertTrue(is_resource($resource));
-
-        $resource = $object->getStreamContext(true);
-
-        self::assertTrue(is_resource($resource));
-    }
-
     public function testGetUserAgent()
     {
         $userAgent = $this->object->getUserAgent();
@@ -238,7 +147,7 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
     {
         $this->object
             ->setMode(Loader::UPDATE_LOCAL)
-            ->setLocaleFile(__DIR__ . '/../data/test.txt')
+            ->setLocalFile(__DIR__ . '/../data/test.txt')
         ;
 
         self::assertSame('This is a test', $this->object->load());
@@ -248,7 +157,7 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
     {
         $this->object
             ->setMode(Loader::UPDATE_LOCAL)
-            ->setLocaleFile(__DIR__ . '/../data/test.txt')
+            ->setLocalFile(__DIR__ . '/../data/test.txt')
         ;
 
         self::assertInternalType('integer', $this->object->getMTime());
