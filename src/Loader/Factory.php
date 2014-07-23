@@ -61,7 +61,15 @@ class Factory
         ) {
             $internalLoader = new Local($loader);
             $internalLoader->setLocalFile($localFile);
-        } elseif (null === $mode || Loader::UPDATE_FSOCKOPEN === $mode) {
+            
+            return $internalLoader;
+        }
+        
+        $httpHelper   = new \FileLoader\Helper\Http();
+        $streamHelper = new \FileLoader\Helper\StreamCreator();
+        $streamHelper->setLoader($loader);
+        
+        if (null === $mode || Loader::UPDATE_FSOCKOPEN === $mode) {
             $internalLoader = new SocketLoader($loader);
         } elseif (ini_get('allow_url_fopen')
             && (null === $mode || Loader::UPDATE_FOPEN === $mode)
@@ -74,6 +82,11 @@ class Factory
         } else {
             throw new Exception('no valid loader found');
         }
+        
+        $internalLoader
+            ->setHttpHelper($httpHelper)
+            ->setStreamHelper($streamHelper)
+        ;
 
         return $internalLoader;
     }

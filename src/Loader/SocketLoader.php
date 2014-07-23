@@ -74,7 +74,7 @@ class SocketLoader extends RemoteLoader
 
         $fullRemoteUrl = $remoteUrl['scheme'] . '://' . $remoteUrl['host'] . ':' . $port;
 
-        $context = $this->getStreamContext();
+        $context = $this->getStreamHelper()->getStreamContext();
         $timeout = $this->loader->getTimeout();
 
         $remoteHandler = stream_socket_client(

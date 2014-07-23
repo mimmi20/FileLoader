@@ -61,6 +61,44 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @expectedException \InvalidArgumentException
+     * @expectedExceptionMessage Invalid value for 'options', array expected.
+     */
+    public function testConstructWithInvalidOption()
+    {
+        new Loader('InvalidOption');
+    }
+
+    /**
+     * @expectedException \InvalidArgumentException
+     * @expectedExceptionMessage Invalid option key 'InvalidOption'.
+     */
+    public function testSetInvalidOption()
+    {
+        $object = new Loader();
+        $object->setOption('InvalidOption', 'test');
+    }
+
+    public function testGetInvalidOption()
+    {
+        $object = new Loader();
+        self::assertNull($object->getOption('InvalidOption'));
+    }
+
+    public function testSetGetOption()
+    {
+        $object = new Loader();
+        self::assertSame($object, $object->setOption('ProxyProtocol', 'http'));
+        self::assertSame('http', $object->getOption('ProxyProtocol'));
+    }
+
+    public function testConstructWithValidOption()
+    {
+        $options = array('ProxyProtocol' => 'http');
+        new Loader($options);
+    }
+
+    /**
      * @expectedException \FileLoader\Exception
      */
     public function testSetLocalFileException()

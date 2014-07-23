@@ -1,5 +1,5 @@
 <?php
-namespace FileLoader\Loader;
+namespace FileLoader\Helper;
 
     /**
      * Browscap.ini parsing class with caching and update capabilities
@@ -37,13 +37,13 @@ namespace FileLoader\Loader;
      */
 
 /** the main loader class */
-use FileLoader\Loader;
 
 /** @var \FileLoader\Exception */
 use FileLoader\Exception;
+use FileLoader\Loader;
 
 /**
- * the loader class for requests via fopen/file_get_contents
+ * the loader class for requests via curl
  *
  * @package    Browscap
  * @author     Jonathan Stoppani <jonathan@stoppani.name>
@@ -54,39 +54,36 @@ use FileLoader\Exception;
  * @license    http://www.opensource.org/licenses/MIT MIT License
  * @link       https://github.com/mimmi20/FileLoader/
  */
-class FopenLoader extends RemoteLoader
+class Http
 {
     /**
-     * Retrieve the data identified by the URL
+     * Gets the exception to throw if the given HTTP status code is an error code (4xx or 5xx)
      *
-     * @param string $url the url of the data
-     *
-     * @throws \RuntimeException
-     * @return string|boolean the retrieved data
+     * @param int $http_code
+     * @return \RuntimeException|null
      */
-    protected function getRemoteData($url)
+    public function getHttpErrorException($http_code)
     {
-        $context  = $this->getStreamHelper()->getStreamContext();
-        $response = file_get_contents($url, false, $context);
+        $http_code = (int)$http_code;
 
-        // $http_response_header is a predefined variables,
-        // automatically created by PHP after the call above
-        //
-        // @see http://php.net/manual/en/reserved.variables.httpresponseheader.php
-        if (isset($http_response_header)) {
-            // extract status from first array entry, e.g. from 'HTTP/1.1 200 OK'
-            if (is_array($http_response_header) && isset($http_response_header[0])) {
-                $tmp_status_parts = explode(" ", $http_response_header[0], 3);
-                $http_code = $tmp_status_parts[1];
-
-                // check for HTTP error
-                $http_exception = $this->getHttpHelper()->getHttpErrorException($http_code);
-                if ($http_exception !== null) {
-                    throw $http_exception;
-                }
-            }
+        if ($http_code < 400) {
+            return null;
+        }
+        
+        $httpCodes = array(
+            401 => "HTTP client error 401: Unauthorized",
+            403 => "HTTP client error 403: Forbidden",
+            404 => "HTTP client error 404: Not Found",
+            429 => "HTTP client error 429: Too many request",
+            500 => "HTTP server error 500: Internal Server Error",
+        );
+        
+        if (isset($httpCodes[$http_code])) {
+            return new \RuntimeException($httpCodes[$http_code], $http_code);
+        } elseif ($http_code >= 500) {
+            return new \RuntimeException("HTTP server error $http_code", $http_code);
         }
 
-        return $response;
+        return new \RuntimeException("HTTP client error $http_code", $http_code);
     }
 }
