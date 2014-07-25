@@ -64,7 +64,7 @@ class Curl extends RemoteLoader
      * @throws \RuntimeException
      * @return string|boolean the retrieved data
      */
-    protected function getRemoteData($url)
+    public function getRemoteData($url)
     {
         $ressource = curl_init($url);
 

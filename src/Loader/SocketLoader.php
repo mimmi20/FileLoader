@@ -64,7 +64,7 @@ class SocketLoader extends RemoteLoader
      * @throws Exception
      * @return string|boolean the retrieved data
      */
-    protected function getRemoteData($url)
+    public function getRemoteData($url)
     {
         $remoteUrl = parse_url($url);
         $errno     = 0;
@@ -77,7 +77,7 @@ class SocketLoader extends RemoteLoader
         $context = $this->getStreamHelper()->getStreamContext();
         $timeout = $this->loader->getTimeout();
 
-        $remoteHandler = stream_socket_client(
+        $stream = stream_socket_client(
             $fullRemoteUrl,
             $errno,
             $errstr,
@@ -86,12 +86,15 @@ class SocketLoader extends RemoteLoader
             $context
         );
 
-        if (!$remoteHandler) {
+        if (!$stream) {
             return false;
         }
+        
+        $response = stream_get_line($stream, 1024, "\n");
+        $meta     = stream_get_meta_data($stream);
 
-        stream_set_timeout($remoteHandler, $timeout);
-        stream_set_blocking($remoteHandler, 1);
+        stream_set_timeout($stream, $timeout);
+        stream_set_blocking($stream, 1);
 
         if (isset($remoteUrl['query'])) {
             $remoteUrl['path'] .= '?' . $remoteUrl['query'];
@@ -104,30 +107,33 @@ class SocketLoader extends RemoteLoader
             $this->loader->getUserAgent()
         );
 
-        fwrite($remoteHandler, $out);
+        fwrite($stream, $out);
 
-        $response = fgets($remoteHandler);
-        $response = $this->getFile($response, $remoteHandler);
+        $response = stream_get_line($stream, 1024, "\n");
+        
+        $meta = stream_get_meta_data($stream);
+        var_dump($response, $meta);exit;
+        $response = $this->getFile($response, $stream);
 
-        fclose($remoteHandler);
+        fclose($stream);
 
         return $response;
     }
 
     /**
      * @param string   $response
-     * @param resource $remoteHandler
+     * @param resource $stream
      *
      * @return string|null
      */
-    private function getFile($response, $remoteHandler)
+    private function getFile($response, $stream)
     {
         $file = null;
 
         if (strpos($response, '200 OK') !== false) {
             $file = '';
-            while (!feof($remoteHandler)) {
-                $file .= fgets($remoteHandler);
+            while (!feof($stream)) {
+                $file .= stream_get_line($stream, 1024, "\n");
             }
 
             $file = str_replace("\r\n", "\n", $file);

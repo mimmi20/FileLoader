@@ -88,10 +88,12 @@ class StreamCreator
     {
         // set basic stream context configuration
         $config = array(
-            'http' => array(
-                'user_agent'    => $this->loader->getUserAgent(),
+            'tcp' => array(
+                'method'          => 'GET',
+                'user_agent'      => $this->loader->getUserAgent(),
                 // ignore errors, handle them manually
-                'ignore_errors' => true,
+                'ignore_errors'   => true,
+                'request_fulluri' => true,
             )
         );
 

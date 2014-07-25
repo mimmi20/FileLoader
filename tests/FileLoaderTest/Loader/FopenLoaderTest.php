@@ -79,6 +79,6 @@ class FopenLoaderTest extends \PHPUnit_Framework_TestCase
         
         $response = $fopenloader->getRemoteData('http://example.org/test.ini');
         
-        self::assertInteralType('string', $response);
+        self::assertInternalType('string', $response);
     }
 }

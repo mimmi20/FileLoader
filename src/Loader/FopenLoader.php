@@ -64,10 +64,10 @@ class FopenLoader extends RemoteLoader
      * @throws \RuntimeException
      * @return string|boolean the retrieved data
      */
-    protected function getRemoteData($url)
+    public function getRemoteData($url)
     {
-        $context  = $this->getStreamHelper()->getStreamContext();
-        $response = file_get_contents($url, false, $context);
+        $context   = $this->getStreamHelper()->getStreamContext();
+        @$response = file_get_contents($url, false, $context);
 
         // $http_response_header is a predefined variables,
         // automatically created by PHP after the call above
