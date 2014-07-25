@@ -39,28 +39,46 @@ use FileLoader\Loader;
 class FopenLoaderTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @var Loader\Local
-     */
-    private $object = null;
-
-    /**
      * Sets up the fixture, for example, opens a network connection.
      * This method is called before a test is executed.
      */
     protected function setUp()
     {
-        parent::setUp();
-
-        $object = new Loader();
-
-        $this->object = new Loader\FopenLoader($object);
+        if (!ini_get('allow_url_fopen')) {
+            $this->markTestSkipped('"allow_url_fopen" has to be activated in the php.ini');
+        }
+    }
+    
+    public function createContext()
+    {
+        $config = array(
+            'http' => array(
+                'user_agent'    => 'Test-UserAgent',
+                // ignore errors, handle them manually
+                'ignore_errors' => true,
+            )
+        );
+        
+        return stream_context_create($config);
     }
 
-    public function testConstruct()
+    public function testGetRemoteData()
     {
-        $object = new Loader();
-        $fopenloader  = new Loader\FopenLoader($object);
-
-        self::assertInstanceOf('\\FileLoader\\Loader\\Fopenloader', $fopenloader);
+        $this->markTestSkipped('need to be reworked');
+        
+        $loader      = $this->getMock('\FileLoader\Loader', array(), array(), '', false);
+        $steamHelper = $this->getMock('\FileLoader\Helper\StreamCreator', array('getStreamContext'), array(), '', false);
+        $steamHelper
+            ->expects(self::once())
+            ->method('getStreamContext')
+            ->will(self::returnCallback(array($this, 'createContext')))
+        ;
+        
+        $fopenloader  = new Loader\FopenLoader($loader);
+        $fopenloader->setStreamHelper($steamHelper);
+        
+        $response = $fopenloader->getRemoteData('http://example.org/test.ini');
+        
+        self::assertInternalType('string', $response);
     }
 }

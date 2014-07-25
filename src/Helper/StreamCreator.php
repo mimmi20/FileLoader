@@ -1,5 +1,5 @@
 <?php
-namespace FileLoader\Loader;
+namespace FileLoader\Helper;
 
     /**
      * Browscap.ini parsing class with caching and update capabilities
@@ -41,6 +41,7 @@ namespace FileLoader\Loader;
 /** @var \FileLoader\Exception */
 use FileLoader\Exception;
 use FileLoader\Loader;
+use FileLoader\Helper\Http;
 
 /**
  * the loader class for requests via curl
@@ -54,23 +55,47 @@ use FileLoader\Loader;
  * @license    http://www.opensource.org/licenses/MIT MIT License
  * @link       https://github.com/mimmi20/FileLoader/
  */
-class Curl extends RemoteLoader
+class StreamCreator
 {
-    /**
-     * Retrieve the data identified by the URL
-     *
-     * @param string $url the url of the data
-     *
-     * @throws \RuntimeException
-     * @return string|boolean the retrieved data
-     */
-    public function getRemoteData($url)
-    {
-        $ressource = curl_init($url);
+    const PROXY_PROTOCOL_HTTP  = 'http';
+    const PROXY_PROTOCOL_HTTPS = 'https';
 
-        curl_setopt($ressource, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ressource, CURLOPT_CONNECTTIMEOUT, $this->loader->getTimeout());
-        curl_setopt($ressource, CURLOPT_USERAGENT, $this->loader->getUserAgent());
+    const PROXY_AUTH_BASIC = 'basic';
+    const PROXY_AUTH_NTLM  = 'ntlm';
+
+    /**
+     * an Loader instance
+     *
+     * @var \FileLoader\Loader
+     */
+    private $loader = null;
+    
+    /**
+     * sets a loader instance
+     *
+     * @param \FileLoader\Loader $loader
+     *
+     * @return \FileLoader\Helper\StreamCreator
+     */
+    public function setLoader(Loader $loader)
+    {
+        $this->loader = $loader;
+        
+        return $this;
+    }
+    
+    public function getStreamContext()
+    {
+        // set basic stream context configuration
+        $config = array(
+            'tcp' => array(
+                'method'          => 'GET',
+                'user_agent'      => $this->loader->getUserAgent(),
+                // ignore errors, handle them manually
+                'ignore_errors'   => true,
+                'request_fulluri' => true,
+            )
+        );
 
         // check and set proxy settings
         $proxy_host = $this->loader->getOption('ProxyHost');
@@ -85,57 +110,46 @@ class Curl extends RemoteLoader
                 $proxy_protocol = self::PROXY_PROTOCOL_HTTP;
             }
 
+            // prepare port for the proxy server address
             $proxy_port = $this->loader->getOption('ProxyPort');
-
-            // set basic proxy options
-            curl_setopt($ressource, CURLOPT_PROXY, $proxy_protocol . "://" . $proxy_host);
             if ($proxy_port !== null) {
-                curl_setopt($ressource, CURLOPT_PROXYPORT, $proxy_port);
+                $proxy_port = ":" . $proxy_port;
+            } else {
+                $proxy_port = "";
             }
 
             // check auth settings
-            $proxy_user = $this->loader->getOption('ProxyUser');
+            $proxy_auth = $this->loader->getOption('ProxyAuth');
+            if ($proxy_auth !== null) {
+                if (!in_array($proxy_auth, array(self::PROXY_AUTH_BASIC))) {
+                    throw new \RuntimeException("Invalid/unsupported value '$proxy_auth' for option 'ProxyAuth'.");
+                }
+            } else {
+                $proxy_auth = self::PROXY_AUTH_BASIC;
+            }
 
-            // set proxy auth options
+            // set proxy server address
+            $config['http']['proxy'] = 'tcp://' . $proxy_host . $proxy_port;
+            // full uri required by some proxy servers
+            $config['http']['request_fulluri'] = true;
+
+            // add authorization header if required
+            $proxy_user = $this->loader->getOption('ProxyUser');
             if ($proxy_user !== null) {
                 $proxy_password = $this->loader->getOption('ProxyPassword');
-
-                $proxy_auth = $this->loader->getOption('ProxyAuth');
-                if ($proxy_auth !== null) {
-                    if (!in_array($proxy_auth, array(self::PROXY_AUTH_BASIC, self::PROXY_AUTH_NTLM))) {
-                        throw new \RuntimeException("Invalid/unsupported value '$proxy_auth' for option 'ProxyAuth'.");
-                    }
-                } else {
-                    $proxy_auth = self::PROXY_AUTH_BASIC;
+                if ($proxy_password === null) {
+                    $proxy_password = '';
                 }
+                $auth = base64_encode($proxy_user . ":" . $proxy_password);
+                $config['http']['header'] = "Proxy-Authorization: Basic " . $auth;
+            }
 
-                $proxy_auth = $this->loader->getOption('ProxyAuth');
-                if ($proxy_auth !== null) {
-                    if (!in_array($proxy_auth, array(self::PROXY_AUTH_BASIC, self::PROXY_AUTH_NTLM))) {
-                        throw new \RuntimeException("Invalid/unsupported value '$proxy_auth' for option 'ProxyAuth'.");
-                    }
-                } else {
-                    $proxy_auth = self::PROXY_AUTH_BASIC;
-                }
-
-                if ($proxy_auth === self::PROXY_AUTH_NTLM) {
-                    curl_setopt($ressource, CURLOPT_PROXYAUTH, CURLAUTH_NTLM);
-                }
-                curl_setopt($ressource, CURLOPT_PROXYUSERPWD, $proxy_user . ":" . $proxy_password);
+            if ($proxy_protocol === self::PROXY_PROTOCOL_HTTPS) {
+                // @todo Add SSL context options
+                // @see  http://www.php.net/manual/en/context.ssl.php
             }
         }
 
-        $response  = curl_exec($ressource);
-        $http_code = curl_getinfo($ressource, CURLINFO_HTTP_CODE);
-
-        curl_close($ressource);
-
-        // check for HTTP error
-        $http_exception = $this->getHttpHelper()->getHttpErrorException($http_code);
-        if ($http_exception !== null) {
-            throw $http_exception;
-        }
-
-        return $response;
+        return stream_context_create($config);
     }
 }

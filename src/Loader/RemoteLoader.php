@@ -41,6 +41,8 @@ namespace FileLoader\Loader;
 /** @var \FileLoader\Exception */
 use FileLoader\Exception;
 use FileLoader\Loader;
+use FileLoader\Helper\Http;
+use FileLoader\Helper\StreamCreator;
 
 /**
  * the loader class for requests via curl
@@ -62,6 +64,20 @@ abstract class RemoteLoader
      * @var \FileLoader\Loader
      */
     protected $loader = null;
+    
+    /**
+     * a HTTP Helper instance
+     *
+     * @var \FileLoader\Helper\Http
+     */
+    protected $httpHelper = null;
+    
+    /**
+     * a HTTP Helper instance
+     *
+     * @var \FileLoader\Helper\StreamCreator
+     */
+    protected $streamHelper = null;
 
     /**
      * Constructor class, checks for the existence of (and loads) the cache and
@@ -72,6 +88,54 @@ abstract class RemoteLoader
     public function __construct(Loader $loader)
     {
         $this->loader = $loader;
+    }
+    
+    /**
+     * sets a http helper instance
+     *
+     * @param \FileLoader\Helper\Http $helper
+     *
+     * @return \FileLoader\Loader\RemoteLoader
+     */
+    public function setHttpHelper(Http $helper)
+    {
+        $this->httpHelper = $helper;
+        
+        return $this;
+    }
+    
+    /**
+     * returns a http helper instance
+     *
+     * @return \FileLoader\Helper\Http
+     */
+    public function getHttpHelper()
+    {
+        return $this->httpHelper;
+    }
+    
+    /**
+     * sets a StreamCreator helper instance
+     *
+     * @param \FileLoader\Helper\StreamCreator $helper
+     *
+     * @return \FileLoader\Loader\RemoteLoader
+     */
+    public function setStreamHelper(StreamCreator $helper)
+    {
+        $this->streamHelper = $helper;
+        
+        return $this;
+    }
+    
+    /**
+     * returns a StreamCreator helper instance
+     *
+     * @return \FileLoader\Helper\Http
+     */
+    public function getStreamHelper()
+    {
+        return $this->streamHelper;
     }
 
     /**

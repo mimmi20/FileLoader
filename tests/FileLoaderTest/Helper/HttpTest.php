@@ -1,8 +1,8 @@
 <?php
 
-namespace FileLoaderTest\Loader;
+namespace FileLoaderTest\Helper;
 
-use FileLoader\Loader;
+use FileLoader\Helper\Http;
 
 /**
  * Browscap.ini parsing class with caching and update capabilities
@@ -36,10 +36,10 @@ use FileLoader\Loader;
  * @license    http://www.opensource.org/licenses/MIT MIT License
  * @link       https://github.com/GaretJax/phpbrowscap/
  */
-class LocalTest extends \PHPUnit_Framework_TestCase
+class HttpTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @var Loader\Local
+     * @var \FileLoader\Helper\Http
      */
     private $object = null;
 
@@ -49,60 +49,38 @@ class LocalTest extends \PHPUnit_Framework_TestCase
      */
     protected function setUp()
     {
-        parent::setUp();
-
-        $object = new Loader();
-
-        $this->object = new Loader\Local($object);
+        $this->object = new Http();
     }
 
-    /**
-     * @expectedException \FileLoader\Exception
-     * @expectedExceptionMessage the filename can not be empty
-     */
-    public function testSetLocalFileException()
+    public function testGetHttpErrorException200()
     {
-        $this->object->setLocalFile('');
+        self::assertNull($this->object->getHttpErrorException(200));
     }
 
-    public function testSetLocalFile()
+    public function testGetHttpErrorException404()
     {
-        $file   = 'x';
-        $return = $this->object->setLocalFile($file);
-        self::assertInstanceOf('\\FileLoader\\Loader\\Local', $return);
-        self::assertSame($this->object, $return);
-        self::assertSame($file, $this->object->getUri());
+        $exception = $this->object->getHttpErrorException(404);
+        
+        self::assertInstanceOf('\RuntimeException', $exception);
+        self::assertSame(404, $exception->getCode());
+        self::assertSame("HTTP client error 404: Not Found", $exception->getMessage());
     }
 
-    public function testLoad()
+    public function testGetHttpErrorException501()
     {
-        $this->object->setLocalFile(__DIR__ . '/../../data/test.txt');
-
-        self::assertSame('This is a test', $this->object->load());
+        $exception = $this->object->getHttpErrorException(501);
+        
+        self::assertInstanceOf('\RuntimeException', $exception);
+        self::assertSame(501, $exception->getCode());
+        self::assertSame("HTTP server error 501", $exception->getMessage());
     }
 
-    /**
-     * @expectedException \FileLoader\Exception
-     * @expectedExceptionMessage Local file is not readable
-     */
-    public function testLoadFileMissing()
+    public function testGetHttpErrorException400()
     {
-        $this->object->load();
-    }
-
-    public function testGetMtime()
-    {
-        $this->object->setLocalFile(__DIR__ . '/../../data/test.txt');
-
-        self::assertInternalType('integer', $this->object->getMTime());
-    }
-
-    /**
-     * @expectedException \FileLoader\Exception
-     * @expectedExceptionMessage Local file is not readable
-     */
-    public function testGetMtimeFileMissing()
-    {
-        $this->object->getMTime();
+        $exception = $this->object->getHttpErrorException(400);
+        
+        self::assertInstanceOf('\RuntimeException', $exception);
+        self::assertSame(400, $exception->getCode());
+        self::assertSame("HTTP client error 400", $exception->getMessage());
     }
 }

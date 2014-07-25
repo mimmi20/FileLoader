@@ -74,26 +74,19 @@ class Loader
     private $userAgent = 'File Loader/%v';
 
     /**
-     * An associative array of associative arrays in the format
-     * `$arr['wrapper']['option'] = $value` passed to stream_context_create()
-     * when building a stream resource.
-     *
-     * Proxy settings are stored in this variable.
-     *
-     * @see http://www.php.net/manual/en/function.stream-context-create.php
+     * Options for the updater. The array should be overwritten,
+     * containing all options as keys, set to the default value.
      *
      * @var array
      */
-    private $streamContextOptions = array();
-
-    /**
-     * A valid context resource created with stream_context_create().
-     *
-     * @see http://www.php.net/manual/en/function.stream-context-create.php
-     *
-     * @var resource
-     */
-    private $streamContext = null;
+    private $options = array(
+        'ProxyProtocol'  => null,
+        'ProxyHost'      => null,
+        'ProxyPort'      => null,
+        'ProxyAuth'      => null,
+        'ProxyUser'      => null,
+        'ProxyPassword'  => null,
+    );
 
     /**
      * The path of the local version of the browscap.ini file from which to
@@ -125,6 +118,68 @@ class Loader
     private $mode = null;
 
     /**
+     * @param array|null $options
+     * @throws \InvalidArgumentException
+     */
+    public function __construct($options = null)
+    {
+        if ($options !== null) {
+            if (is_array($options)) {
+                $this->setOptions($options);
+            } else {
+                throw new \InvalidArgumentException("Invalid value for 'options', array expected.");
+            }
+        }
+    }
+
+    /**
+     * Sets multiple loader options at once
+     *
+     * @param array $options
+     * @return \FileLoader\Loader
+     */
+    public function setOptions(array $options)
+    {
+        foreach ($options as $option_key => $option_value) {
+            $this->setOption($option_key, $option_value);
+        }
+        return $this;
+    }
+
+    /**
+     * Sets an loader option value
+     *
+     * @param string $key
+     * @param mixed $value
+     * @return \FileLoader\Loader
+     * @throws \InvalidArgumentException
+     */
+    public function setOption($key, $value)
+    {
+        if (array_key_exists($key, $this->options)) {
+            $this->options[$key] = $value;
+        } else {
+            throw new \InvalidArgumentException("Invalid option key '" . (string)$key . "'.");
+        }
+        return $this;
+    }
+
+    /**
+     * Gets an loader option value
+     *
+     * @param string $key
+     * @return mixed|null
+     */
+    public function getOption($key)
+    {
+        if (array_key_exists($key, $this->options)) {
+            return $this->options[$key];
+        }
+
+        return null;
+    }
+
+    /**
      * sets the name of the local file
      *
      * @param string $filename the file name
@@ -132,7 +187,7 @@ class Loader
      * @throws Exception
      * @return \FileLoader\Loader
      */
-    public function setLocaleFile($filename)
+    public function setLocalFile($filename)
     {
         if (empty($filename)) {
             throw new Exception(
@@ -253,83 +308,6 @@ class Loader
     }
 
     /**
-     * Add proxy settings to the stream context array.
-     *
-     * @param string $server   Proxy server/host
-     * @param int    $port     Port
-     * @param string $wrapper  Wrapper: "http", "https", "ftp", others...
-     * @param string $username Username (when requiring authentication)
-     * @param string $password Password (when requiring authentication)
-     *
-     * @return \FileLoader\Loader
-     */
-    public function addProxySettings($server, $port = 3128, $wrapper = 'http', $username = null, $password = null)
-    {
-        $settings = array(
-            $wrapper => array(
-                'proxy'           => sprintf('tcp://%s:%d', $server, $port),
-                'request_fulluri' => true,
-            )
-        );
-
-        // Proxy authentication (optional)
-        if (isset($username) && isset($password)) {
-            $settings[$wrapper]['header'] = 'Proxy-Authorization: Basic ' . base64_encode($username . ':' . $password);
-        }
-
-        // Add these new settings to the stream context options array
-        $this->streamContextOptions = array_merge(
-            $this->streamContextOptions,
-            $settings
-        );
-
-        return $this;
-    }
-
-    /**
-     * Clear proxy settings from the stream context options array.
-     *
-     * @param string $wrapper Remove settings from this wrapper only
-     *
-     * @return array Wrappers cleared
-     */
-    public function clearProxySettings($wrapper = null)
-    {
-        $wrappers = isset($wrapper) ? array($wrapper) : array_keys($this->streamContextOptions);
-
-        $clearedWrappers = array();
-        $options         = array('proxy', 'request_fulluri', 'header');
-
-        foreach ($wrappers as $wrapper) {
-            // remove wrapper options related to proxy settings
-            if (isset($this->streamContextOptions[$wrapper]['proxy'])) {
-                foreach ($options as $option) {
-                    unset($this->streamContextOptions[$wrapper][$option]);
-                }
-
-                // remove wrapper entry if there are no other options left
-                if (empty($this->streamContextOptions[$wrapper])) {
-                    unset($this->streamContextOptions[$wrapper]);
-                }
-
-                $clearedWrappers[] = $wrapper;
-            }
-        }
-
-        return $clearedWrappers;
-    }
-
-    /**
-     * Returns the array of stream context options.
-     *
-     * @return array
-     */
-    public function getStreamContextOptions()
-    {
-        return $this->streamContextOptions;
-    }
-
-    /**
      * loads the file from a remote or local location and stores it into the cache
      *
      * @return string the file content
@@ -353,25 +331,6 @@ class Loader
 
         // Get file content
         return $internalLoader->getMTime();
-    }
-
-    /**
-     * Lazy getter for the stream context resource.
-     *
-     * @param bool $recreate
-     *
-     * @return resource
-     */
-    public function getStreamContext($recreate = false)
-    {
-        if (!isset($this->streamContext)
-            || !is_resource($this->streamContext)
-            || $recreate
-        ) {
-            $this->streamContext = stream_context_create($this->getStreamContextOptions());
-        }
-
-        return $this->streamContext;
     }
 
     /**

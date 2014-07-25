@@ -1,5 +1,5 @@
 <?php
-namespace FileLoader\Loader;
+namespace FileLoader\Helper;
 
     /**
      * Browscap.ini parsing class with caching and update capabilities
@@ -36,7 +36,7 @@ namespace FileLoader\Loader;
      * @link       https://github.com/mimmi20/FileLoader/
      */
 
-/** @var \FileLoader\Loader the main loader class */
+/** the main loader class */
 
 /** @var \FileLoader\Exception */
 use FileLoader\Exception;
@@ -54,91 +54,36 @@ use FileLoader\Loader;
  * @license    http://www.opensource.org/licenses/MIT MIT License
  * @link       https://github.com/mimmi20/FileLoader/
  */
-class Local
+class Http
 {
     /**
-     * The path of the local version of the browscap.ini file from which to
-     * update (to be set only if used).
+     * Gets the exception to throw if the given HTTP status code is an error code (4xx or 5xx)
      *
-     * @var string
+     * @param int $http_code
+     * @return \RuntimeException|null
      */
-    private $localFile = null;
-
-    /**
-     * sets the name of the local file
-     *
-     * @param string $filename the file name
-     *
-     * @throws \FileLoader\Exception
-     * @return \FileLoader\Loader\Local
-     */
-    public function setLocalFile($filename)
+    public function getHttpErrorException($http_code)
     {
-        if (empty($filename)) {
-            throw new Exception(
-                'the filename can not be empty',
-                Exception::LOCAL_FILE_MISSING
-            );
+        $http_code = (int)$http_code;
+
+        if ($http_code < 400) {
+            return null;
+        }
+        
+        $httpCodes = array(
+            401 => "HTTP client error 401: Unauthorized",
+            403 => "HTTP client error 403: Forbidden",
+            404 => "HTTP client error 404: Not Found",
+            429 => "HTTP client error 429: Too many request",
+            500 => "HTTP server error 500: Internal Server Error",
+        );
+        
+        if (isset($httpCodes[$http_code])) {
+            return new \RuntimeException($httpCodes[$http_code], $http_code);
+        } elseif ($http_code >= 500) {
+            return new \RuntimeException("HTTP server error $http_code", $http_code);
         }
 
-        $this->localFile = $filename;
-
-        return $this;
-    }
-
-    /**
-     * XXX save
-     *
-     * loads the ini file from a remote or local location and stores it into
-     * the cache dir, parses the ini file
-     *
-     * @throws \FileLoader\Exception
-     * @return string the content of the local ini file
-     */
-    public function load()
-    {
-        if (!is_readable($this->localFile) || !is_file($this->localFile)) {
-            throw new Exception(
-                'Local file is not readable',
-                Exception::LOCAL_FILE_NOT_READABLE
-            );
-        }
-
-        // Get file content
-        $file = file_get_contents($this->localFile);
-
-        if ($file !== false) {
-            return $file;
-        }
-
-        throw new Exception('Cannot open the local file');
-    }
-
-    /**
-     * returns the uri, used for download
-     *
-     * @return string
-     */
-    public function getUri()
-    {
-        return $this->localFile;
-    }
-
-    /**
-     * Gets the local ini file update timestamp
-     *
-     * @throws Exception
-     * @return int the local modification timestamp
-     */
-    public function getMTime()
-    {
-        if (!is_readable($this->localFile) || !is_file($this->localFile)) {
-            throw new Exception(
-                'Local file is not readable',
-                Exception::LOCAL_FILE_NOT_READABLE
-            );
-        }
-
-        return filemtime($this->localFile);
+        return new \RuntimeException("HTTP client error $http_code", $http_code);
     }
 }

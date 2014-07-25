@@ -39,32 +39,18 @@ use FileLoader\Loader;
 class CurlTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @var Loader\Local
-     */
-    private $object = null;
-
-    /**
      * Sets up the fixture, for example, opens a network connection.
      * This method is called before a test is executed.
      */
     protected function setUp()
     {
-        parent::setUp();
-
         if (!extension_loaded('curl')) {
             self::markTestSkipped('PHP must have cURL support.');
         }
-
-        $object = new Loader();
-
-        $this->object = new Loader\Curl($object);
     }
 
-    public function testConstruct()
+    public function testGetRemoteData()
     {
-        $object = new Loader();
-        $curl  = new Loader\Curl($object);
-
-        self::assertInstanceOf('\\FileLoader\\Loader\\Curl', $curl);
+        $this->markTestSkipped('need to be reworked');
     }
 }

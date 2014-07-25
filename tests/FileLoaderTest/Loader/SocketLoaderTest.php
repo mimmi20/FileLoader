@@ -38,29 +38,36 @@ use FileLoader\Loader;
  */
 class SocketloaderTest extends \PHPUnit_Framework_TestCase
 {
-    /**
-     * @var Loader\Local
-     */
-    private $object = null;
-
-    /**
-     * Sets up the fixture, for example, opens a network connection.
-     * This method is called before a test is executed.
-     */
-    protected function setUp()
+    public function createContext()
     {
-        parent::setUp();
-
-        $object = new Loader();
-
-        $this->object = new Loader\Socketloader($object);
+        $config = array(
+            'tcp' => array(
+                'user_agent'    => 'Test-UserAgent',
+                // ignore errors, handle them manually
+                'ignore_errors' => true,
+            )
+        );
+        
+        return stream_context_create($config);
     }
 
-    public function testConstruct()
+    public function testGetRemoteData()
     {
-        $object = new Loader();
-        $socketloader  = new Loader\Socketloader($object);
-
-        self::assertInstanceOf('\\FileLoader\\Loader\\Socketloader', $socketloader);
+        $this->markTestSkipped('need to be reworked');
+        
+        $loader      = $this->getMock('\FileLoader\Loader', array(), array(), '', false);
+        $steamHelper = $this->getMock('\FileLoader\Helper\StreamCreator', array('getStreamContext'), array(), '', false);
+        $steamHelper
+            ->expects(self::once())
+            ->method('getStreamContext')
+            ->will(self::returnCallback(array($this, 'createContext')))
+        ;
+        
+        $socketLoader  = new Loader\SocketLoader($loader);
+        $socketLoader->setStreamHelper($steamHelper);
+        
+        $response = $socketLoader->getRemoteData('tcp://www.example.com');
+        
+        self::assertInternalType('string', $response);
     }
 }
