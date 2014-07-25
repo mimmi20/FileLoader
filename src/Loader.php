@@ -1,10 +1,6 @@
 <?php
 namespace FileLoader;
 
-use WurflCache\Adapter\AdapterInterface;
-use WurflCache\Adapter\File;
-use WurflCache\Adapter\NullStorage;
-
 /**
  * class to load a file from a local or remote source
  *
@@ -108,13 +104,6 @@ class Loader
     private $localFile = null;
 
     /**
-     * the name of the cache entry where the loaded file is stored
-     *
-     * @var string
-     */
-    private $filename = null;
-
-    /**
      * The Url where the remote file can be found
      *
      * @var string
@@ -153,28 +142,6 @@ class Loader
         }
 
         $this->localFile = $filename;
-
-        return $this;
-    }
-
-    /**
-     * sets the name of the local ini file
-     *
-     * @param string $filename the file name
-     *
-     * @throws Exception
-     * @return \FileLoader\Loader
-     */
-    public function setCacheFile($filename)
-    {
-        if (empty($filename)) {
-            throw new Exception(
-                'the filename can not be empty',
-                Exception::INI_FILE_MISSING
-            );
-        }
-
-        $this->filename = $filename;
 
         return $this;
     }
