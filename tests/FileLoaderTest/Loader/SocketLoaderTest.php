@@ -2,7 +2,7 @@
 
 namespace FileLoaderTest\Loader;
 
-use FileLoader\Loader;
+use FileLoader\Connector;
 
 /**
  * Browscap.ini parsing class with caching and update capabilities
@@ -47,14 +47,14 @@ class SocketloaderTest extends \PHPUnit_Framework_TestCase
                 'ignore_errors' => true,
             )
         );
-        
+
         return stream_context_create($config);
     }
 
     public function testGetRemoteData()
     {
         $this->markTestSkipped('need to be reworked');
-        
+
         $loader      = $this->getMock('\FileLoader\Loader', array(), array(), '', false);
         $steamHelper = $this->getMock('\FileLoader\Helper\StreamCreator', array('getStreamContext'), array(), '', false);
         $steamHelper
@@ -62,12 +62,12 @@ class SocketloaderTest extends \PHPUnit_Framework_TestCase
             ->method('getStreamContext')
             ->will(self::returnCallback(array($this, 'createContext')))
         ;
-        
-        $socketLoader  = new Loader\SocketLoader($loader);
+
+        $socketLoader  = new Connector\SocketLoader($loader);
         $socketLoader->setStreamHelper($steamHelper);
-        
+
         $response = $socketLoader->getRemoteData('tcp://www.example.com');
-        
+
         self::assertInternalType('string', $response);
     }
 }

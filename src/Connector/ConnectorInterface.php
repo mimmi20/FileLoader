@@ -1,6 +1,6 @@
 <?php
 /**
- * a helper class to handle http errors
+ * the interface for all supported connectors
  *
  * PHP version 5
  *
@@ -27,55 +27,30 @@
  * @package    Browscap
  * @author     Thomas Müller <t_mueller_stolzenhain@yahoo.de>
  * @copyright  Copyright (c) 2014 Thomas Müller
- * @version    1.0
  * @license    http://www.opensource.org/licenses/MIT MIT License
  * @link       https://github.com/mimmi20/FileLoader/
  */
 
-namespace FileLoader\Helper;
-
-use FileLoader\Loader;
+namespace FileLoader\Connector;
 
 /**
- * a helper class to handle http errors
+ * the interface for all supported connectors
  *
  * @package    Browscap
  * @author     Thomas Müller <t_mueller_stolzenhain@yahoo.de>
  * @copyright  Copyright (c) 2014 Thomas Müller
- * @version    1.0
  * @license    http://www.opensource.org/licenses/MIT MIT License
  * @link       https://github.com/mimmi20/FileLoader/
  */
-class Http
+interface ConnectorInterface
 {
     /**
-     * Gets the exception to throw if the given HTTP status code is an error code (4xx or 5xx)
+     * Retrieve the data identified by the URL
      *
-     * @param int $http_code
-     * @return \RuntimeException|null
+     * @param string $url the url of the data
+     *
+     * @throws \RuntimeException
+     * @return string|boolean the retrieved data
      */
-    public function getHttpErrorException($http_code)
-    {
-        $http_code = (int)$http_code;
-
-        if ($http_code < 400) {
-            return null;
-        }
-
-        $httpCodes = array(
-            401 => "HTTP client error 401: Unauthorized",
-            403 => "HTTP client error 403: Forbidden",
-            404 => "HTTP client error 404: Not Found",
-            429 => "HTTP client error 429: Too many request",
-            500 => "HTTP server error 500: Internal Server Error",
-        );
-
-        if (isset($httpCodes[$http_code])) {
-            return new \RuntimeException($httpCodes[$http_code], $http_code);
-        } elseif ($http_code >= 500) {
-            return new \RuntimeException("HTTP server error $http_code", $http_code);
-        }
-
-        return new \RuntimeException("HTTP client error $http_code", $http_code);
-    }
+    public function getRemoteData($url);
 }

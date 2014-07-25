@@ -1,95 +1,103 @@
 <?php
-namespace FileLoader\Loader;
-
-    /**
-     * Browscap.ini parsing class with caching and update capabilities
-     *
-     * PHP version 5
-     *
-     * Copyright (c) 2006-2012 Jonathan Stoppani
-     *
-     * Permission is hereby granted, free of charge, to any person obtaining a
-     * copy of this software and associated documentation files (the "Software"),
-     * to deal in the Software without restriction, including without limitation
-     * the rights to use, copy, modify, merge, publish, distribute, sublicense,
-     * and/or sell copies of the Software, and to permit persons to whom the
-     * Software is furnished to do so, subject to the following conditions:
-     *
-     * The above copyright notice and this permission notice shall be included
-     * in all copies or substantial portions of the Software.
-     *
-     * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-     * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-     * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-     * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-     * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-     * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-     * THE SOFTWARE.
-     *
-     * @package    Browscap
-     * @author     Jonathan Stoppani <jonathan@stoppani.name>
-     * @author     Vítor Brandão <noisebleed@noiselabs.org>
-     * @author     Mikołaj Misiurewicz <quentin389+phpb@gmail.com>
-     * @copyright  Copyright (c) 2006-2012 Jonathan Stoppani
-     * @version    1.0
-     * @license    http://www.opensource.org/licenses/MIT MIT License
-     * @link       https://github.com/mimmi20/FileLoader/
-     */
-
-/** the main loader class */
-
-/** @var \FileLoader\Exception */
-use FileLoader\Exception;
-use FileLoader\Loader;
-use FileLoader\Helper\Http;
-use FileLoader\Helper\StreamCreator;
-
 /**
- * the loader class for requests via curl
+ * class to load a file from a remote source
+ *
+ * PHP version 5
+ *
+ * Copyright (c) 2006-2012 Jonathan Stoppani
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a
+ * copy of this software and associated documentation files (the "Software"),
+ * to deal in the Software without restriction, including without limitation
+ * the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ * and/or sell copies of the Software, and to permit persons to whom the
+ * Software is furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included
+ * in all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+ * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
  *
  * @package    Browscap
- * @author     Jonathan Stoppani <jonathan@stoppani.name>
- * @author     Vítor Brandão <noisebleed@noiselabs.org>
- * @author     Mikołaj Misiurewicz <quentin389+phpb@gmail.com>
- * @copyright  Copyright (c) 2006-2012 Jonathan Stoppani
+ * @author     Thomas Müller <t_mueller_stolzenhain@yahoo.de>
+ * @copyright  Copyright (c) 2014 Thomas Müller
  * @version    1.0
  * @license    http://www.opensource.org/licenses/MIT MIT License
  * @link       https://github.com/mimmi20/FileLoader/
  */
-abstract class RemoteLoader
+
+namespace FileLoader\Loader;
+
+use FileLoader\Exception;
+use FileLoader\Loader;
+use FileLoader\Helper\Http;
+use FileLoader\Helper\StreamCreator;
+use FileLoader\Connector\ConnectorInterface;
+
+/**
+ * class to load a file from a remote source
+ *
+ * @package    Browscap
+ * @author     Thomas Müller <t_mueller_stolzenhain@yahoo.de>
+ * @copyright  Copyright (c) 2014 Thomas Müller
+ * @version    1.0
+ * @license    http://www.opensource.org/licenses/MIT MIT License
+ * @link       https://github.com/mimmi20/FileLoader/
+ */
+class RemoteLoader
 {
     /**
      * an Loader instance
      *
      * @var \FileLoader\Loader
      */
-    protected $loader = null;
-    
+    private $loader = null;
+
     /**
      * a HTTP Helper instance
      *
      * @var \FileLoader\Helper\Http
      */
-    protected $httpHelper = null;
-    
+    private $httpHelper = null;
+
     /**
      * a HTTP Helper instance
      *
      * @var \FileLoader\Helper\StreamCreator
      */
-    protected $streamHelper = null;
+    private $streamHelper = null;
 
     /**
-     * Constructor class, checks for the existence of (and loads) the cache and
-     * if needed updated the definitions
-     *
-     * @param \FileLoader\Loader $loader
+     * @var \FileLoader\Connector\ConnectorInterface
      */
-    public function __construct(Loader $loader)
+    private $connector = null;
+
+    /**
+     * @param \FileLoader\Loader $loader
+     *
+     * @return \FileLoader\Loader\RemoteLoader
+     */
+    public function setLoader($loader)
     {
         $this->loader = $loader;
+
+        return $this;
     }
-    
+
+    /**
+     * @return \FileLoader\Loader
+     */
+    public function getLoader()
+    {
+        return $this->loader;
+    }
+
     /**
      * sets a http helper instance
      *
@@ -100,10 +108,10 @@ abstract class RemoteLoader
     public function setHttpHelper(Http $helper)
     {
         $this->httpHelper = $helper;
-        
+
         return $this;
     }
-    
+
     /**
      * returns a http helper instance
      *
@@ -113,7 +121,7 @@ abstract class RemoteLoader
     {
         return $this->httpHelper;
     }
-    
+
     /**
      * sets a StreamCreator helper instance
      *
@@ -124,10 +132,10 @@ abstract class RemoteLoader
     public function setStreamHelper(StreamCreator $helper)
     {
         $this->streamHelper = $helper;
-        
+
         return $this;
     }
-    
+
     /**
      * returns a StreamCreator helper instance
      *
@@ -136,6 +144,26 @@ abstract class RemoteLoader
     public function getStreamHelper()
     {
         return $this->streamHelper;
+    }
+
+    /**
+     * @param \FileLoader\Connector\ConnectorInterface $connector
+     *
+     * @return \FileLoader\Loader\RemoteLoader
+     */
+    public function setConnector(ConnectorInterface $connector)
+    {
+        $this->connector = $connector;
+
+        return $this;
+    }
+
+    /**
+     * @return \FileLoader\Connector\ConnectorInterface
+     */
+    public function getConnector()
+    {
+        return $this->connector;
     }
 
     /**
@@ -149,7 +177,7 @@ abstract class RemoteLoader
     public function load()
     {
         // Choose the right url
-        $file = $this->getRemoteData($this->getUri());
+        $file = $this->getConnector()->getRemoteData($this->getUri());
 
         if ($file !== false) {
             return $file;
@@ -165,7 +193,7 @@ abstract class RemoteLoader
      */
     public function getUri()
     {
-        return $this->loader->getRemoteDataUrl();
+        return $this->getLoader()->getRemoteDataUrl();
     }
 
     /**
@@ -176,8 +204,8 @@ abstract class RemoteLoader
      */
     public function getMTime()
     {
-        $remoteDataUrl  = $this->loader->getRemoteVerUrl();
-        $remoteDatetime = $this->getRemoteData($remoteDataUrl);
+        $remoteDataUrl  = $this->getLoader()->getRemoteVerUrl();
+        $remoteDatetime = $this->getConnector()->getRemoteData($remoteDataUrl);
 
         if (!$remoteDatetime) {
             throw new Exception(
@@ -188,14 +216,4 @@ abstract class RemoteLoader
 
         return $remoteDatetime;
     }
-
-    /**
-     * Retrieve the data identified by the URL
-     *
-     * @param string $url the url of the data
-     *
-     * @throws Exception
-     * @return string|boolean the retrieved data
-     */
-    abstract protected function getRemoteData($url);
 }

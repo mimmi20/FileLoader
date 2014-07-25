@@ -2,7 +2,7 @@
 
 namespace FileLoaderTest\Loader;
 
-use FileLoader\Loader;
+use FileLoader\Connector;
 
 /**
  * Browscap.ini parsing class with caching and update capabilities
@@ -48,7 +48,7 @@ class FopenLoaderTest extends \PHPUnit_Framework_TestCase
             $this->markTestSkipped('"allow_url_fopen" has to be activated in the php.ini');
         }
     }
-    
+
     public function createContext()
     {
         $config = array(
@@ -58,14 +58,14 @@ class FopenLoaderTest extends \PHPUnit_Framework_TestCase
                 'ignore_errors' => true,
             )
         );
-        
+
         return stream_context_create($config);
     }
 
     public function testGetRemoteData()
     {
         $this->markTestSkipped('need to be reworked');
-        
+
         $loader      = $this->getMock('\FileLoader\Loader', array(), array(), '', false);
         $steamHelper = $this->getMock('\FileLoader\Helper\StreamCreator', array('getStreamContext'), array(), '', false);
         $steamHelper
@@ -73,12 +73,12 @@ class FopenLoaderTest extends \PHPUnit_Framework_TestCase
             ->method('getStreamContext')
             ->will(self::returnCallback(array($this, 'createContext')))
         ;
-        
-        $fopenloader  = new Loader\FopenLoader($loader);
+
+        $fopenloader  = new Connector\FopenLoader($loader);
         $fopenloader->setStreamHelper($steamHelper);
-        
+
         $response = $fopenloader->getRemoteData('http://example.org/test.ini');
-        
+
         self::assertInternalType('string', $response);
     }
 }

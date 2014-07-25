@@ -1,14 +1,6 @@
 <?php
-namespace FileLoader\Loader;
-
-/** the main loader class */
-
-/** @var \FileLoader\Exception */
-use FileLoader\Exception;
-use FileLoader\Loader;
-
 /**
- * class to load a file from a local or remote source
+ * a factory class to build the required loader and the needed helpers
  *
  * PHP version 5
  *
@@ -33,10 +25,30 @@ use FileLoader\Loader;
  * THE SOFTWARE.
  *
  * @package    Browscap
- * @author     Jonathan Stoppani <jonathan@stoppani.name>
- * @author     Vítor Brandão <noisebleed@noiselabs.org>
- * @author     Mikołaj Misiurewicz <quentin389+phpb@gmail.com>
- * @copyright  Copyright (c) 2006-2012 Jonathan Stoppani
+ * @author     Thomas Müller <t_mueller_stolzenhain@yahoo.de>
+ * @copyright  Copyright (c) 2014 Thomas Müller
+ * @version    1.0
+ * @license    http://www.opensource.org/licenses/MIT MIT License
+ * @link       https://github.com/mimmi20/FileLoader/
+ */
+
+namespace FileLoader\Loader;
+
+use FileLoader\Connector\Curl;
+use FileLoader\Connector\FopenLoader;
+use FileLoader\Connector\SocketLoader;
+use FileLoader\Exception;
+use FileLoader\Helper\Http;
+use FileLoader\Helper\StreamCreator;
+use FileLoader\Loader;
+use FileLoader\Connector\ConnectorInterface;
+
+/**
+ * a factory class to build the required loader and the needed helpers
+ *
+ * @package    Browscap
+ * @author     Thomas Müller <t_mueller_stolzenhain@yahoo.de>
+ * @copyright  Copyright (c) 2014 Thomas Müller
  * @version    1.0
  * @license    http://www.opensource.org/licenses/MIT MIT License
  * @link       https://github.com/mimmi20/FileLoader/
@@ -48,7 +60,7 @@ class Factory
      * the cache dir, parses the ini file
      *
      * @param \FileLoader\Loader $loader
-     * @param string $mode
+     * @param string|\FileLoader\Connector\ConnectorInterface $mode
      * @param string $localFile
      *
      * @return RemoteLoader the loader to use
@@ -59,33 +71,38 @@ class Factory
         if ($localFile !== null
             && (null === $mode || Loader::UPDATE_LOCAL === $mode)
         ) {
-            $internalLoader = new Local($loader);
-            $internalLoader->setLocalFile($localFile);
-            
-            return $internalLoader;
+            $connector = new Local($loader);
+            $connector->setLocalFile($localFile);
+
+            return $connector;
         }
-        
-        $httpHelper   = new \FileLoader\Helper\Http();
-        $streamHelper = new \FileLoader\Helper\StreamCreator();
+
+        $httpHelper   = new Http();
+        $streamHelper = new StreamCreator();
         $streamHelper->setLoader($loader);
-        
-        if (null === $mode || Loader::UPDATE_FSOCKOPEN === $mode) {
-            $internalLoader = new SocketLoader($loader);
-        } elseif (ini_get('allow_url_fopen')
-            && (null === $mode || Loader::UPDATE_FOPEN === $mode)
-        ) {
-            $internalLoader = new FopenLoader($loader);
+
+        if ($mode instanceof ConnectorInterface) {
+            $connector = $mode;
         } elseif (extension_loaded('curl')
             && (null === $mode || Loader::UPDATE_CURL === $mode)
         ) {
-            $internalLoader = new Curl($loader);
+            $connector = new Curl($loader, $httpHelper);
+        } elseif (ini_get('allow_url_fopen')
+            && (null === $mode || Loader::UPDATE_FOPEN === $mode)
+        ) {
+            $connector = new FopenLoader($loader, $httpHelper, $streamHelper);
+        } elseif (null === $mode || Loader::UPDATE_FSOCKOPEN === $mode) {
+            $connector = new SocketLoader($loader, $streamHelper);
         } else {
-            throw new Exception('no valid loader found');
+            throw new Exception('no valid connector found');
         }
-        
+
+        $internalLoader = new RemoteLoader();
         $internalLoader
+            ->setLoader($loader)
             ->setHttpHelper($httpHelper)
             ->setStreamHelper($streamHelper)
+            ->setConnector($connector)
         ;
 
         return $internalLoader;

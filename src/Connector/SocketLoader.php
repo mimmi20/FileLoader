@@ -1,61 +1,82 @@
 <?php
-namespace FileLoader\Loader;
-
-    /**
-     * Browscap.ini parsing class with caching and update capabilities
-     *
-     * PHP version 5
-     *
-     * Copyright (c) 2006-2012 Jonathan Stoppani
-     *
-     * Permission is hereby granted, free of charge, to any person obtaining a
-     * copy of this software and associated documentation files (the "Software"),
-     * to deal in the Software without restriction, including without limitation
-     * the rights to use, copy, modify, merge, publish, distribute, sublicense,
-     * and/or sell copies of the Software, and to permit persons to whom the
-     * Software is furnished to do so, subject to the following conditions:
-     *
-     * The above copyright notice and this permission notice shall be included
-     * in all copies or substantial portions of the Software.
-     *
-     * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-     * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-     * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-     * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-     * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-     * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-     * THE SOFTWARE.
-     *
-     * @package    Browscap
-     * @author     Jonathan Stoppani <jonathan@stoppani.name>
-     * @author     Vítor Brandão <noisebleed@noiselabs.org>
-     * @author     Mikołaj Misiurewicz <quentin389+phpb@gmail.com>
-     * @copyright  Copyright (c) 2006-2012 Jonathan Stoppani
-     * @version    1.0
-     * @license    http://www.opensource.org/licenses/MIT MIT License
-     * @link       https://github.com/mimmi20/FileLoader/
-     */
-
-    /** the main loader class */
-
-/** @var \FileLoader\Exception */
-use FileLoader\Exception;
-use FileLoader\Loader;
-
 /**
- * the loader class for requests via fsockopen
+ * class to load a file from a remote source via fsockopen|stream_socket_client
+ *
+ * PHP version 5
+ *
+ * Copyright (c) 2006-2012 Jonathan Stoppani
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a
+ * copy of this software and associated documentation files (the "Software"),
+ * to deal in the Software without restriction, including without limitation
+ * the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ * and/or sell copies of the Software, and to permit persons to whom the
+ * Software is furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included
+ * in all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+ * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
  *
  * @package    Browscap
- * @author     Jonathan Stoppani <jonathan@stoppani.name>
- * @author     Vítor Brandão <noisebleed@noiselabs.org>
- * @author     Mikołaj Misiurewicz <quentin389+phpb@gmail.com>
- * @copyright  Copyright (c) 2006-2012 Jonathan Stoppani
+ * @author     Thomas Müller <t_mueller_stolzenhain@yahoo.de>
+ * @copyright  Copyright (c) 2014 Thomas Müller
  * @version    1.0
  * @license    http://www.opensource.org/licenses/MIT MIT License
  * @link       https://github.com/mimmi20/FileLoader/
  */
-class SocketLoader extends RemoteLoader
+
+namespace FileLoader\Connector;
+
+use FileLoader\Exception;
+use FileLoader\Loader;
+use FileLoader\Helper\StreamCreator;
+
+/**
+ * class to load a file from a remote source via fsockopen|stream_socket_client
+ *
+ * @package    Browscap
+ * @author     Thomas Müller <t_mueller_stolzenhain@yahoo.de>
+ * @copyright  Copyright (c) 2014 Thomas Müller
+ * @version    1.0
+ * @license    http://www.opensource.org/licenses/MIT MIT License
+ * @link       https://github.com/mimmi20/FileLoader/
+ */
+class SocketLoader implements ConnectorInterface
 {
+    /**
+     * an Loader instance
+     *
+     * @var \FileLoader\Loader
+     */
+    private $loader = null;
+
+    /**
+     * a HTTP Helper instance
+     *
+     * @var \FileLoader\Helper\StreamCreator
+     */
+    private $streamHelper = null;
+
+    /**
+     * Constructor class, checks for the existence of (and loads) the cache and
+     * if needed updated the definitions
+     *
+     * @param \FileLoader\Loader               $loader
+     * @param \FileLoader\Helper\StreamCreator $helper
+     */
+    public function __construct(Loader $loader, StreamCreator $helper)
+    {
+        $this->loader       = $loader;
+        $this->streamHelper = $helper;
+    }
+
     /**
      * Retrieve the data identified by the URL
      *
@@ -74,7 +95,7 @@ class SocketLoader extends RemoteLoader
 
         $fullRemoteUrl = $remoteUrl['scheme'] . '://' . $remoteUrl['host'] . ':' . $port;
 
-        $context = $this->getStreamHelper()->getStreamContext();
+        $context = $this->streamHelper->getStreamContext();
         $timeout = $this->loader->getTimeout();
 
         $stream = stream_socket_client(
@@ -89,9 +110,6 @@ class SocketLoader extends RemoteLoader
         if (!$stream) {
             return false;
         }
-        
-        $response = stream_get_line($stream, 1024, "\n");
-        $meta     = stream_get_meta_data($stream);
 
         stream_set_timeout($stream, $timeout);
         stream_set_blocking($stream, 1);
@@ -110,9 +128,6 @@ class SocketLoader extends RemoteLoader
         fwrite($stream, $out);
 
         $response = stream_get_line($stream, 1024, "\n");
-        
-        $meta = stream_get_meta_data($stream);
-        var_dump($response, $meta);exit;
         $response = $this->getFile($response, $stream);
 
         fclose($stream);

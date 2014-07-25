@@ -1,6 +1,4 @@
 <?php
-namespace FileLoader;
-
 /**
  * class to load a file from a local or remote source
  *
@@ -32,6 +30,18 @@ namespace FileLoader;
  * @author     Mikołaj Misiurewicz <quentin389+phpb@gmail.com>
  * @copyright  Copyright (c) 2006-2012 Jonathan Stoppani
  * @version    1.0
+ * @license    http://www.opensource.org/licenses/MIT MIT License
+ * @link       https://github.com/mimmi20/FileLoader/
+ */
+
+namespace FileLoader;
+
+/**
+ * class to load a file from a local or remote source
+ *
+ * @package    Browscap
+ * @author     Thomas Müller <t_mueller_stolzenhain@yahoo.de>
+ * @copyright  Copyright (c) 2006-2012 Jonathan Stoppani
  * @license    http://www.opensource.org/licenses/MIT MIT License
  * @link       https://github.com/mimmi20/FileLoader/
  */
@@ -113,7 +123,7 @@ class Loader
     /**
      * the mode what defines which way the remote file is loaded
      *
-     * @var string
+     * @var string|\FileLoader\Connector\ConnectorInterface
      */
     private $mode = null;
 
@@ -292,7 +302,7 @@ class Loader
     /**
      * sets the mode to load the remote file
      *
-     * @param string $mode
+     * @param string|\FileLoader\Connector\ConnectorInterface $mode
      *
      * @return \FileLoader\Loader
      */
