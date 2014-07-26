@@ -34,9 +34,9 @@
 
 namespace FileLoader\Connector;
 
-use FileLoader\Loader;
 use FileLoader\Helper\Http;
 use FileLoader\Helper\StreamCreator;
+use FileLoader\Loader;
 
 /**
  * class to load a file from a remote source via fopen/file_get_contents
@@ -132,7 +132,7 @@ class FopenLoader implements ConnectorInterface
     /**
      * returns a StreamCreator helper instance
      *
-     * @return \FileLoader\Helper\Http
+     * @return \FileLoader\Helper\StreamCreator
      */
     public function getStreamHelper()
     {
@@ -144,7 +144,7 @@ class FopenLoader implements ConnectorInterface
      *
      * @param string $url the url of the data
      *
-     * @throws \RuntimeException
+     * @throws \FileLoader\Exception
      * @return string|boolean the retrieved data
      */
     public function getRemoteData($url)
@@ -159,11 +159,12 @@ class FopenLoader implements ConnectorInterface
         if (isset($http_response_header)) {
             // extract status from first array entry, e.g. from 'HTTP/1.1 200 OK'
             if (is_array($http_response_header) && isset($http_response_header[0])) {
-                $tmp_status_parts = explode(" ", $http_response_header[0], 3);
-                $http_code = $tmp_status_parts[1];
+                $tmp_status_parts = explode(' ', $http_response_header[0], 3);
+                $http_code        = $tmp_status_parts[1];
 
                 // check for HTTP error
                 $http_exception = $this->getHttpHelper()->getHttpErrorException($http_code);
+
                 if ($http_exception !== null) {
                     throw $http_exception;
                 }

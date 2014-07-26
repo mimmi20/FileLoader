@@ -35,6 +35,7 @@
 namespace FileLoader\Helper;
 
 use FileLoader\Loader;
+use FileLoader\Exception;
 
 /**
  * a helper class to handle http errors
@@ -52,11 +53,12 @@ class Http
      * Gets the exception to throw if the given HTTP status code is an error code (4xx or 5xx)
      *
      * @param int $http_code
-     * @return \RuntimeException|null
+     *
+     * @return \FileLoader\Exception|null
      */
     public function getHttpErrorException($http_code)
     {
-        $http_code = (int)$http_code;
+        $http_code = (int) $http_code;
 
         if ($http_code < 400) {
             return null;
@@ -71,11 +73,11 @@ class Http
         );
 
         if (isset($httpCodes[$http_code])) {
-            return new \RuntimeException($httpCodes[$http_code], $http_code);
+            return new Exception($httpCodes[$http_code], $http_code);
         } elseif ($http_code >= 500) {
-            return new \RuntimeException("HTTP server error $http_code", $http_code);
+            return new Exception("HTTP server error $http_code", $http_code);
         }
 
-        return new \RuntimeException("HTTP client error $http_code", $http_code);
+        return new Exception("HTTP client error $http_code", $http_code);
     }
 }

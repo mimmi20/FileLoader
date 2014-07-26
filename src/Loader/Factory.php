@@ -34,6 +34,7 @@
 
 namespace FileLoader\Loader;
 
+use FileLoader\Connector\ConnectorInterface;
 use FileLoader\Connector\Curl;
 use FileLoader\Connector\FopenLoader;
 use FileLoader\Connector\SocketLoader;
@@ -41,7 +42,6 @@ use FileLoader\Exception;
 use FileLoader\Helper\Http;
 use FileLoader\Helper\StreamCreator;
 use FileLoader\Loader;
-use FileLoader\Connector\ConnectorInterface;
 
 /**
  * a factory class to build the required loader and the needed helpers
@@ -59,9 +59,9 @@ class Factory
      * loads the ini file from a remote or local location and stores it into
      * the cache dir, parses the ini file
      *
-     * @param \FileLoader\Loader $loader
+     * @param \FileLoader\Loader                              $loader
      * @param string|\FileLoader\Connector\ConnectorInterface $mode
-     * @param string $localFile
+     * @param string                                          $localFile
      *
      * @return RemoteLoader the loader to use
      * @throws \FileLoader\Exception
@@ -87,23 +87,23 @@ class Factory
             && (null === $mode || Loader::UPDATE_CURL === $mode)
         ) {
             $connector = new Curl();
-			$connector->setHttpHelper($httpHelper);
+            $connector->setHttpHelper($httpHelper);
         } elseif (ini_get('allow_url_fopen')
             && (null === $mode || Loader::UPDATE_FOPEN === $mode)
         ) {
             $connector = new FopenLoader();
-			$connector
-				->setStreamHelper($streamHelper)
-				->setHttpHelper($httpHelper)
-			;
+            $connector
+                ->setStreamHelper($streamHelper)
+                ->setHttpHelper($httpHelper)
+            ;
         } elseif (null === $mode || Loader::UPDATE_FSOCKOPEN === $mode) {
             $connector = new SocketLoader();
-			$connector->setStreamHelper($streamHelper);
+            $connector->setStreamHelper($streamHelper);
         } else {
             throw new Exception('no valid connector found');
         }
-		
-		$connector->setLoader($loader);
+
+        $connector->setLoader($loader);
 
         $internalLoader = new RemoteLoader();
         $internalLoader

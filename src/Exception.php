@@ -62,4 +62,5 @@ class Exception extends \Exception
     const INI_FILE_MISSING           = 900;
     const VERSION_URL_MISSING        = 1000;
     const DATA_URL_MISSING           = 1100;
+    const INVALID_OPTION             = 1200;
 }

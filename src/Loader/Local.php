@@ -68,10 +68,7 @@ class Local
     public function setLocalFile($filename)
     {
         if (empty($filename)) {
-            throw new Exception(
-                'the filename can not be empty',
-                Exception::LOCAL_FILE_MISSING
-            );
+            throw new Exception('the filename can not be empty', Exception::LOCAL_FILE_MISSING);
         }
 
         $this->localFile = $filename;
@@ -91,10 +88,7 @@ class Local
     public function load()
     {
         if (!is_readable($this->localFile) || !is_file($this->localFile)) {
-            throw new Exception(
-                'Local file is not readable',
-                Exception::LOCAL_FILE_NOT_READABLE
-            );
+            throw new Exception('Local file is not readable', Exception::LOCAL_FILE_NOT_READABLE);
         }
 
         // Get file content
@@ -126,10 +120,7 @@ class Local
     public function getMTime()
     {
         if (!is_readable($this->localFile) || !is_file($this->localFile)) {
-            throw new Exception(
-                'Local file is not readable',
-                Exception::LOCAL_FILE_NOT_READABLE
-            );
+            throw new Exception('Local file is not readable', Exception::LOCAL_FILE_NOT_READABLE);
         }
 
         return filemtime($this->localFile);

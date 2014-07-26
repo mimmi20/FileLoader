@@ -37,6 +37,7 @@ namespace FileLoader\Connector;
 use FileLoader\Helper\Http;
 use FileLoader\Helper\StreamCreator;
 use FileLoader\Loader;
+use FileLoader\Exception;
 
 /**
  * class to load a file from a remote source with the curl extension
@@ -113,12 +114,12 @@ class Curl implements ConnectorInterface
      *
      * @param string $url the url of the data
      *
-     * @throws \RuntimeException
+     * @throws \FileLoader\Exception
      * @return string|boolean the retrieved data
      */
     public function getRemoteData($url)
     {
-        $ressource = $this->init();
+        $ressource = $this->init($url);
 
         $response  = curl_exec($ressource);
         $http_code = curl_getinfo($ressource, CURLINFO_HTTP_CODE);
@@ -127,21 +128,25 @@ class Curl implements ConnectorInterface
 
         // check for HTTP error
         $http_exception = $this->getHttpHelper()->getHttpErrorException($http_code);
+
         if ($http_exception !== null) {
             throw $http_exception;
         }
 
         return $response;
     }
-	
-	/**
-	 * initialize the connection
-	 *
-	 * @return resource
-	 */
-	private function init()
-	{
-		$ressource = curl_init($url);
+
+    /**
+     * initialize the connection
+     *
+     * @param string $url
+     *
+     * @throws \FileLoader\Exception
+     * @return resource
+     */
+    private function init($url)
+    {
+        $ressource = curl_init($url);
 
         curl_setopt($ressource, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ressource, CURLOPT_CONNECTTIMEOUT, $this->getLoader()->getTimeout());
@@ -149,15 +154,18 @@ class Curl implements ConnectorInterface
 
         // check and set proxy settings
         $proxy_host = $this->getLoader()->getOption('ProxyHost');
+
         if ($proxy_host !== null) {
             // check for supported protocol
             $proxy_protocol = $this->getLoader()->getOption('ProxyProtocol');
+
             if ($proxy_protocol !== null) {
                 $allowedProtocolls = array(StreamCreator::PROXY_PROTOCOL_HTTP, StreamCreator::PROXY_PROTOCOL_HTTPS);
 
                 if (!in_array($proxy_protocol, $allowedProtocolls)) {
-                    throw new \RuntimeException(
-                        'Invalid/unsupported value "' . $proxy_protocol . '" for option "ProxyProtocol".'
+                    throw new Exception(
+                        'Invalid/unsupported value "' . $proxy_protocol . '" for option "ProxyProtocol".',
+                        Exception::INVALID_OPTION
                     );
                 }
             } else {
@@ -184,8 +192,9 @@ class Curl implements ConnectorInterface
                     $allowedAuth = array(StreamCreator::PROXY_AUTH_BASIC, StreamCreator::PROXY_AUTH_NTLM);
 
                     if (!in_array($proxy_auth, $allowedAuth)) {
-                        throw new \RuntimeException(
-                            'Invalid/unsupported value "' . $proxy_auth . '" for option "ProxyAuth".'
+                        throw new Exception(
+                            'Invalid/unsupported value "' . $proxy_auth . '" for option "ProxyAuth".',
+                            Exception::INVALID_OPTION
                         );
                     }
                 } else {
@@ -198,7 +207,7 @@ class Curl implements ConnectorInterface
                 curl_setopt($ressource, CURLOPT_PROXYUSERPWD, $proxy_user . ':' . $proxy_password);
             }
         }
-		
-		return $ressource;
-	}
+
+        return $ressource;
+    }
 }

@@ -35,8 +35,8 @@
 namespace FileLoader\Connector;
 
 use FileLoader\Exception;
-use FileLoader\Loader;
 use FileLoader\Helper\StreamCreator;
+use FileLoader\Loader;
 
 /**
  * class to load a file from a remote source via fsockopen|stream_socket_client
@@ -101,7 +101,7 @@ class SocketLoader implements ConnectorInterface
     /**
      * returns a StreamCreator helper instance
      *
-     * @return \FileLoader\Helper\Http
+     * @return \FileLoader\Helper\StreamCreator
      */
     public function getStreamHelper()
     {
@@ -185,27 +185,26 @@ class SocketLoader implements ConnectorInterface
 
         return $file;
     }
-	
-	/**
-	 * initialize the connection
+
+    /**
+     * initialize the connection
      *
      * @param string $url the url of the data
-	 *
-	 * @return array
-	 */
-	private function init($url)
-	{
-		$remoteUrl = parse_url($url);
+     *
+     * @return array
+     */
+    private function init($url)
+    {
+        $remoteUrl = parse_url($url);
 
-        $port = $this->getPort($remoteUrl);
-
+        $port          = $this->getPort($remoteUrl);
         $fullRemoteUrl = $remoteUrl['scheme'] . '://' . $remoteUrl['host'] . ':' . $port;
 
         $context = $this->getStreamHelper()->getStreamContext();
         $timeout = $this->getLoader()->getTimeout();
-		
-		return array($remoteUrl, $fullRemoteUrl, $context, $timeout);
-	}
+
+        return array($remoteUrl, $fullRemoteUrl, $context, $timeout);
+    }
 
     /**
      * @param array $remoteUrl

@@ -90,12 +90,12 @@ class Loader
      * @var array
      */
     private $options = array(
-        'ProxyProtocol'  => null,
-        'ProxyHost'      => null,
-        'ProxyPort'      => null,
-        'ProxyAuth'      => null,
-        'ProxyUser'      => null,
-        'ProxyPassword'  => null,
+        'ProxyProtocol' => null,
+        'ProxyHost'     => null,
+        'ProxyPort'     => null,
+        'ProxyAuth'     => null,
+        'ProxyUser'     => null,
+        'ProxyPassword' => null,
     );
 
     /**
@@ -129,7 +129,8 @@ class Loader
 
     /**
      * @param array|null $options
-     * @throws \InvalidArgumentException
+     *
+     * @throws \FileLoader\Exception
      */
     public function __construct($options = null)
     {
@@ -137,7 +138,7 @@ class Loader
             if (is_array($options)) {
                 $this->setOptions($options);
             } else {
-                throw new \InvalidArgumentException("Invalid value for 'options', array expected.");
+                throw new Exception('Invalid value for "options", array expected.', Exception::INVALID_OPTION);
             }
         }
     }
@@ -146,6 +147,7 @@ class Loader
      * Sets multiple loader options at once
      *
      * @param array $options
+     *
      * @return \FileLoader\Loader
      */
     public function setOptions(array $options)
@@ -160,16 +162,17 @@ class Loader
      * Sets an loader option value
      *
      * @param string $key
-     * @param mixed $value
+     * @param mixed  $value
+     *
      * @return \FileLoader\Loader
-     * @throws \InvalidArgumentException
+     * @throws \FileLoader\Exception
      */
     public function setOption($key, $value)
     {
         if (array_key_exists($key, $this->options)) {
             $this->options[$key] = $value;
         } else {
-            throw new \InvalidArgumentException("Invalid option key '" . (string)$key . "'.");
+            throw new Exception('Invalid option key "' . (string) $key . '".', Exception::INVALID_OPTION);
         }
         return $this;
     }
@@ -178,6 +181,7 @@ class Loader
      * Gets an loader option value
      *
      * @param string $key
+     *
      * @return mixed|null
      */
     public function getOption($key)
@@ -194,16 +198,13 @@ class Loader
      *
      * @param string $filename the file name
      *
-     * @throws Exception
+     * @throws \FileLoader\Exception
      * @return \FileLoader\Loader
      */
     public function setLocalFile($filename)
     {
         if (empty($filename)) {
-            throw new Exception(
-                'the filename can not be empty',
-                Exception::LOCAL_FILE_MISSING
-            );
+            throw new Exception('the filename can not be empty', Exception::LOCAL_FILE_MISSING);
         }
 
         $this->localFile = $filename;
@@ -216,16 +217,13 @@ class Loader
      *
      * @param string $remoteDataUrl
      *
-     * @throws Exception
+     * @throws \FileLoader\Exception
      * @return \FileLoader\Loader
      */
     public function setRemoteDataUrl($remoteDataUrl)
     {
         if (empty($remoteDataUrl)) {
-            throw new Exception(
-                'the parameter $remoteDataUrl can not be empty',
-                Exception::DATA_URL_MISSING
-            );
+            throw new Exception('the parameter ' . $remoteDataUrl . ' can not be empty', Exception::DATA_URL_MISSING);
         }
 
         $this->remoteDataUrl = $remoteDataUrl;
@@ -248,16 +246,13 @@ class Loader
      *
      * @param string $remoteVerUrl
      *
-     * @throws Exception
+     * @throws \FileLoader\Exception
      * @return \FileLoader\Loader
      */
     public function setRemoteVerUrl($remoteVerUrl)
     {
         if (empty($remoteVerUrl)) {
-            throw new Exception(
-                'the parameter $remoteVerUrl can not be empty',
-                Exception::VERSION_URL_MISSING
-            );
+            throw new Exception('the parameter ' . $remoteVerUrl . ' can not be empty', Exception::VERSION_URL_MISSING);
         }
 
         $this->remoteVerUrl = $remoteVerUrl;
@@ -284,7 +279,7 @@ class Loader
      */
     public function setTimeout($timeout)
     {
-        $this->timeout = (int)$timeout;
+        $this->timeout = (int) $timeout;
 
         return $this;
     }

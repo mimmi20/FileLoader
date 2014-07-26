@@ -34,11 +34,11 @@
 
 namespace FileLoader\Loader;
 
+use FileLoader\Connector\ConnectorInterface;
 use FileLoader\Exception;
-use FileLoader\Loader;
 use FileLoader\Helper\Http;
 use FileLoader\Helper\StreamCreator;
-use FileLoader\Connector\ConnectorInterface;
+use FileLoader\Loader;
 
 /**
  * class to load a file from a remote source
@@ -172,12 +172,12 @@ class RemoteLoader
      * loads the ini file from a remote location
      *
      * @return string the file content
-     * @throws Exception
+     * @throws \FileLoader\Exception
      */
     public function load()
     {
         // Choose the right url
-		$remoteDataUri = $this->getLoader()->getRemoteDataUrl();
+        $remoteDataUri = $this->getLoader()->getRemoteDataUrl();
         $file          = $this->getConnector()->getRemoteData($remoteDataUri);
 
         if ($file !== false) {
@@ -190,7 +190,7 @@ class RemoteLoader
     /**
      * Gets the remote file update timestamp
      *
-     * @throws Exception
+     * @throws \FileLoader\Exception
      * @return integer the remote modification timestamp
      */
     public function getMTime()
@@ -199,10 +199,7 @@ class RemoteLoader
         $remoteDatetime   = $this->getConnector()->getRemoteData($remoteVersionUrl);
 
         if (!$remoteDatetime) {
-            throw new Exception(
-                'Bad datetime format from ' . $remoteVersionUrl,
-                Exception::INVALID_DATETIME
-            );
+            throw new Exception('Bad datetime format from ' . $remoteVersionUrl, Exception::INVALID_DATETIME);
         }
 
         return (int) $remoteDatetime;
