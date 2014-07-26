@@ -177,7 +177,8 @@ class RemoteLoader
     public function load()
     {
         // Choose the right url
-        $file = $this->getConnector()->getRemoteData($this->getUri());
+		$remoteDataUri = $this->getLoader()->getRemoteDataUrl();
+        $file          = $this->getConnector()->getRemoteData($remoteDataUri);
 
         if ($file !== false) {
             return $file;
@@ -187,33 +188,23 @@ class RemoteLoader
     }
 
     /**
-     * returns the uri, used for download
-     *
-     * @return string
-     */
-    public function getUri()
-    {
-        return $this->getLoader()->getRemoteDataUrl();
-    }
-
-    /**
      * Gets the remote file update timestamp
      *
      * @throws Exception
-     * @return int|string the remote modification timestamp
+     * @return integer the remote modification timestamp
      */
     public function getMTime()
     {
-        $remoteDataUrl  = $this->getLoader()->getRemoteVerUrl();
-        $remoteDatetime = $this->getConnector()->getRemoteData($remoteDataUrl);
+        $remoteVersionUrl = $this->getLoader()->getRemoteVerUrl();
+        $remoteDatetime   = $this->getConnector()->getRemoteData($remoteVersionUrl);
 
         if (!$remoteDatetime) {
             throw new Exception(
-                'Bad datetime format from ' . $remoteDataUrl,
+                'Bad datetime format from ' . $remoteVersionUrl,
                 Exception::INVALID_DATETIME
             );
         }
 
-        return $remoteDatetime;
+        return (int) $remoteDatetime;
     }
 }

@@ -49,8 +49,6 @@ class LocalTest extends \PHPUnit_Framework_TestCase
      */
     protected function setUp()
     {
-        parent::setUp();
-
         $object = new Loader();
 
         $this->object = new Loader\Local($object);

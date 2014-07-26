@@ -1,6 +1,6 @@
 <?php
 
-namespace FileLoaderTest\Loader;
+namespace FileLoaderTest\Connector;
 
 use FileLoader\Connector;
 
@@ -36,23 +36,12 @@ use FileLoader\Connector;
  * @license    http://www.opensource.org/licenses/MIT MIT License
  * @link       https://github.com/GaretJax/phpbrowscap/
  */
-class FopenLoaderTest extends \PHPUnit_Framework_TestCase
+class SocketloaderTest extends \PHPUnit_Framework_TestCase
 {
-    /**
-     * Sets up the fixture, for example, opens a network connection.
-     * This method is called before a test is executed.
-     */
-    protected function setUp()
-    {
-        if (!ini_get('allow_url_fopen')) {
-            $this->markTestSkipped('"allow_url_fopen" has to be activated in the php.ini');
-        }
-    }
-
     public function createContext()
     {
         $config = array(
-            'http' => array(
+            'tcp' => array(
                 'user_agent'    => 'Test-UserAgent',
                 // ignore errors, handle them manually
                 'ignore_errors' => true,
@@ -74,10 +63,10 @@ class FopenLoaderTest extends \PHPUnit_Framework_TestCase
             ->will(self::returnCallback(array($this, 'createContext')))
         ;
 
-        $fopenloader  = new Connector\FopenLoader($loader);
-        $fopenloader->setStreamHelper($steamHelper);
+        $socketLoader  = new Connector\SocketLoader($loader);
+        $socketLoader->setStreamHelper($steamHelper);
 
-        $response = $fopenloader->getRemoteData('http://example.org/test.ini');
+        $response = $socketLoader->getRemoteData('tcp://www.example.com');
 
         self::assertInternalType('string', $response);
     }
