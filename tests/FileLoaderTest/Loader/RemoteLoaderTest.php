@@ -55,49 +55,50 @@ class RemoteLoaderTest extends \PHPUnit_Framework_TestCase
     public function testSetGetLoader()
     {
         $loader = $this->getMock('\FileLoader\Loader', array(), array(), '', false);
-		
-		self::assertSame($this->object, $this->object->setLoader($loader));
-		self::assertSame($loader, $this->object->getLoader());
+
+        self::assertSame($this->object, $this->object->setLoader($loader));
+        self::assertSame($loader, $this->object->getLoader());
     }
 
     public function testSetGetHttpHelper()
     {
         $helper = $this->getMock('\FileLoader\Helper\Http', array(), array(), '', false);
-		
-		self::assertSame($this->object, $this->object->setHttpHelper($helper));
-		self::assertSame($helper, $this->object->getHttpHelper());
+
+        self::assertSame($this->object, $this->object->setHttpHelper($helper));
+        self::assertSame($helper, $this->object->getHttpHelper());
     }
 
     public function testSetGetStreamHelper()
     {
         $helper = $this->getMock('\FileLoader\Helper\StreamCreator', array(), array(), '', false);
-		
-		self::assertSame($this->object, $this->object->setStreamHelper($helper));
-		self::assertSame($helper, $this->object->getStreamHelper());
+
+        self::assertSame($this->object, $this->object->setStreamHelper($helper));
+        self::assertSame($helper, $this->object->getStreamHelper());
     }
 
     public function testSetGetConnector()
     {
         $connector = $this->getMock('\FileLoader\Connector\Curl', array(), array(), '', false);
-		
-		self::assertSame($this->object, $this->object->setConnector($connector));
-		self::assertSame($connector, $this->object->getConnector());
+
+        self::assertSame($this->object, $this->object->setConnector($connector));
+        self::assertSame($connector, $this->object->getConnector());
     }
 
     public function testLoad()
     {
         $loader = $this->getMock('\FileLoader\Loader', array(), array(), '', false);
-		$this->object->setLoader($loader);
-		
-		$connector = $this->getMock('\FileLoader\Connector\Curl', array('getRemoteData'), array(), '', false);
-		$connector
+        $this->object->setLoader($loader);
+
+        $connector = $this->getMock('\FileLoader\Connector\Curl', array('getRemoteData'), array(), '', false);
+        $connector
             ->expects(self::once())
             ->method('getRemoteData')
             ->will(self::returnValue('This is a test'))
         ;
-		$this->object->setConnector($connector);
-		
-		self::assertSame('This is a test', $this->object->load());
+
+        $this->object->setConnector($connector);
+
+        self::assertSame('This is a test', $this->object->load());
     }
 
     /**
@@ -107,33 +108,35 @@ class RemoteLoaderTest extends \PHPUnit_Framework_TestCase
     public function testLoadFail()
     {
         $loader = $this->getMock('\FileLoader\Loader', array(), array(), '', false);
-		$this->object->setLoader($loader);
-		
-		$connector = $this->getMock('\FileLoader\Connector\Curl', array('getRemoteData'), array(), '', false);
-		$connector
+        $this->object->setLoader($loader);
+
+        $connector = $this->getMock('\FileLoader\Connector\Curl', array('getRemoteData'), array(), '', false);
+        $connector
             ->expects(self::once())
             ->method('getRemoteData')
             ->will(self::returnValue(false))
         ;
-		$this->object->setConnector($connector);
-		
-		$this->object->load();
+
+        $this->object->setConnector($connector);
+
+        $this->object->load();
     }
 
     public function testGetMtime()
     {
         $loader = $this->getMock('\FileLoader\Loader', array(), array(), '', false);
-		$this->object->setLoader($loader);
-		
-		$connector = $this->getMock('\FileLoader\Connector\Curl', array('getRemoteData'), array(), '', false);
-		$connector
+        $this->object->setLoader($loader);
+
+        $connector = $this->getMock('\FileLoader\Connector\Curl', array('getRemoteData'), array(), '', false);
+        $connector
             ->expects(self::once())
             ->method('getRemoteData')
             ->will(self::returnValue(time()))
         ;
-		$this->object->setConnector($connector);
-		
-		self::assertInternalType('integer', $this->object->getMTime());
+
+        $this->object->setConnector($connector);
+
+        self::assertInternalType('integer', $this->object->getMTime());
     }
 
     /**
@@ -143,21 +146,23 @@ class RemoteLoaderTest extends \PHPUnit_Framework_TestCase
     public function testGetMtimeFail()
     {
         $loader = $this->getMock('\FileLoader\Loader', array('getRemoteVerUrl'), array(), '', false);
-		$loader
+        $loader
             ->expects(self::once())
             ->method('getRemoteVerUrl')
             ->will(self::returnValue('http://example.org/version'))
         ;
-		$this->object->setLoader($loader);
-		
-		$connector = $this->getMock('\FileLoader\Connector\Curl', array('getRemoteData'), array(), '', false);
-		$connector
+
+        $this->object->setLoader($loader);
+
+        $connector = $this->getMock('\FileLoader\Connector\Curl', array('getRemoteData'), array(), '', false);
+        $connector
             ->expects(self::once())
             ->method('getRemoteData')
             ->will(self::returnValue(false))
         ;
-		$this->object->setConnector($connector);
-		
-		$this->object->getMTime();
+
+        $this->object->setConnector($connector);
+
+        $this->object->getMTime();
     }
 }

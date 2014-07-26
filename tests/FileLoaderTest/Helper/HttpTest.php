@@ -60,8 +60,8 @@ class HttpTest extends \PHPUnit_Framework_TestCase
     public function testGetHttpErrorException404()
     {
         $exception = $this->object->getHttpErrorException(404);
-        
-        self::assertInstanceOf('\RuntimeException', $exception);
+
+        self::assertInstanceOf('\FileLoader\Exception', $exception);
         self::assertSame(404, $exception->getCode());
         self::assertSame("HTTP client error 404: Not Found", $exception->getMessage());
     }
@@ -69,8 +69,8 @@ class HttpTest extends \PHPUnit_Framework_TestCase
     public function testGetHttpErrorException501()
     {
         $exception = $this->object->getHttpErrorException(501);
-        
-        self::assertInstanceOf('\RuntimeException', $exception);
+
+        self::assertInstanceOf('\FileLoader\Exception', $exception);
         self::assertSame(501, $exception->getCode());
         self::assertSame("HTTP server error 501", $exception->getMessage());
     }
@@ -78,8 +78,8 @@ class HttpTest extends \PHPUnit_Framework_TestCase
     public function testGetHttpErrorException400()
     {
         $exception = $this->object->getHttpErrorException(400);
-        
-        self::assertInstanceOf('\RuntimeException', $exception);
+
+        self::assertInstanceOf('\FileLoader\Exception', $exception);
         self::assertSame(400, $exception->getCode());
         self::assertSame("HTTP client error 400", $exception->getMessage());
     }

@@ -58,7 +58,7 @@ class FactoryTest extends \PHPUnit_Framework_TestCase
     {
         $result = Loader\Factory::build($this->object, null, 'xxx');
 
-        self::assertInstanceOf('\\FileLoader\\Loader\\Local', $result);
+        self::assertInstanceOf('\FileLoader\Loader\Local', $result);
     }
 
     /**
@@ -96,7 +96,7 @@ class FactoryTest extends \PHPUnit_Framework_TestCase
         $result = Loader\Factory::build($this->object, Loader::UPDATE_FSOCKOPEN);
 
         self::assertInstanceOf('\FileLoader\Loader\RemoteLoader', $result);
-		self::assertInstanceOf('\FileLoader\Connector\SocketLoader', $result->getConnector());
+        self::assertInstanceOf('\FileLoader\Connector\SocketLoader', $result->getConnector());
     }
 
     public function testBuildForcedFopenLoader()
@@ -104,7 +104,7 @@ class FactoryTest extends \PHPUnit_Framework_TestCase
         $result = Loader\Factory::build($this->object, Loader::UPDATE_FOPEN);
 
         self::assertInstanceOf('\FileLoader\Loader\RemoteLoader', $result);
-		self::assertInstanceOf('\FileLoader\Connector\FopenLoader', $result->getConnector());
+        self::assertInstanceOf('\FileLoader\Connector\FopenLoader', $result->getConnector());
     }
 
     public function testBuildForcedCurlLoader()
@@ -112,22 +112,22 @@ class FactoryTest extends \PHPUnit_Framework_TestCase
         $result = Loader\Factory::build($this->object, Loader::UPDATE_CURL);
 
         self::assertInstanceOf('\FileLoader\Loader\RemoteLoader', $result);
-		self::assertInstanceOf('\FileLoader\Connector\Curl', $result->getConnector());
+        self::assertInstanceOf('\FileLoader\Connector\Curl', $result->getConnector());
     }
 
     public function testBuildForcedCustomLoader()
     {
         $connector = $this->getMock('\FileLoader\Connector\FopenLoader', array(), array(), '', false);
-		$result    = Loader\Factory::build($this->object, $connector);
+        $result    = Loader\Factory::build($this->object, $connector);
 
         self::assertInstanceOf('\FileLoader\Loader\RemoteLoader', $result);
-		self::assertInstanceOf('\FileLoader\Connector\FopenLoader', $result->getConnector());
+        self::assertInstanceOf('\FileLoader\Connector\FopenLoader', $result->getConnector());
     }
 
     /**
      * @expectedException \FileLoader\Exception
      * @expectedExceptionMessage no valid connector found
-     * @expectedExceptionCode 0
+     * @expectedExceptionCode    0
      */
     public function testBuildForcedInvalid()
     {

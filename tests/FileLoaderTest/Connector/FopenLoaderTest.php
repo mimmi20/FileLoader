@@ -52,8 +52,8 @@ class FopenLoaderTest extends \PHPUnit_Framework_TestCase
         if (!ini_get('allow_url_fopen')) {
             $this->markTestSkipped('"allow_url_fopen" has to be activated in the php.ini');
         }
-		
-		$this->object = new Connector\FopenLoader();
+
+        $this->object = new Connector\FopenLoader();
     }
 
     public function createContext()
@@ -72,25 +72,25 @@ class FopenLoaderTest extends \PHPUnit_Framework_TestCase
     public function testSetGetLoader()
     {
         $loader = $this->getMock('\FileLoader\Loader', array(), array(), '', false);
-		
-		self::assertSame($this->object, $this->object->setLoader($loader));
-		self::assertSame($loader, $this->object->getLoader());
+
+        self::assertSame($this->object, $this->object->setLoader($loader));
+        self::assertSame($loader, $this->object->getLoader());
     }
 
     public function testSetGetHttpHelper()
     {
         $helper = $this->getMock('\FileLoader\Helper\Http', array(), array(), '', false);
-		
-		self::assertSame($this->object, $this->object->setHttpHelper($helper));
-		self::assertSame($helper, $this->object->getHttpHelper());
+
+        self::assertSame($this->object, $this->object->setHttpHelper($helper));
+        self::assertSame($helper, $this->object->getHttpHelper());
     }
 
     public function testSetGetStreamHelper()
     {
         $helper = $this->getMock('\FileLoader\Helper\StreamCreator', array(), array(), '', false);
-		
-		self::assertSame($this->object, $this->object->setStreamHelper($helper));
-		self::assertSame($helper, $this->object->getStreamHelper());
+
+        self::assertSame($this->object, $this->object->setStreamHelper($helper));
+        self::assertSame($helper, $this->object->getStreamHelper());
     }
 
     public function testGetRemoteData()
@@ -98,14 +98,20 @@ class FopenLoaderTest extends \PHPUnit_Framework_TestCase
         $this->markTestSkipped('need to be reworked');
 
         $loader      = $this->getMock('\FileLoader\Loader', array(), array(), '', false);
-        $steamHelper = $this->getMock('\FileLoader\Helper\StreamCreator', array('getStreamContext'), array(), '', false);
+        $steamHelper = $this->getMock(
+            '\FileLoader\Helper\StreamCreator',
+            array('getStreamContext'),
+            array(),
+            '',
+            false
+        );
         $steamHelper
             ->expects(self::once())
             ->method('getStreamContext')
             ->will(self::returnCallback(array($this, 'createContext')))
         ;
 
-        $fopenloader  = new Connector\FopenLoader($loader);
+        $fopenloader = new Connector\FopenLoader($loader);
         $fopenloader->setStreamHelper($steamHelper);
 
         $response = $fopenloader->getRemoteData('http://example.org/test.ini');

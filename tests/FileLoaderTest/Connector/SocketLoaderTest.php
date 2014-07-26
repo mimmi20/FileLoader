@@ -68,17 +68,17 @@ class SocketloaderTest extends \PHPUnit_Framework_TestCase
     public function testSetGetLoader()
     {
         $loader = $this->getMock('\FileLoader\Loader', array(), array(), '', false);
-		
-		self::assertSame($this->object, $this->object->setLoader($loader));
-		self::assertSame($loader, $this->object->getLoader());
+
+        self::assertSame($this->object, $this->object->setLoader($loader));
+        self::assertSame($loader, $this->object->getLoader());
     }
 
     public function testSetGetStreamHelper()
     {
         $helper = $this->getMock('\FileLoader\Helper\StreamCreator', array(), array(), '', false);
-		
-		self::assertSame($this->object, $this->object->setStreamHelper($helper));
-		self::assertSame($helper, $this->object->getStreamHelper());
+
+        self::assertSame($this->object, $this->object->setStreamHelper($helper));
+        self::assertSame($helper, $this->object->getStreamHelper());
     }
 
     public function testGetRemoteData()
@@ -86,14 +86,20 @@ class SocketloaderTest extends \PHPUnit_Framework_TestCase
         $this->markTestSkipped('need to be reworked');
 
         $loader      = $this->getMock('\FileLoader\Loader', array(), array(), '', false);
-        $steamHelper = $this->getMock('\FileLoader\Helper\StreamCreator', array('getStreamContext'), array(), '', false);
+        $steamHelper = $this->getMock(
+            '\FileLoader\Helper\StreamCreator',
+            array('getStreamContext'),
+            array(),
+            '',
+            false
+        );
         $steamHelper
             ->expects(self::once())
             ->method('getStreamContext')
             ->will(self::returnCallback(array($this, 'createContext')))
         ;
 
-        $socketLoader  = new Connector\SocketLoader($loader);
+        $socketLoader = new Connector\SocketLoader($loader);
         $socketLoader->setStreamHelper($steamHelper);
 
         $response = $socketLoader->getRemoteData('tcp://www.example.com');

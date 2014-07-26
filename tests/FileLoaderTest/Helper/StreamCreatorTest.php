@@ -55,7 +55,7 @@ class StreamCreatorTest extends \PHPUnit_Framework_TestCase
     public function testSetLoader()
     {
         $loader = $this->getMock('\FileLoader\Loader', array(), array(), '', false);
-        
+
         self::assertSame($this->object, $this->object->setLoader($loader));
     }
 
@@ -67,10 +67,9 @@ class StreamCreatorTest extends \PHPUnit_Framework_TestCase
             ->method('getOption')
             ->will(self::returnValue(null))
         ;
-        
+
         self::assertSame($this->object, $this->object->setLoader($loader));
         self::assertTrue(is_resource($this->object->getStreamContext()));
-        
     }
 
     public function testGetStreamContextWithProxyWithoutAuthAndUser()
@@ -82,17 +81,16 @@ class StreamCreatorTest extends \PHPUnit_Framework_TestCase
             array('ProxyAuth', null),
             array('ProxyUser', null),
         );
-        
+
         $loader = $this->getMock('\FileLoader\Loader', array('getOption'), array(), '', false);
         $loader
             ->expects(self::exactly(5))
             ->method('getOption')
             ->will(self::returnValueMap($map))
         ;
-        
+
         self::assertSame($this->object, $this->object->setLoader($loader));
         self::assertTrue(is_resource($this->object->getStreamContext()));
-        
     }
 
     public function testGetStreamContextWithProxyWithAuthAndUser()
@@ -105,16 +103,15 @@ class StreamCreatorTest extends \PHPUnit_Framework_TestCase
             array('ProxyUser', 'testUser'),
             array('ProxyPassword', 'testPassword'),
         );
-        
+
         $loader = $this->getMock('\FileLoader\Loader', array('getOption'), array(), '', false);
         $loader
             ->expects(self::exactly(6))
             ->method('getOption')
             ->will(self::returnValueMap($map))
         ;
-        
+
         self::assertSame($this->object, $this->object->setLoader($loader));
         self::assertTrue(is_resource($this->object->getStreamContext()));
-        
     }
 }

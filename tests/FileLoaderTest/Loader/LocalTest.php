@@ -67,7 +67,7 @@ class LocalTest extends \PHPUnit_Framework_TestCase
     {
         $file   = 'x';
         $return = $this->object->setLocalFile($file);
-        self::assertInstanceOf('\\FileLoader\\Loader\\Local', $return);
+        self::assertInstanceOf('\FileLoader\Loader\Local', $return);
         self::assertSame($this->object, $return);
         self::assertSame($file, $this->object->getUri());
     }

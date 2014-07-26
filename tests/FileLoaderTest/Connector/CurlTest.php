@@ -52,24 +52,24 @@ class CurlTest extends \PHPUnit_Framework_TestCase
         if (!extension_loaded('curl')) {
             self::markTestSkipped('PHP must have cURL support.');
         }
-		
-		$this->object = new Connector\Curl();
+
+        $this->object = new Connector\Curl();
     }
 
     public function testSetGetLoader()
     {
         $loader = $this->getMock('\FileLoader\Loader', array(), array(), '', false);
-		
-		self::assertSame($this->object, $this->object->setLoader($loader));
-		self::assertSame($loader, $this->object->getLoader());
+
+        self::assertSame($this->object, $this->object->setLoader($loader));
+        self::assertSame($loader, $this->object->getLoader());
     }
 
     public function testSetGetHttpHelper()
     {
         $helper = $this->getMock('\FileLoader\Helper\Http', array(), array(), '', false);
-		
-		self::assertSame($this->object, $this->object->setHttpHelper($helper));
-		self::assertSame($helper, $this->object->getHttpHelper());
+
+        self::assertSame($this->object, $this->object->setHttpHelper($helper));
+        self::assertSame($helper, $this->object->getHttpHelper());
     }
 
     public function testGetRemoteData()
