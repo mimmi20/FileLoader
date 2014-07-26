@@ -62,7 +62,7 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @expectedException \FileLoader\Exception
-     * @expectedExceptionMessage Invalid value for 'options', array expected.
+     * @expectedExceptionMessage Invalid value for "options", array expected.
      */
     public function testConstructWithInvalidOption()
     {
@@ -71,7 +71,7 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @expectedException \FileLoader\Exception
-     * @expectedExceptionMessage Invalid option key 'InvalidOption'.
+     * @expectedExceptionMessage Invalid option key "InvalidOption".
      */
     public function testSetInvalidOption()
     {
