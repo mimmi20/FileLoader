@@ -65,16 +65,47 @@ class SocketLoader implements ConnectorInterface
     private $streamHelper = null;
 
     /**
-     * Constructor class, checks for the existence of (and loads) the cache and
-     * if needed updated the definitions
+     * @param \FileLoader\Loader $loader
      *
-     * @param \FileLoader\Loader               $loader
-     * @param \FileLoader\Helper\StreamCreator $helper
+     * @return \FileLoader\Loader\RemoteLoader
      */
-    public function __construct(Loader $loader, StreamCreator $helper)
+    public function setLoader(Loader $loader)
     {
-        $this->loader       = $loader;
+        $this->loader = $loader;
+
+        return $this;
+    }
+
+    /**
+     * @return \FileLoader\Loader
+     */
+    public function getLoader()
+    {
+        return $this->loader;
+    }
+
+    /**
+     * sets a StreamCreator helper instance
+     *
+     * @param \FileLoader\Helper\StreamCreator $helper
+     *
+     * @return \FileLoader\Loader\RemoteLoader
+     */
+    public function setStreamHelper(StreamCreator $helper)
+    {
         $this->streamHelper = $helper;
+
+        return $this;
+    }
+
+    /**
+     * returns a StreamCreator helper instance
+     *
+     * @return \FileLoader\Helper\Http
+     */
+    public function getStreamHelper()
+    {
+        return $this->streamHelper;
     }
 
     /**
@@ -87,16 +118,10 @@ class SocketLoader implements ConnectorInterface
      */
     public function getRemoteData($url)
     {
-        $remoteUrl = parse_url($url);
-        $errno     = 0;
-        $errstr    = '';
+        $errno  = 0;
+        $errstr = '';
 
-        $port = $this->getPort($remoteUrl);
-
-        $fullRemoteUrl = $remoteUrl['scheme'] . '://' . $remoteUrl['host'] . ':' . $port;
-
-        $context = $this->streamHelper->getStreamContext();
-        $timeout = $this->loader->getTimeout();
+        list($remoteUrl, $fullRemoteUrl, $context, $timeout) = $this->init($url);
 
         $stream = stream_socket_client(
             $fullRemoteUrl,
@@ -107,7 +132,7 @@ class SocketLoader implements ConnectorInterface
             $context
         );
 
-        if (!$stream) {
+        if (false === $stream) {
             return false;
         }
 
@@ -122,7 +147,7 @@ class SocketLoader implements ConnectorInterface
             Loader::REQUEST_HEADERS,
             $remoteUrl['path'],
             $remoteUrl['host'],
-            $this->loader->getUserAgent()
+            $this->getLoader()->getUserAgent()
         );
 
         fwrite($stream, $out);
@@ -160,13 +185,34 @@ class SocketLoader implements ConnectorInterface
 
         return $file;
     }
+	
+	/**
+	 * initialize the connection
+     *
+     * @param string $url the url of the data
+	 *
+	 * @return array
+	 */
+	private function init($url)
+	{
+		$remoteUrl = parse_url($url);
+
+        $port = $this->getPort($remoteUrl);
+
+        $fullRemoteUrl = $remoteUrl['scheme'] . '://' . $remoteUrl['host'] . ':' . $port;
+
+        $context = $this->getStreamHelper()->getStreamContext();
+        $timeout = $this->getLoader()->getTimeout();
+		
+		return array($remoteUrl, $fullRemoteUrl, $context, $timeout);
+	}
 
     /**
-     * @param $remoteUrl
+     * @param array $remoteUrl
      *
      * @return integer
      */
-    private function getPort($remoteUrl)
+    private function getPort(array $remoteUrl)
     {
         if (isset($remoteUrl['port'])) {
             return (int) $remoteUrl['port'];

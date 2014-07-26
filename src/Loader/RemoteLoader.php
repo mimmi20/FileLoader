@@ -83,7 +83,7 @@ class RemoteLoader
      *
      * @return \FileLoader\Loader\RemoteLoader
      */
-    public function setLoader($loader)
+    public function setLoader(Loader $loader)
     {
         $this->loader = $loader;
 

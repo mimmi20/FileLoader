@@ -33,6 +33,8 @@
 
 namespace FileLoader\Connector;
 
+use FileLoader\Loader;
+
 /**
  * the interface for all supported connectors
  *
@@ -44,6 +46,18 @@ namespace FileLoader\Connector;
  */
 interface ConnectorInterface
 {
+    /**
+     * @param \FileLoader\Loader $loader
+     *
+     * @return \FileLoader\Loader\RemoteLoader
+     */
+    public function setLoader(Loader $loader);
+
+    /**
+     * @return \FileLoader\Loader
+     */
+    public function getLoader();
+
     /**
      * Retrieve the data identified by the URL
      *

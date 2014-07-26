@@ -65,16 +65,47 @@ class Curl implements ConnectorInterface
     private $httpHelper = null;
 
     /**
-     * Constructor class, checks for the existence of (and loads) the cache and
-     * if needed updated the definitions
+     * @param \FileLoader\Loader $loader
      *
-     * @param \FileLoader\Loader      $loader
-     * @param \FileLoader\Helper\Http $helper
+     * @return \FileLoader\Loader\RemoteLoader
      */
-    public function __construct(Loader $loader, Http $helper)
+    public function setLoader(Loader $loader)
     {
-        $this->loader     = $loader;
+        $this->loader = $loader;
+
+        return $this;
+    }
+
+    /**
+     * @return \FileLoader\Loader
+     */
+    public function getLoader()
+    {
+        return $this->loader;
+    }
+
+    /**
+     * sets a http helper instance
+     *
+     * @param \FileLoader\Helper\Http $helper
+     *
+     * @return \FileLoader\Loader\RemoteLoader
+     */
+    public function setHttpHelper(Http $helper)
+    {
         $this->httpHelper = $helper;
+
+        return $this;
+    }
+
+    /**
+     * returns a http helper instance
+     *
+     * @return \FileLoader\Helper\Http
+     */
+    public function getHttpHelper()
+    {
+        return $this->httpHelper;
     }
 
     /**
@@ -87,17 +118,40 @@ class Curl implements ConnectorInterface
      */
     public function getRemoteData($url)
     {
-        $ressource = curl_init($url);
+        $ressource = $this->init();
+
+        $response  = curl_exec($ressource);
+        $http_code = curl_getinfo($ressource, CURLINFO_HTTP_CODE);
+
+        curl_close($ressource);
+
+        // check for HTTP error
+        $http_exception = $this->getHttpHelper()->getHttpErrorException($http_code);
+        if ($http_exception !== null) {
+            throw $http_exception;
+        }
+
+        return $response;
+    }
+	
+	/**
+	 * initialize the connection
+	 *
+	 * @return resource
+	 */
+	private function init()
+	{
+		$ressource = curl_init($url);
 
         curl_setopt($ressource, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ressource, CURLOPT_CONNECTTIMEOUT, $this->loader->getTimeout());
-        curl_setopt($ressource, CURLOPT_USERAGENT, $this->loader->getUserAgent());
+        curl_setopt($ressource, CURLOPT_CONNECTTIMEOUT, $this->getLoader()->getTimeout());
+        curl_setopt($ressource, CURLOPT_USERAGENT, $this->getLoader()->getUserAgent());
 
         // check and set proxy settings
-        $proxy_host = $this->loader->getOption('ProxyHost');
+        $proxy_host = $this->getLoader()->getOption('ProxyHost');
         if ($proxy_host !== null) {
             // check for supported protocol
-            $proxy_protocol = $this->loader->getOption('ProxyProtocol');
+            $proxy_protocol = $this->getLoader()->getOption('ProxyProtocol');
             if ($proxy_protocol !== null) {
                 $allowedProtocolls = array(StreamCreator::PROXY_PROTOCOL_HTTP, StreamCreator::PROXY_PROTOCOL_HTTPS);
 
@@ -110,7 +164,7 @@ class Curl implements ConnectorInterface
                 $proxy_protocol = StreamCreator::PROXY_PROTOCOL_HTTP;
             }
 
-            $proxy_port = $this->loader->getOption('ProxyPort');
+            $proxy_port = $this->getLoader()->getOption('ProxyPort');
 
             // set basic proxy options
             curl_setopt($ressource, CURLOPT_PROXY, $proxy_protocol . '://' . $proxy_host);
@@ -119,13 +173,13 @@ class Curl implements ConnectorInterface
             }
 
             // check auth settings
-            $proxy_user = $this->loader->getOption('ProxyUser');
+            $proxy_user = $this->getLoader()->getOption('ProxyUser');
 
             // set proxy auth options
             if ($proxy_user !== null) {
-                $proxy_password = $this->loader->getOption('ProxyPassword');
+                $proxy_password = $this->getLoader()->getOption('ProxyPassword');
 
-                $proxy_auth = $this->loader->getOption('ProxyAuth');
+                $proxy_auth = $this->getLoader()->getOption('ProxyAuth');
                 if ($proxy_auth !== null) {
                     $allowedAuth = array(StreamCreator::PROXY_AUTH_BASIC, StreamCreator::PROXY_AUTH_NTLM);
 
@@ -144,18 +198,7 @@ class Curl implements ConnectorInterface
                 curl_setopt($ressource, CURLOPT_PROXYUSERPWD, $proxy_user . ':' . $proxy_password);
             }
         }
-
-        $response  = curl_exec($ressource);
-        $http_code = curl_getinfo($ressource, CURLINFO_HTTP_CODE);
-
-        curl_close($ressource);
-
-        // check for HTTP error
-        $http_exception = $this->httpHelper->getHttpErrorException($http_code);
-        if ($http_exception !== null) {
-            throw $http_exception;
-        }
-
-        return $response;
-    }
+		
+		return $ressource;
+	}
 }

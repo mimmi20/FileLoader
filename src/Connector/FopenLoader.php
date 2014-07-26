@@ -72,18 +72,71 @@ class FopenLoader implements ConnectorInterface
     private $streamHelper = null;
 
     /**
-     * Constructor class, checks for the existence of (and loads) the cache and
-     * if needed updated the definitions
+     * @param \FileLoader\Loader $loader
      *
-     * @param \FileLoader\Loader               $loader
-     * @param \FileLoader\Helper\Http          $httpHelper
-     * @param \FileLoader\Helper\StreamCreator $streamHelper
+     * @return \FileLoader\Loader\RemoteLoader
      */
-    public function __construct(Loader $loader, Http $httpHelper, StreamCreator $streamHelper)
+    public function setLoader(Loader $loader)
     {
-        $this->loader       = $loader;
-        $this->httpHelper   = $httpHelper;
-        $this->streamHelper = $streamHelper;
+        $this->loader = $loader;
+
+        return $this;
+    }
+
+    /**
+     * @return \FileLoader\Loader
+     */
+    public function getLoader()
+    {
+        return $this->loader;
+    }
+
+    /**
+     * sets a http helper instance
+     *
+     * @param \FileLoader\Helper\Http $helper
+     *
+     * @return \FileLoader\Loader\RemoteLoader
+     */
+    public function setHttpHelper(Http $helper)
+    {
+        $this->httpHelper = $helper;
+
+        return $this;
+    }
+
+    /**
+     * returns a http helper instance
+     *
+     * @return \FileLoader\Helper\Http
+     */
+    public function getHttpHelper()
+    {
+        return $this->httpHelper;
+    }
+
+    /**
+     * sets a StreamCreator helper instance
+     *
+     * @param \FileLoader\Helper\StreamCreator $helper
+     *
+     * @return \FileLoader\Loader\RemoteLoader
+     */
+    public function setStreamHelper(StreamCreator $helper)
+    {
+        $this->streamHelper = $helper;
+
+        return $this;
+    }
+
+    /**
+     * returns a StreamCreator helper instance
+     *
+     * @return \FileLoader\Helper\Http
+     */
+    public function getStreamHelper()
+    {
+        return $this->streamHelper;
     }
 
     /**
@@ -96,7 +149,7 @@ class FopenLoader implements ConnectorInterface
      */
     public function getRemoteData($url)
     {
-        $context   = $this->streamHelper->getStreamContext();
+        $context   = $this->getStreamHelper()->getStreamContext();
         @$response = file_get_contents($url, false, $context);
 
         // $http_response_header is a predefined variables,
@@ -110,7 +163,7 @@ class FopenLoader implements ConnectorInterface
                 $http_code = $tmp_status_parts[1];
 
                 // check for HTTP error
-                $http_exception = $this->httpHelper->getHttpErrorException($http_code);
+                $http_exception = $this->getHttpHelper()->getHttpErrorException($http_code);
                 if ($http_exception !== null) {
                     throw $http_exception;
                 }

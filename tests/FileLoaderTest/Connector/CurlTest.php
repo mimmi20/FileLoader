@@ -39,6 +39,11 @@ use FileLoader\Connector;
 class CurlTest extends \PHPUnit_Framework_TestCase
 {
     /**
+     * @var Connector\Curl
+     */
+    private $object = null;
+
+    /**
      * Sets up the fixture, for example, opens a network connection.
      * This method is called before a test is executed.
      */
@@ -47,6 +52,24 @@ class CurlTest extends \PHPUnit_Framework_TestCase
         if (!extension_loaded('curl')) {
             self::markTestSkipped('PHP must have cURL support.');
         }
+		
+		$this->object = new Connector\Curl();
+    }
+
+    public function testSetGetLoader()
+    {
+        $loader = $this->getMock('\FileLoader\Loader', array(), array(), '', false);
+		
+		self::assertSame($this->object, $this->object->setLoader($loader));
+		self::assertSame($loader, $this->object->getLoader());
+    }
+
+    public function testSetGetHttpHelper()
+    {
+        $helper = $this->getMock('\FileLoader\Helper\Http', array(), array(), '', false);
+		
+		self::assertSame($this->object, $this->object->setHttpHelper($helper));
+		self::assertSame($helper, $this->object->getHttpHelper());
     }
 
     public function testGetRemoteData()

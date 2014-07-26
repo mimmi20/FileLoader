@@ -86,16 +86,24 @@ class Factory
         } elseif (extension_loaded('curl')
             && (null === $mode || Loader::UPDATE_CURL === $mode)
         ) {
-            $connector = new Curl($loader, $httpHelper);
+            $connector = new Curl();
+			$connector->setHttpHelper($httpHelper);
         } elseif (ini_get('allow_url_fopen')
             && (null === $mode || Loader::UPDATE_FOPEN === $mode)
         ) {
-            $connector = new FopenLoader($loader, $httpHelper, $streamHelper);
+            $connector = new FopenLoader();
+			$connector
+				->setStreamHelper($streamHelper)
+				->setHttpHelper($httpHelper)
+			;
         } elseif (null === $mode || Loader::UPDATE_FSOCKOPEN === $mode) {
-            $connector = new SocketLoader($loader, $streamHelper);
+            $connector = new SocketLoader();
+			$connector->setStreamHelper($streamHelper);
         } else {
             throw new Exception('no valid connector found');
         }
+		
+		$connector->setLoader($loader);
 
         $internalLoader = new RemoteLoader();
         $internalLoader

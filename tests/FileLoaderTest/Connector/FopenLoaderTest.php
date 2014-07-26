@@ -39,6 +39,11 @@ use FileLoader\Connector;
 class FopenLoaderTest extends \PHPUnit_Framework_TestCase
 {
     /**
+     * @var Connector\FopenLoader
+     */
+    private $object = null;
+
+    /**
      * Sets up the fixture, for example, opens a network connection.
      * This method is called before a test is executed.
      */
@@ -47,6 +52,8 @@ class FopenLoaderTest extends \PHPUnit_Framework_TestCase
         if (!ini_get('allow_url_fopen')) {
             $this->markTestSkipped('"allow_url_fopen" has to be activated in the php.ini');
         }
+		
+		$this->object = new Connector\FopenLoader();
     }
 
     public function createContext()
@@ -60,6 +67,30 @@ class FopenLoaderTest extends \PHPUnit_Framework_TestCase
         );
 
         return stream_context_create($config);
+    }
+
+    public function testSetGetLoader()
+    {
+        $loader = $this->getMock('\FileLoader\Loader', array(), array(), '', false);
+		
+		self::assertSame($this->object, $this->object->setLoader($loader));
+		self::assertSame($loader, $this->object->getLoader());
+    }
+
+    public function testSetGetHttpHelper()
+    {
+        $helper = $this->getMock('\FileLoader\Helper\Http', array(), array(), '', false);
+		
+		self::assertSame($this->object, $this->object->setHttpHelper($helper));
+		self::assertSame($helper, $this->object->getHttpHelper());
+    }
+
+    public function testSetGetStreamHelper()
+    {
+        $helper = $this->getMock('\FileLoader\Helper\StreamCreator', array(), array(), '', false);
+		
+		self::assertSame($this->object, $this->object->setStreamHelper($helper));
+		self::assertSame($helper, $this->object->getStreamHelper());
     }
 
     public function testGetRemoteData()

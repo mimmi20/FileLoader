@@ -38,6 +38,20 @@ use FileLoader\Connector;
  */
 class SocketloaderTest extends \PHPUnit_Framework_TestCase
 {
+    /**
+     * @var Connector\SocketLoader
+     */
+    private $object = null;
+
+    /**
+     * Sets up the fixture, for example, opens a network connection.
+     * This method is called before a test is executed.
+     */
+    protected function setUp()
+    {
+        $this->object = new Connector\SocketLoader();
+    }
+
     public function createContext()
     {
         $config = array(
@@ -49,6 +63,22 @@ class SocketloaderTest extends \PHPUnit_Framework_TestCase
         );
 
         return stream_context_create($config);
+    }
+
+    public function testSetGetLoader()
+    {
+        $loader = $this->getMock('\FileLoader\Loader', array(), array(), '', false);
+		
+		self::assertSame($this->object, $this->object->setLoader($loader));
+		self::assertSame($loader, $this->object->getLoader());
+    }
+
+    public function testSetGetStreamHelper()
+    {
+        $helper = $this->getMock('\FileLoader\Helper\StreamCreator', array(), array(), '', false);
+		
+		self::assertSame($this->object, $this->object->setStreamHelper($helper));
+		self::assertSame($helper, $this->object->getStreamHelper());
     }
 
     public function testGetRemoteData()
