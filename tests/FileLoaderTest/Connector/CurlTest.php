@@ -129,7 +129,23 @@ class CurlTest extends \PHPUnit_Framework_TestCase
             ->will(self::returnValueMap($map))
         ;
 
-        self::assertSame($this->object, $this->object->setLoader($loader));
+        $httpHelper = $this->getMock(
+            '\FileLoader\Helper\Http',
+            array('getHttpErrorException'),
+            array(),
+            '',
+            false
+        );
+        $httpHelper
+            ->expects(self::once())
+            ->method('getHttpErrorException')
+            ->will(self::returnValue(null))
+        ;
+
+        $this->object
+            ->setHttpHelper($httpHelper)
+            ->setLoader($loader)
+        ;
 
         $response = $this->object->getRemoteData('http://example.org/test.ini');
 
@@ -153,7 +169,23 @@ class CurlTest extends \PHPUnit_Framework_TestCase
             ->will(self::returnValueMap($map))
         ;
 
-        self::assertSame($this->object, $this->object->setLoader($loader));
+        $httpHelper = $this->getMock(
+            '\FileLoader\Helper\Http',
+            array('getHttpErrorException'),
+            array(),
+            '',
+            false
+        );
+        $httpHelper
+            ->expects(self::once())
+            ->method('getHttpErrorException')
+            ->will(self::returnValue(null))
+        ;
+
+        $this->object
+            ->setHttpHelper($httpHelper)
+            ->setLoader($loader)
+        ;
 
         $response = $this->object->getRemoteData('http://example.org/test.ini');
 
@@ -178,7 +210,23 @@ class CurlTest extends \PHPUnit_Framework_TestCase
             ->will(self::returnValueMap($map))
         ;
 
-        self::assertSame($this->object, $this->object->setLoader($loader));
+        $httpHelper = $this->getMock(
+            '\FileLoader\Helper\Http',
+            array('getHttpErrorException'),
+            array(),
+            '',
+            false
+        );
+        $httpHelper
+            ->expects(self::once())
+            ->method('getHttpErrorException')
+            ->will(self::returnValue(null))
+        ;
+
+        $this->object
+            ->setHttpHelper($httpHelper)
+            ->setLoader($loader)
+        ;
 
         $response = $this->object->getRemoteData('http://example.org/test.ini');
 
@@ -203,7 +251,23 @@ class CurlTest extends \PHPUnit_Framework_TestCase
             ->will(self::returnValueMap($map))
         ;
 
-        self::assertSame($this->object, $this->object->setLoader($loader));
+        $httpHelper = $this->getMock(
+            '\FileLoader\Helper\Http',
+            array('getHttpErrorException'),
+            array(),
+            '',
+            false
+        );
+        $httpHelper
+            ->expects(self::once())
+            ->method('getHttpErrorException')
+            ->will(self::returnValue(null))
+        ;
+
+        $this->object
+            ->setHttpHelper($httpHelper)
+            ->setLoader($loader)
+        ;
 
         $response = $this->object->getRemoteData('http://example.org/test.ini');
 
@@ -232,7 +296,23 @@ class CurlTest extends \PHPUnit_Framework_TestCase
             ->will(self::returnValueMap($map))
         ;
 
-        $this->object->setLoader($loader);
+        $httpHelper = $this->getMock(
+            '\FileLoader\Helper\Http',
+            array('getHttpErrorException'),
+            array(),
+            '',
+            false
+        );
+        $httpHelper
+            ->expects(self::once())
+            ->method('getHttpErrorException')
+            ->will(self::returnValue(null))
+        ;
+
+        $this->object
+            ->setHttpHelper($httpHelper)
+            ->setLoader($loader)
+        ;
 
         $response = $this->object->getRemoteData('http://example.org/test.ini');
 
@@ -261,7 +341,23 @@ class CurlTest extends \PHPUnit_Framework_TestCase
             ->will(self::returnValueMap($map))
         ;
 
-        $this->object->setLoader($loader);
+        $httpHelper = $this->getMock(
+            '\FileLoader\Helper\Http',
+            array('getHttpErrorException'),
+            array(),
+            '',
+            false
+        );
+        $httpHelper
+            ->expects(self::once())
+            ->method('getHttpErrorException')
+            ->will(self::returnValue(null))
+        ;
+
+        $this->object
+            ->setHttpHelper($httpHelper)
+            ->setLoader($loader)
+        ;
 
         $response = $this->object->getRemoteData('http://example.org/test.ini');
 
