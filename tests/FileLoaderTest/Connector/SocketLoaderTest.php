@@ -104,19 +104,6 @@ class SocketloaderTest extends \PHPUnit_Framework_TestCase
 
         $loader = $this->getMock('\FileLoader\Loader', array(), array(), '', false);
 
-        $steamHelper = $this->getMock(
-            '\FileLoader\Helper\StreamCreator',
-            array('getStreamContext'),
-            array(),
-            '',
-            false
-        );
-        $steamHelper
-            ->expects(self::once())
-            ->method('getStreamContext')
-            ->will(self::returnCallback(array($this, 'createContext')))
-        ;
-
         $httpHelper = $this->getMock(
             '\FileLoader\Helper\Http',
             array('getHttpErrorException'),
@@ -125,13 +112,12 @@ class SocketloaderTest extends \PHPUnit_Framework_TestCase
             false
         );
         $httpHelper
-            ->expects(self::once())
+            ->expects(self::never())
             ->method('getHttpErrorException')
             ->will(self::returnValue(null))
         ;
 
         $this->object
-            ->setStreamHelper($steamHelper)
             ->setHttpHelper($httpHelper)
             ->setLoader($loader)
         ;
