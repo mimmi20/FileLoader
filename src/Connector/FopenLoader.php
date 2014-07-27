@@ -70,7 +70,7 @@ class FopenLoader implements ConnectorInterface
      * @var \FileLoader\Helper\StreamCreator
      */
     private $streamHelper = null;
-    
+
     /**
      * a file handle created by fopen
      *
@@ -167,7 +167,7 @@ class FopenLoader implements ConnectorInterface
         if (false === $this->init($url)) {
             return false;
         }
-        
+
         $response = '';
         while ($this->isValid()) {
             $response .= $this->getLine();
@@ -176,12 +176,12 @@ class FopenLoader implements ConnectorInterface
         $meta = stream_get_meta_data($this->stream);
 
         $this->close();
-        
+
         foreach ($meta['wrapper_data'] as $metaData) {
             if ('http/' === substr(strtolower($metaData), 0, 5)) {
                 $tmp_status_parts = explode(' ', $metaData, 3);
                 $http_code        = $tmp_status_parts[1];
-                
+
                 // check for HTTP error
                 $http_exception = $this->getHttpHelper()->getHttpErrorException($http_code);
 
@@ -210,20 +210,20 @@ class FopenLoader implements ConnectorInterface
     public function init($url)
     {
         $context      = $this->getStreamHelper()->getStreamContext();
-        $this->stream = fopen($url, 'r', false, $context);
+        $this->stream = @fopen($url, 'r', false, $context);
 
         if (false === $this->stream) {
             return false;
         }
 
         $timeout = $this->getLoader()->getTimeout();
-        
+
         stream_set_timeout($this->stream, $timeout);
         stream_set_blocking($this->stream, 1);
-        
+
         return true;
     }
-    
+
     /**
      * checks if the end of the stream is reached
      *
@@ -233,7 +233,7 @@ class FopenLoader implements ConnectorInterface
     {
         return (!feof($this->stream));
     }
-    
+
     /**
      * reads one line from the stream
      *
@@ -243,7 +243,7 @@ class FopenLoader implements ConnectorInterface
     {
         return stream_get_line($this->stream, 1024, "\n");
     }
-    
+
     /**
      * closes an open stream
      */

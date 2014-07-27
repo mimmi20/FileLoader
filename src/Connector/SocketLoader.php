@@ -71,14 +71,14 @@ class SocketLoader implements ConnectorInterface
      * @var \FileLoader\Helper\StreamCreator
      */
     private $streamHelper = null;
-    
+
     /**
      * a file handle created by fsockopen
      *
      * @var resource
      */
     private $stream = null;
-    
+
     /**
      * holds the parts of the target url
      *
@@ -175,7 +175,7 @@ class SocketLoader implements ConnectorInterface
         if (false === $this->init($url)) {
             return false;
         }
-        
+
         if (isset($this->urlParts['query'])) {
             $this->urlParts['path'] .= '?' . $this->urlParts['query'];
         }
@@ -190,12 +190,12 @@ class SocketLoader implements ConnectorInterface
         fwrite($this->stream, $out);
 
         $meta = stream_get_meta_data($this->stream);
-        
+
         foreach ($meta['wrapper_data'] as $metaData) {
             if ('http/' === substr(strtolower($metaData), 0, 5)) {
                 $tmp_status_parts = explode(' ', $metaData, 3);
                 $http_code        = $tmp_status_parts[1];
-                
+
                 // check for HTTP error
                 $http_exception = $this->getHttpHelper()->getHttpErrorException($http_code);
 
@@ -204,7 +204,7 @@ class SocketLoader implements ConnectorInterface
                 }
             }
         }
-        
+
         $response = '';
         while ($this->isValid()) {
             $response .= $this->getLine();
@@ -236,7 +236,7 @@ class SocketLoader implements ConnectorInterface
         $this->urlParts = parse_url($url);
         $timeout        = $this->getLoader()->getTimeout();
 
-        $this->stream = fsockopen(
+        $this->stream = @fsockopen(
             $this->urlParts['host'],
             $this->getPort(),
             $errno,
@@ -247,10 +247,10 @@ class SocketLoader implements ConnectorInterface
         if (false === $this->stream) {
             return false;
         }
-        
+
         stream_set_timeout($this->stream, $timeout);
         stream_set_blocking($this->stream, 1);
-        
+
         return true;
     }
 
@@ -269,7 +269,7 @@ class SocketLoader implements ConnectorInterface
 
         return 80;
     }
-    
+
     /**
      * checks if the end of the stream is reached
      *
@@ -279,7 +279,7 @@ class SocketLoader implements ConnectorInterface
     {
         return (!feof($this->stream));
     }
-    
+
     /**
      * reads one line from the stream
      *
@@ -289,7 +289,7 @@ class SocketLoader implements ConnectorInterface
     {
         return stream_get_line($this->stream, 1024, "\n");
     }
-    
+
     /**
      * closes an open stream
      */
