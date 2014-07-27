@@ -86,10 +86,22 @@ class RemoteLoaderTest extends \PHPUnit_Framework_TestCase
 
     public function testLoad()
     {
-        $loader = $this->getMock('\FileLoader\Loader', array(), array(), '', false);
+        $loader = $this->getMock(
+            '\FileLoader\Loader',
+            array(),
+            array(),
+            '',
+            false
+        );
         $this->object->setLoader($loader);
 
-        $connector = $this->getMock('\FileLoader\Connector\Curl', array('getRemoteData'), array(), '', false);
+        $connector = $this->getMock(
+            '\FileLoader\Connector\Curl',
+            array('getRemoteData'),
+            array(),
+            '', 
+            false
+        );
         $connector
             ->expects(self::once())
             ->method('getRemoteData')
@@ -107,10 +119,22 @@ class RemoteLoaderTest extends \PHPUnit_Framework_TestCase
      */
     public function testLoadFail()
     {
-        $loader = $this->getMock('\FileLoader\Loader', array(), array(), '', false);
+        $loader = $this->getMock(
+            '\FileLoader\Loader',
+            array(),
+            array(),
+            '',
+            false
+        );
         $this->object->setLoader($loader);
 
-        $connector = $this->getMock('\FileLoader\Connector\Curl', array('getRemoteData'), array(), '', false);
+        $connector = $this->getMock(
+            '\FileLoader\Connector\Curl',
+            array('getRemoteData'),
+            array(),
+            '',
+            false
+        );
         $connector
             ->expects(self::once())
             ->method('getRemoteData')
@@ -124,10 +148,22 @@ class RemoteLoaderTest extends \PHPUnit_Framework_TestCase
 
     public function testGetMtime()
     {
-        $loader = $this->getMock('\FileLoader\Loader', array(), array(), '', false);
+        $loader = $this->getMock(
+            '\FileLoader\Loader',
+            array(),
+            array(),
+            '',
+            false
+        );
         $this->object->setLoader($loader);
 
-        $connector = $this->getMock('\FileLoader\Connector\Curl', array('getRemoteData'), array(), '', false);
+        $connector = $this->getMock(
+            '\FileLoader\Connector\Curl',
+            array('getRemoteData'),
+            array(),
+            '',
+            false
+        );
         $connector
             ->expects(self::once())
             ->method('getRemoteData')
@@ -145,7 +181,13 @@ class RemoteLoaderTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetMtimeFail()
     {
-        $loader = $this->getMock('\FileLoader\Loader', array('getRemoteVerUrl'), array(), '', false);
+        $loader = $this->getMock(
+            '\FileLoader\Loader',
+            array('getRemoteVerUrl'),
+            array(),
+            '',
+            false
+        );
         $loader
             ->expects(self::once())
             ->method('getRemoteVerUrl')
@@ -154,7 +196,13 @@ class RemoteLoaderTest extends \PHPUnit_Framework_TestCase
 
         $this->object->setLoader($loader);
 
-        $connector = $this->getMock('\FileLoader\Connector\Curl', array('getRemoteData'), array(), '', false);
+        $connector = $this->getMock(
+            '\FileLoader\Connector\Curl',
+            array('getRemoteData'),
+            array(),
+            '',
+            false
+        );
         $connector
             ->expects(self::once())
             ->method('getRemoteData')
@@ -168,7 +216,13 @@ class RemoteLoaderTest extends \PHPUnit_Framework_TestCase
 
     public function testGetUri()
     {
-        $loader = $this->getMock('\FileLoader\Loader', array('getRemoteDataUrl'), array(), '', false);
+        $loader = $this->getMock(
+            '\FileLoader\Loader',
+            array('getRemoteDataUrl'),
+            array(),
+            '',
+            false
+        );
         $loader
             ->expects(self::once())
             ->method('getRemoteDataUrl')
@@ -182,7 +236,13 @@ class RemoteLoaderTest extends \PHPUnit_Framework_TestCase
 
     public function testIsSupportingLoadingLines()
     {
-        $connector = $this->getMock('\FileLoader\Connector\Curl', array('isSupportingLoadingLines'), array(), '', false);
+        $connector = $this->getMock(
+            '\FileLoader\Connector\SocketLoader',
+            array('isSupportingLoadingLines'),
+            array(),
+            '',
+            false
+        );
         $connector
             ->expects(self::once())
             ->method('isSupportingLoadingLines')
@@ -196,7 +256,13 @@ class RemoteLoaderTest extends \PHPUnit_Framework_TestCase
 
     public function testInit()
     {
-        $connector = $this->getMock('\FileLoader\Connector\Curl', array('init'), array(), '', false);
+        $connector = $this->getMock(
+            '\FileLoader\Connector\SocketLoader',
+            array('init'),
+            array(),
+            '',
+            false
+        );
         $connector
             ->expects(self::once())
             ->method('init')
@@ -210,7 +276,13 @@ class RemoteLoaderTest extends \PHPUnit_Framework_TestCase
 
     public function testIsValid()
     {
-        $connector = $this->getMock('\FileLoader\Connector\Curl', array('isValid'), array(), '', false);
+        $connector = $this->getMock(
+            '\FileLoader\Connector\SocketLoader',
+            array('isValid'),
+            array(),
+            '',
+            false
+        );
         $connector
             ->expects(self::once())
             ->method('isValid')
@@ -224,7 +296,13 @@ class RemoteLoaderTest extends \PHPUnit_Framework_TestCase
 
     public function testGetLine()
     {
-        $connector = $this->getMock('\FileLoader\Connector\Curl', array('getLine'), array(), '', false);
+        $connector = $this->getMock(
+            '\FileLoader\Connector\SocketLoader',
+            array('getLine'),
+            array(),
+            '',
+            false
+        );
         $connector
             ->expects(self::once())
             ->method('getLine')
@@ -238,7 +316,13 @@ class RemoteLoaderTest extends \PHPUnit_Framework_TestCase
 
     public function testClose()
     {
-        $connector = $this->getMock('\FileLoader\Connector\Curl', array('close'), array(), '', false);
+        $connector = $this->getMock(
+            '\FileLoader\Connector\SocketLoader',
+            array('close'),
+            array(),
+            '',
+            false
+        );
         $connector
             ->expects(self::once())
             ->method('close')
