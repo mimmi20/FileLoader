@@ -175,7 +175,7 @@ class StreamCreatorTest extends \PHPUnit_Framework_TestCase
 
         $loader = $this->getMock('\FileLoader\Loader', array('getOption'), array(), '', false);
         $loader
-            ->expects(self::exactly(6))
+            ->expects(self::exactly(2))
             ->method('getOption')
             ->will(self::returnValueMap($map))
         ;
@@ -201,7 +201,7 @@ class StreamCreatorTest extends \PHPUnit_Framework_TestCase
 
         $loader = $this->getMock('\FileLoader\Loader', array('getOption'), array(), '', false);
         $loader
-            ->expects(self::exactly(6))
+            ->expects(self::exactly(4))
             ->method('getOption')
             ->will(self::returnValueMap($map))
         ;

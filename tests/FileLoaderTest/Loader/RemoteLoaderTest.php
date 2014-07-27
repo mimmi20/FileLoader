@@ -165,4 +165,88 @@ class RemoteLoaderTest extends \PHPUnit_Framework_TestCase
 
         $this->object->getMTime();
     }
+
+    public function testGetUri()
+    {
+        $loader = $this->getMock('\FileLoader\Loader', array('getRemoteDataUrl'), array(), '', false);
+        $loader
+            ->expects(self::once())
+            ->method('getRemoteDataUrl')
+            ->will(self::returnValue('http://example.org/data'))
+        ;
+
+        $this->object->setLoader($loader);
+
+        self::assertSame('http://example.org/data', $this->object->getUri());
+    }
+
+    public function testIsSupportingLoadingLines()
+    {
+        $connector = $this->getMock('\FileLoader\Connector\Curl', array('isSupportingLoadingLines'), array(), '', false);
+        $connector
+            ->expects(self::once())
+            ->method('isSupportingLoadingLines')
+            ->will(self::returnValue(true))
+        ;
+
+        $this->object->setConnector($connector);
+
+        self::assertTrue($this->object->isSupportingLoadingLines());
+    }
+
+    public function testInit()
+    {
+        $connector = $this->getMock('\FileLoader\Connector\Curl', array('init'), array(), '', false);
+        $connector
+            ->expects(self::once())
+            ->method('init')
+            ->will(self::returnValue(true))
+        ;
+
+        $this->object->setConnector($connector);
+
+        self::assertTrue($this->object->init('http://example.org/data'));
+    }
+
+    public function testIsValid()
+    {
+        $connector = $this->getMock('\FileLoader\Connector\Curl', array('isValid'), array(), '', false);
+        $connector
+            ->expects(self::once())
+            ->method('isValid')
+            ->will(self::returnValue(false))
+        ;
+
+        $this->object->setConnector($connector);
+
+        self::assertFalse($this->object->isValid());
+    }
+
+    public function testGetLine()
+    {
+        $connector = $this->getMock('\FileLoader\Connector\Curl', array('getLine'), array(), '', false);
+        $connector
+            ->expects(self::once())
+            ->method('getLine')
+            ->will(self::returnValue('This is a test'))
+        ;
+
+        $this->object->setConnector($connector);
+
+        self::assertSame('This is a test', $this->object->getLine());
+    }
+
+    public function testClose()
+    {
+        $connector = $this->getMock('\FileLoader\Connector\Curl', array('close'), array(), '', false);
+        $connector
+            ->expects(self::once())
+            ->method('close')
+            ->will(self::returnValue(null))
+        ;
+
+        $this->object->setConnector($connector);
+
+        self::assertNull($this->object->close());
+    }
 }
