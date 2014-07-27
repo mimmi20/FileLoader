@@ -124,7 +124,7 @@ class CurlTest extends \PHPUnit_Framework_TestCase
 
         $loader = $this->getMock('\FileLoader\Loader', array('getOption'), array(), '', false);
         $loader
-            ->expects(self::exactly(5))
+            ->expects(self::exactly(4))
             ->method('getOption')
             ->will(self::returnValueMap($map))
         ;
@@ -187,9 +187,7 @@ class CurlTest extends \PHPUnit_Framework_TestCase
             ->setLoader($loader)
         ;
 
-        $response = $this->object->getRemoteData('http://example.org/test.ini');
-
-        self::assertInternalType('string', $response);
+        self::assertFalse($this->object->getRemoteData('http://example.org/test.ini'));
     }
 
     public function testGetStreamContextWithProxyWithAuthAndUser()
@@ -304,7 +302,7 @@ class CurlTest extends \PHPUnit_Framework_TestCase
             false
         );
         $httpHelper
-            ->expects(self::once())
+            ->expects(self::never())
             ->method('getHttpErrorException')
             ->will(self::returnValue(null))
         ;
@@ -336,7 +334,7 @@ class CurlTest extends \PHPUnit_Framework_TestCase
 
         $loader = $this->getMock('\FileLoader\Loader', array('getOption'), array(), '', false);
         $loader
-            ->expects(self::exactly(4))
+            ->expects(self::exactly(6))
             ->method('getOption')
             ->will(self::returnValueMap($map))
         ;
