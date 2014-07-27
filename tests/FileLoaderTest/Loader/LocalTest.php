@@ -103,4 +103,14 @@ class LocalTest extends \PHPUnit_Framework_TestCase
     {
         $this->object->getMTime();
     }
+
+    public function testGetType()
+    {
+        self::assertSame(Loader::UPDATE_LOCAL, $this->object->getType());
+    }
+
+    public function testIsSupportingLoadingLines()
+    {
+        self::assertTrue($this->object->isSupportingLoadingLines());
+    }
 }

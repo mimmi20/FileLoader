@@ -105,4 +105,9 @@ class CurlTest extends \PHPUnit_Framework_TestCase
 
         self::assertInternalType('string', $response);
     }
+
+    public function testIsSupportingLoadingLines()
+    {
+        self::assertFalse($this->object->isSupportingLoadingLines());
+    }
 }

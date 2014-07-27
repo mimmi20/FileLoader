@@ -123,7 +123,7 @@ class Loader
     /**
      * the mode what defines which way the remote file is loaded
      *
-     * @var string|\FileLoader\Connector\ConnectorInterface
+     * @var null|string|\FileLoader\Interfaces\ConnectorInterface
      */
     private $mode = null;
 
@@ -297,7 +297,7 @@ class Loader
     /**
      * sets the mode to load the remote file
      *
-     * @param string|\FileLoader\Connector\ConnectorInterface $mode
+     * @param string|\FileLoader\Interfaces\ConnectorInterface $mode
      *
      * @return \FileLoader\Loader
      */
@@ -319,10 +319,8 @@ class Loader
      */
     public function load()
     {
-        $internalLoader = Loader\Factory::build($this, $this->mode, $this->localFile);
-
         // Get file content
-        return $internalLoader->load();
+        return $this->getLoader()->load();
     }
 
     /**
@@ -332,10 +330,8 @@ class Loader
      */
     public function getMTime()
     {
-        $internalLoader = Loader\Factory::build($this, $this->mode, $this->localFile);
-
-        // Get file content
-        return $internalLoader->getMTime();
+        // Get time of last modification
+        return $this->getLoader()->getMTime();
     }
 
     /**
@@ -347,5 +343,15 @@ class Loader
     public function getUserAgent()
     {
         return str_replace('%v', self::VERSION, $this->userAgent);
+    }
+
+    /**
+     * return the actual used loader
+     *
+     * @return \FileLoader\Interfaces\LoaderInterface|\FileLoader\Interfaces\LoadLinesInterface
+     */
+    public function getLoader()
+    {
+        return Loader\Factory::build($this, $this->mode, $this->localFile);
     }
 }

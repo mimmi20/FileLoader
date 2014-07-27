@@ -138,6 +138,11 @@ class SocketloaderTest extends \PHPUnit_Framework_TestCase
 
         $response = $this->object->getRemoteData('http://browscap.org/stream?q=PHP_BrowsCapINI');
 
-        self::assertInternalType('string', $response);
+        self::assertInternalType('boolean', $response);
+    }
+
+    public function testIsSupportingLoadingLines()
+    {
+        self::assertTrue($this->object->isSupportingLoadingLines());
     }
 }

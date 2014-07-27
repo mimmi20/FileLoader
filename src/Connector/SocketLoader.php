@@ -38,6 +38,8 @@ use FileLoader\Exception;
 use FileLoader\Helper\Http;
 use FileLoader\Helper\StreamCreator;
 use FileLoader\Loader;
+use FileLoader\Interfaces\ConnectorInterface;
+use FileLoader\Interfaces\LoadLinesInterface;
 
 /**
  * class to load a file from a remote source via fsockopen|stream_socket_client
@@ -49,7 +51,7 @@ use FileLoader\Loader;
  * @license    http://www.opensource.org/licenses/MIT MIT License
  * @link       https://github.com/mimmi20/FileLoader/
  */
-class SocketLoader implements ConnectorInterface
+class SocketLoader implements ConnectorInterface, LoadLinesInterface
 {
     /**
      * an Loader instance
@@ -112,6 +114,16 @@ class SocketLoader implements ConnectorInterface
     public function getType()
     {
         return Loader::UPDATE_FSOCKOPEN;
+    }
+
+    /**
+     * return TRUE, if this connector is able to return a file line per line
+     *
+     * @return bool
+     */
+    public function isSupportingLoadingLines()
+    {
+        return true;
     }
 
     /**
@@ -232,6 +244,8 @@ class SocketLoader implements ConnectorInterface
     {
         $errno  = 0;
         $errstr = '';
+
+        ini_set('user_agent', $this->getLoader()->getUserAgent());
 
         $this->urlParts = parse_url($url);
         $timeout        = $this->getLoader()->getTimeout();

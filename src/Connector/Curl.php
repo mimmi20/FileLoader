@@ -38,6 +38,7 @@ use FileLoader\Helper\Http;
 use FileLoader\Helper\StreamCreator;
 use FileLoader\Loader;
 use FileLoader\Exception;
+use FileLoader\Interfaces\ConnectorInterface;
 
 /**
  * class to load a file from a remote source with the curl extension
@@ -66,6 +67,13 @@ class Curl implements ConnectorInterface
     private $httpHelper = null;
 
     /**
+     * a file handle created by fsockopen
+     *
+     * @var resource
+     */
+    private $resource = null;
+
+    /**
      * @param \FileLoader\Loader $loader
      *
      * @return \FileLoader\Loader\RemoteLoader
@@ -91,6 +99,16 @@ class Curl implements ConnectorInterface
     public function getType()
     {
         return Loader::UPDATE_CURL;
+    }
+
+    /**
+     * return TRUE, if this connector is able to return a file line per line
+     *
+     * @return bool
+     */
+    public function isSupportingLoadingLines()
+    {
+        return false;
     }
 
     /**
@@ -127,12 +145,12 @@ class Curl implements ConnectorInterface
      */
     public function getRemoteData($url)
     {
-        $ressource = $this->init($url);
+        $this->init($url);
 
-        $response  = curl_exec($ressource);
-        $http_code = curl_getinfo($ressource, CURLINFO_HTTP_CODE);
+        $response  = curl_exec($this->resource);
+        $http_code = curl_getinfo($this->resource, CURLINFO_HTTP_CODE);
 
-        curl_close($ressource);
+        $this->close();
 
         // check for HTTP error
         $http_exception = $this->getHttpHelper()->getHttpErrorException($http_code);
@@ -154,11 +172,11 @@ class Curl implements ConnectorInterface
      */
     private function init($url)
     {
-        $ressource = curl_init($url);
+        $this->resource = curl_init($url);
 
-        curl_setopt($ressource, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ressource, CURLOPT_CONNECTTIMEOUT, $this->getLoader()->getTimeout());
-        curl_setopt($ressource, CURLOPT_USERAGENT, $this->getLoader()->getUserAgent());
+        curl_setopt($this->resource, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($this->resource, CURLOPT_CONNECTTIMEOUT, $this->getLoader()->getTimeout());
+        curl_setopt($this->resource, CURLOPT_USERAGENT, $this->getLoader()->getUserAgent());
 
         // check and set proxy settings
         $proxy_host = $this->getLoader()->getOption('ProxyHost');
@@ -183,9 +201,9 @@ class Curl implements ConnectorInterface
             $proxy_port = $this->getLoader()->getOption('ProxyPort');
 
             // set basic proxy options
-            curl_setopt($ressource, CURLOPT_PROXY, $proxy_protocol . '://' . $proxy_host);
+            curl_setopt($this->resource, CURLOPT_PROXY, $proxy_protocol . '://' . $proxy_host);
             if ($proxy_port !== null) {
-                curl_setopt($ressource, CURLOPT_PROXYPORT, $proxy_port);
+                curl_setopt($this->resource, CURLOPT_PROXYPORT, $proxy_port);
             }
 
             // check auth settings
@@ -210,12 +228,20 @@ class Curl implements ConnectorInterface
                 }
 
                 if ($proxy_auth === StreamCreator::PROXY_AUTH_NTLM) {
-                    curl_setopt($ressource, CURLOPT_PROXYAUTH, CURLAUTH_NTLM);
+                    curl_setopt($this->resource, CURLOPT_PROXYAUTH, CURLAUTH_NTLM);
                 }
-                curl_setopt($ressource, CURLOPT_PROXYUSERPWD, $proxy_user . ':' . $proxy_password);
+                curl_setopt($this->resource, CURLOPT_PROXYUSERPWD, $proxy_user . ':' . $proxy_password);
             }
         }
 
-        return $ressource;
+        return true;
+    }
+
+    /**
+     * closes an open stream
+     */
+    private function close()
+    {
+        curl_close($this->resource);
     }
 }

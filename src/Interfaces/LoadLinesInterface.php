@@ -31,7 +31,7 @@
  * @link       https://github.com/mimmi20/FileLoader/
  */
 
-namespace FileLoader\Connector;
+namespace FileLoader\Interfaces;
 
 use FileLoader\Loader;
 
@@ -44,32 +44,40 @@ use FileLoader\Loader;
  * @license    http://www.opensource.org/licenses/MIT MIT License
  * @link       https://github.com/mimmi20/FileLoader/
  */
-interface ConnectorInterface
+interface LoadLinesInterface
 {
     /**
-     * @param \FileLoader\Loader $loader
+     * return TRUE, if this connector is able to return a file line per line
      *
-     * @return \FileLoader\Loader\RemoteLoader
+     * @return bool
      */
-    public function setLoader(Loader $loader);
+    public function isSupportingLoadingLines();
 
     /**
-     * @return \FileLoader\Loader
-     */
-    public function getLoader();
-
-    /**
-     * @return string
-     */
-    public function getType();
-
-    /**
-     * Retrieve the data identified by the URL
+     * initialize the connection
      *
      * @param string $url the url of the data
      *
-     * @throws \RuntimeException
-     * @return string|boolean the retrieved data
+     * @return boolean
      */
-    public function getRemoteData($url);
+    public function init($url);
+
+    /**
+     * checks if the end of the stream is reached
+     *
+     * @return boolean
+     */
+    public function isValid();
+
+    /**
+     * reads one line from the stream
+     *
+     * @return string
+     */
+    public function getLine();
+
+    /**
+     * closes an open stream
+     */
+    public function close();
 }

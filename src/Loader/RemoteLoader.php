@@ -34,7 +34,9 @@
 
 namespace FileLoader\Loader;
 
-use FileLoader\Connector\ConnectorInterface;
+use FileLoader\Interfaces\ConnectorInterface;
+use FileLoader\Interfaces\LoaderInterface;
+use FileLoader\Interfaces\LoadLinesInterface;
 use FileLoader\Exception;
 use FileLoader\Helper\Http;
 use FileLoader\Helper\StreamCreator;
@@ -50,7 +52,7 @@ use FileLoader\Loader;
  * @license    http://www.opensource.org/licenses/MIT MIT License
  * @link       https://github.com/mimmi20/FileLoader/
  */
-class RemoteLoader
+class RemoteLoader implements LoaderInterface, LoadLinesInterface
 {
     /**
      * an Loader instance
@@ -74,7 +76,7 @@ class RemoteLoader
     private $streamHelper = null;
 
     /**
-     * @var \FileLoader\Connector\ConnectorInterface
+     * @var \FileLoader\Interfaces\ConnectorInterface
      */
     private $connector = null;
 
@@ -147,7 +149,7 @@ class RemoteLoader
     }
 
     /**
-     * @param \FileLoader\Connector\ConnectorInterface $connector
+     * @param \FileLoader\Interfaces\ConnectorInterface $connector
      *
      * @return \FileLoader\Loader\RemoteLoader
      */
@@ -159,7 +161,7 @@ class RemoteLoader
     }
 
     /**
-     * @return \FileLoader\Connector\ConnectorInterface
+     * @return \FileLoader\Interfaces\ConnectorInterface|\FileLoader\Interfaces\LoadLinesInterface
      */
     public function getConnector()
     {
@@ -188,6 +190,16 @@ class RemoteLoader
     }
 
     /**
+     * returns the uri, used for download
+     *
+     * @return string
+     */
+    public function getUri()
+    {
+        return $this->getLoader()->getRemoteDataUrl();
+    }
+
+    /**
      * Gets the remote file update timestamp
      *
      * @throws \FileLoader\Exception
@@ -206,6 +218,16 @@ class RemoteLoader
     }
 
     /**
+     * return TRUE, if this connector is able to return a file line per line
+     *
+     * @return bool
+     */
+    public function isSupportingLoadingLines()
+    {
+        return $this->getConnector()->isSupportingLoadingLines();
+    }
+
+    /**
      * initialize the connection
      *
      * @param string $url the url of the data
@@ -216,7 +238,7 @@ class RemoteLoader
     {
         return $this->getConnector()->init($url);
     }
-    
+
     /**
      * checks if the end of the stream is reached
      *
@@ -226,7 +248,7 @@ class RemoteLoader
     {
         return $this->getConnector()->isValid();
     }
-    
+
     /**
      * reads one line from the stream
      *
@@ -236,7 +258,7 @@ class RemoteLoader
     {
         return $this->getConnector()->getLine();
     }
-    
+
     /**
      * closes an open stream
      */

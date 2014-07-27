@@ -36,6 +36,8 @@ namespace FileLoader\Loader;
 
 use FileLoader\Exception;
 use FileLoader\Loader;
+use FileLoader\Interfaces\LoaderInterface;
+use FileLoader\Interfaces\LoadLinesInterface;
 
 /**
  * class to load a file from a local source
@@ -47,7 +49,7 @@ use FileLoader\Loader;
  * @license    http://www.opensource.org/licenses/MIT MIT License
  * @link       https://github.com/mimmi20/FileLoader/
  */
-class Local
+class Local implements LoaderInterface, LoadLinesInterface
 {
     /**
      * The path of the local version of the browscap.ini file from which to
@@ -56,7 +58,7 @@ class Local
      * @var string
      */
     private $localFile = null;
-    
+
     /**
      * a file handle created by fopen
      *
@@ -84,6 +86,24 @@ class Local
     }
 
     /**
+     * @return string
+     */
+    public function getType()
+    {
+        return Loader::UPDATE_LOCAL;
+    }
+
+    /**
+     * return TRUE, if this connector is able to return a file line per line
+     *
+     * @return bool
+     */
+    public function isSupportingLoadingLines()
+    {
+        return true;
+    }
+
+    /**
      * XXX save
      *
      * loads the ini file from a remote or local location and stores it into
@@ -95,12 +115,12 @@ class Local
     public function load()
     {
         if (!is_readable($this->localFile)
-            || !is_file($this->localFile) 
-            || false === $this->init()
+            || !is_file($this->localFile)
+            || false === $this->init($this->getUri())
         ) {
             throw new Exception('Local file is not readable', Exception::LOCAL_FILE_NOT_READABLE);
         }
-        
+
         $response = '';
         while ($this->isValid()) {
             $response .= $this->getLine();
@@ -139,19 +159,21 @@ class Local
     /**
      * initialize the connection
      *
+     * @param string $url
+     *
      * @return boolean
      */
-    public function init()
+    public function init($url)
     {
-        $this->stream = fopen($this->localFile, 'r', false);
+        $this->stream = fopen($url, 'r', false);
 
         if (false === $this->stream) {
             return false;
         }
-        
+
         return true;
     }
-    
+
     /**
      * checks if the end of the stream is reached
      *
@@ -161,7 +183,7 @@ class Local
     {
         return (!feof($this->stream));
     }
-    
+
     /**
      * reads one line from the stream
      *
@@ -171,7 +193,7 @@ class Local
     {
         return stream_get_line($this->stream, 1024, "\n");
     }
-    
+
     /**
      * closes an open stream
      */

@@ -34,7 +34,7 @@
 
 namespace FileLoader\Loader;
 
-use FileLoader\Connector\ConnectorInterface;
+use FileLoader\Interfaces\ConnectorInterface;
 use FileLoader\Connector\Curl;
 use FileLoader\Connector\FopenLoader;
 use FileLoader\Connector\SocketLoader;
@@ -59,11 +59,11 @@ class Factory
      * loads the ini file from a remote or local location and stores it into
      * the cache dir, parses the ini file
      *
-     * @param \FileLoader\Loader                              $loader
-     * @param string|\FileLoader\Connector\ConnectorInterface $mode
-     * @param string                                          $localFile
+     * @param \FileLoader\Loader                               $loader
+     * @param string|\FileLoader\Interfaces\ConnectorInterface $mode
+     * @param string                                           $localFile
      *
-     * @return RemoteLoader the loader to use
+     * @return \FileLoader\Interfaces\LoaderInterface|\FileLoader\Interfaces\LoadLinesInterface the loader to use
      * @throws \FileLoader\Exception
      */
     public static function build(Loader $loader, $mode = null, $localFile = null)

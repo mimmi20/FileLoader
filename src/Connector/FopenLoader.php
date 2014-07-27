@@ -37,6 +37,8 @@ namespace FileLoader\Connector;
 use FileLoader\Helper\Http;
 use FileLoader\Helper\StreamCreator;
 use FileLoader\Loader;
+use FileLoader\Interfaces\ConnectorInterface;
+use FileLoader\Interfaces\LoadLinesInterface;
 
 /**
  * class to load a file from a remote source via fopen/file_get_contents
@@ -48,7 +50,7 @@ use FileLoader\Loader;
  * @license    http://www.opensource.org/licenses/MIT MIT License
  * @link       https://github.com/mimmi20/FileLoader/
  */
-class FopenLoader implements ConnectorInterface
+class FopenLoader implements ConnectorInterface, LoadLinesInterface
 {
     /**
      * an Loader instance
@@ -104,6 +106,16 @@ class FopenLoader implements ConnectorInterface
     public function getType()
     {
         return Loader::UPDATE_FOPEN;
+    }
+
+    /**
+     * return TRUE, if this connector is able to return a file line per line
+     *
+     * @return bool
+     */
+    public function isSupportingLoadingLines()
+    {
+        return true;
     }
 
     /**
@@ -209,8 +221,10 @@ class FopenLoader implements ConnectorInterface
      */
     public function init($url)
     {
+        ini_set('user_agent', $this->getLoader()->getUserAgent());
+
         $context      = $this->getStreamHelper()->getStreamContext();
-        $this->stream = @fopen($url, 'r', false, $context);
+        $this->stream = @fopen($url, 'rb', false, $context);
 
         if (false === $this->stream) {
             return false;
