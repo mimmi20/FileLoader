@@ -3,6 +3,7 @@
     "type": "library",
     "description": "a class to load remote or local files",
     "homepage": "http://github.com/mimmi20/FileLoader",
+    "license": "MIT",
     "authors": [
         {
             "name": "Thomas Müller",
@@ -31,7 +32,11 @@
     },
     "autoload": {
         "psr-4": {
-            "FileLoader\\": "src/",
+            "FileLoader\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
             "FileLoaderTest\\": "tests/FileLoaderTest/"
         }
     }
