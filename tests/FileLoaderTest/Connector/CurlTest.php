@@ -4,6 +4,7 @@ namespace FileLoaderTest\Connector;
 
 use FileLoader\Connector;
 use FileLoader\Loader;
+use FileLoader\Helper\StreamCreator;
 
 /**
  * Browscap.ini parsing class with caching and update capabilities
@@ -109,5 +110,161 @@ class CurlTest extends \PHPUnit_Framework_TestCase
     public function testIsSupportingLoadingLines()
     {
         self::assertFalse($this->object->isSupportingLoadingLines());
+    }
+
+    public function testGetStreamContextWithProxyWithoutAuthAndUser()
+    {
+        $map = array(
+            array('ProxyHost', 'example.org'),
+            array('ProxyProtocol', 'http'),
+            array('ProxyPort', 80),
+            array('ProxyAuth', null),
+            array('ProxyUser', null),
+        );
+
+        $loader = $this->getMock('\FileLoader\Loader', array('getOption'), array(), '', false);
+        $loader
+            ->expects(self::exactly(5))
+            ->method('getOption')
+            ->will(self::returnValueMap($map))
+        ;
+
+        self::assertSame($this->object, $this->object->setLoader($loader));
+
+        $response = $this->object->getRemoteData('http://example.org/test.ini');
+
+        self::assertInternalType('string', $response);
+    }
+
+    public function testGetStreamContextWithProxyWithoutAuthUserPortAndProtocol()
+    {
+        $map = array(
+            array('ProxyHost', 'example.org'),
+            array('ProxyProtocol', null),
+            array('ProxyPort', null),
+            array('ProxyAuth', null),
+            array('ProxyUser', null),
+        );
+
+        $loader = $this->getMock('\FileLoader\Loader', array('getOption'), array(), '', false);
+        $loader
+            ->expects(self::exactly(5))
+            ->method('getOption')
+            ->will(self::returnValueMap($map))
+        ;
+
+        self::assertSame($this->object, $this->object->setLoader($loader));
+
+        $response = $this->object->getRemoteData('http://example.org/test.ini');
+
+        self::assertInternalType('string', $response);
+    }
+
+    public function testGetStreamContextWithProxyWithAuthAndUser()
+    {
+        $map = array(
+            array('ProxyHost', 'example.org'),
+            array('ProxyProtocol', 'http'),
+            array('ProxyPort', 80),
+            array('ProxyAuth', StreamCreator::PROXY_AUTH_BASIC),
+            array('ProxyUser', 'testUser'),
+            array('ProxyPassword', 'testPassword'),
+        );
+
+        $loader = $this->getMock('\FileLoader\Loader', array('getOption'), array(), '', false);
+        $loader
+            ->expects(self::exactly(6))
+            ->method('getOption')
+            ->will(self::returnValueMap($map))
+        ;
+
+        self::assertSame($this->object, $this->object->setLoader($loader));
+
+        $response = $this->object->getRemoteData('http://example.org/test.ini');
+
+        self::assertInternalType('string', $response);
+    }
+
+    public function testGetStreamContextWithProxyWithAuthAndUserWithoutPassword()
+    {
+        $map = array(
+            array('ProxyHost', 'example.org'),
+            array('ProxyProtocol', 'http'),
+            array('ProxyPort', 80),
+            array('ProxyAuth', StreamCreator::PROXY_AUTH_BASIC),
+            array('ProxyUser', 'testUser'),
+            array('ProxyPassword', null),
+        );
+
+        $loader = $this->getMock('\FileLoader\Loader', array('getOption'), array(), '', false);
+        $loader
+            ->expects(self::exactly(6))
+            ->method('getOption')
+            ->will(self::returnValueMap($map))
+        ;
+
+        self::assertSame($this->object, $this->object->setLoader($loader));
+
+        $response = $this->object->getRemoteData('http://example.org/test.ini');
+
+        self::assertInternalType('string', $response);
+    }
+
+    /**
+     * @expectedException \FileLoader\Exception
+     * @expectedExceptionMessage Invalid/unsupported value "htt" for option "ProxyProtocol".
+     */
+    public function testGetStreamContextWithWrongProtocol()
+    {
+        $map = array(
+            array('ProxyHost', 'example.org'),
+            array('ProxyProtocol', 'htt'),
+            array('ProxyPort', 80),
+            array('ProxyAuth', StreamCreator::PROXY_AUTH_BASIC),
+            array('ProxyUser', 'testUser'),
+            array('ProxyPassword', 'testPassword'),
+        );
+
+        $loader = $this->getMock('\FileLoader\Loader', array('getOption'), array(), '', false);
+        $loader
+            ->expects(self::exactly(2))
+            ->method('getOption')
+            ->will(self::returnValueMap($map))
+        ;
+
+        $this->object->setLoader($loader);
+
+        $response = $this->object->getRemoteData('http://example.org/test.ini');
+
+        self::assertInternalType('string', $response);
+    }
+
+    /**
+     * @expectedException \FileLoader\Exception
+     * @expectedExceptionMessage Invalid/unsupported value "ntlm" for option "ProxyAuth".
+     */
+    public function testGetStreamContextWithWrongProxyAuthMethod()
+    {
+        $map = array(
+            array('ProxyHost', 'example.org'),
+            array('ProxyProtocol', 'http'),
+            array('ProxyPort', 80),
+            array('ProxyAuth', StreamCreator::PROXY_AUTH_NTLM),
+            array('ProxyUser', 'testUser'),
+            array('ProxyPassword', 'testPassword'),
+        );
+
+        $loader = $this->getMock('\FileLoader\Loader', array('getOption'), array(), '', false);
+        $loader
+            ->expects(self::exactly(4))
+            ->method('getOption')
+            ->will(self::returnValueMap($map))
+        ;
+
+        $this->object->setLoader($loader);
+
+        $response = $this->object->getRemoteData('http://example.org/test.ini');
+
+        self::assertInternalType('string', $response);
     }
 }

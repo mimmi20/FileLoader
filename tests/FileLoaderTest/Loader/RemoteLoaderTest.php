@@ -99,7 +99,7 @@ class RemoteLoaderTest extends \PHPUnit_Framework_TestCase
             '\FileLoader\Connector\Curl',
             array('getRemoteData'),
             array(),
-            '', 
+            '',
             false
         );
         $connector
