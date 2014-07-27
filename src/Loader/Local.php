@@ -126,7 +126,7 @@ class Local implements LoaderInterface, LoadLinesInterface
             $response .= $this->getLine();
         }
 
-        fclose($this->stream);
+        $this->close();
 
         return $response;
     }

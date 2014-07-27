@@ -104,8 +104,6 @@ class FopenLoaderTest extends \PHPUnit_Framework_TestCase
 
     public function testGetRemoteData()
     {
-        //$this->markTestSkipped('need to be reworked');
-
         $loader      = $this->getMock('\FileLoader\Loader', array(), array(), '', false);
         $steamHelper = $this->getMock(
             '\FileLoader\Helper\StreamCreator',
