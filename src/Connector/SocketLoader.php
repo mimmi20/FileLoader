@@ -203,16 +203,18 @@ class SocketLoader implements ConnectorInterface, LoadLinesInterface
 
         $meta = stream_get_meta_data($this->stream);
 
-        foreach ($meta['wrapper_data'] as $metaData) {
-            if ('http/' === substr(strtolower($metaData), 0, 5)) {
-                $tmp_status_parts = explode(' ', $metaData, 3);
-                $http_code        = $tmp_status_parts[1];
+        if (isset($meta['wrapper_data']) && is_array($meta['wrapper_data'])) {
+            foreach ($meta['wrapper_data'] as $metaData) {
+                if ('http/' === substr(strtolower($metaData), 0, 5)) {
+                    $tmp_status_parts = explode(' ', $metaData, 3);
+                    $http_code        = $tmp_status_parts[1];
 
-                // check for HTTP error
-                $http_exception = $this->getHttpHelper()->getHttpErrorException($http_code);
+                    // check for HTTP error
+                    $http_exception = $this->getHttpHelper()->getHttpErrorException($http_code);
 
-                if ($http_exception !== null) {
-                    throw $http_exception;
+                    if ($http_exception !== null) {
+                        throw $http_exception;
+                    }
                 }
             }
         }
