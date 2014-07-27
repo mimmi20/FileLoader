@@ -204,4 +204,44 @@ class RemoteLoader
 
         return (int) $remoteDatetime;
     }
+
+    /**
+     * initialize the connection
+     *
+     * @param string $url the url of the data
+     *
+     * @return boolean
+     */
+    public function init($url)
+    {
+        return $this->getConnector()->init($url);
+    }
+    
+    /**
+     * checks if the end of the stream is reached
+     *
+     * @return boolean
+     */
+    public function isValid()
+    {
+        return $this->getConnector()->isValid();
+    }
+    
+    /**
+     * reads one line from the stream
+     *
+     * @return string
+     */
+    public function getLine()
+    {
+        return $this->getConnector()->getLine();
+    }
+    
+    /**
+     * closes an open stream
+     */
+    public function close()
+    {
+        $this->getConnector()->close();
+    }
 }

@@ -70,6 +70,13 @@ class FopenLoader implements ConnectorInterface
      * @var \FileLoader\Helper\StreamCreator
      */
     private $streamHelper = null;
+    
+    /**
+     * a file handle created by fopen
+     *
+     * @var resource
+     */
+    private $stream = null;
 
     /**
      * @param \FileLoader\Loader $loader
@@ -89,6 +96,14 @@ class FopenLoader implements ConnectorInterface
     public function getLoader()
     {
         return $this->loader;
+    }
+
+    /**
+     * @return string
+     */
+    public function getType()
+    {
+        return Loader::UPDATE_FOPEN;
     }
 
     /**
@@ -149,19 +164,24 @@ class FopenLoader implements ConnectorInterface
      */
     public function getRemoteData($url)
     {
-        $context   = $this->getStreamHelper()->getStreamContext();
-        @$response = file_get_contents($url, false, $context);
+        if (false === $this->init($url)) {
+            return false;
+        }
+        
+        $response = '';
+        while ($this->isValid()) {
+            $response .= $this->getLine();
+        }
 
-        // $http_response_header is a predefined variables,
-        // automatically created by PHP after the call above
-        //
-        // @see http://php.net/manual/en/reserved.variables.httpresponseheader.php
-        if (isset($http_response_header)) {
-            // extract status from first array entry, e.g. from 'HTTP/1.1 200 OK'
-            if (is_array($http_response_header) && isset($http_response_header[0])) {
-                $tmp_status_parts = explode(' ', $http_response_header[0], 3);
+        $meta = stream_get_meta_data($this->stream);
+
+        $this->close();
+        
+        foreach ($meta['wrapper_data'] as $metaData) {
+            if ('http/' === substr(strtolower($metaData), 0, 5)) {
+                $tmp_status_parts = explode(' ', $metaData, 3);
                 $http_code        = $tmp_status_parts[1];
-
+                
                 // check for HTTP error
                 $http_exception = $this->getHttpHelper()->getHttpErrorException($http_code);
 
@@ -171,6 +191,64 @@ class FopenLoader implements ConnectorInterface
             }
         }
 
+        $response = str_replace("\r\n", "\n", $response);
+        $response = explode("\n\n", $response);
+        array_shift($response);
+
+        $response = implode("\n\n", $response);
+
         return $response;
+    }
+
+    /**
+     * initialize the connection
+     *
+     * @param string $url the url of the data
+     *
+     * @return boolean
+     */
+    public function init($url)
+    {
+        $context      = $this->getStreamHelper()->getStreamContext();
+        $this->stream = fopen($url, 'r', false, $context);
+
+        if (false === $this->stream) {
+            return false;
+        }
+
+        $timeout = $this->getLoader()->getTimeout();
+        
+        stream_set_timeout($this->stream, $timeout);
+        stream_set_blocking($this->stream, 1);
+        
+        return true;
+    }
+    
+    /**
+     * checks if the end of the stream is reached
+     *
+     * @return boolean
+     */
+    public function isValid()
+    {
+        return (!feof($this->stream));
+    }
+    
+    /**
+     * reads one line from the stream
+     *
+     * @return string
+     */
+    public function getLine()
+    {
+        return stream_get_line($this->stream, 1024, "\n");
+    }
+    
+    /**
+     * closes an open stream
+     */
+    public function close()
+    {
+        fclose($this->stream);
     }
 }

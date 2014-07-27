@@ -3,6 +3,7 @@
 namespace FileLoaderTest\Connector;
 
 use FileLoader\Connector;
+use FileLoader\Loader;
 
 /**
  * Browscap.ini parsing class with caching and update capabilities
@@ -56,19 +57,6 @@ class FopenLoaderTest extends \PHPUnit_Framework_TestCase
         $this->object = new Connector\FopenLoader();
     }
 
-    public function createContext()
-    {
-        $config = array(
-            'http' => array(
-                'user_agent'    => 'Test-UserAgent',
-                // ignore errors, handle them manually
-                'ignore_errors' => true,
-            )
-        );
-
-        return stream_context_create($config);
-    }
-
     public function testSetGetLoader()
     {
         $loader = $this->getMock('\FileLoader\Loader', array(), array(), '', false);
@@ -93,9 +81,30 @@ class FopenLoaderTest extends \PHPUnit_Framework_TestCase
         self::assertSame($helper, $this->object->getStreamHelper());
     }
 
+    public function testGetType()
+    {
+        self::assertSame(Loader::UPDATE_FOPEN, $this->object->getType());
+    }
+
+    public function createContext()
+    {
+        $config = array(
+            'http' => array(
+                'method'          => 'GET',
+                'user_agent'      => 'Test-UserAgent',
+                // ignore errors, handle them manually
+                'ignore_errors'   => true,
+                'request_fulluri' => true,
+                'timeout'         => 60,
+            )
+        );
+
+        return stream_context_create($config);
+    }
+
     public function testGetRemoteData()
     {
-        $this->markTestSkipped('need to be reworked');
+        //$this->markTestSkipped('need to be reworked');
 
         $loader      = $this->getMock('\FileLoader\Loader', array(), array(), '', false);
         $steamHelper = $this->getMock(
@@ -111,10 +120,26 @@ class FopenLoaderTest extends \PHPUnit_Framework_TestCase
             ->will(self::returnCallback(array($this, 'createContext')))
         ;
 
-        $fopenloader = new Connector\FopenLoader($loader);
-        $fopenloader->setStreamHelper($steamHelper);
+        $httpHelper = $this->getMock(
+            '\FileLoader\Helper\Http',
+            array('getHttpErrorException'),
+            array(),
+            '',
+            false
+        );
+        $httpHelper
+            ->expects(self::once())
+            ->method('getHttpErrorException')
+            ->will(self::returnValue(null))
+        ;
 
-        $response = $fopenloader->getRemoteData('http://example.org/test.ini');
+        $this->object
+            ->setStreamHelper($steamHelper)
+            ->setHttpHelper($httpHelper)
+            ->setLoader($loader)
+        ;
+
+        $response = $this->object->getRemoteData('http://example.org/test.ini');
 
         self::assertInternalType('string', $response);
     }

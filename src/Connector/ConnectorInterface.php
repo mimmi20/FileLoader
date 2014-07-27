@@ -59,6 +59,11 @@ interface ConnectorInterface
     public function getLoader();
 
     /**
+     * @return string
+     */
+    public function getType();
+
+    /**
      * Retrieve the data identified by the URL
      *
      * @param string $url the url of the data

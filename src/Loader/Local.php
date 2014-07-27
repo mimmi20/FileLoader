@@ -56,6 +56,13 @@ class Local
      * @var string
      */
     private $localFile = null;
+    
+    /**
+     * a file handle created by fopen
+     *
+     * @var resource
+     */
+    private $stream = null;
 
     /**
      * sets the name of the local file
@@ -87,18 +94,21 @@ class Local
      */
     public function load()
     {
-        if (!is_readable($this->localFile) || !is_file($this->localFile)) {
+        if (!is_readable($this->localFile)
+            || !is_file($this->localFile) 
+            || false === $this->init()
+        ) {
             throw new Exception('Local file is not readable', Exception::LOCAL_FILE_NOT_READABLE);
         }
-
-        // Get file content
-        $file = file_get_contents($this->localFile);
-
-        if ($file !== false) {
-            return $file;
+        
+        $response = '';
+        while ($this->isValid()) {
+            $response .= $this->getLine();
         }
 
-        throw new Exception('Cannot open the local file');
+        fclose($this->stream);
+
+        return $response;
     }
 
     /**
@@ -124,5 +134,49 @@ class Local
         }
 
         return filemtime($this->localFile);
+    }
+
+    /**
+     * initialize the connection
+     *
+     * @return boolean
+     */
+    public function init()
+    {
+        $this->stream = fopen($this->localFile, 'r', false);
+
+        if (false === $this->stream) {
+            return false;
+        }
+        
+        return true;
+    }
+    
+    /**
+     * checks if the end of the stream is reached
+     *
+     * @return boolean
+     */
+    public function isValid()
+    {
+        return (!feof($this->stream));
+    }
+    
+    /**
+     * reads one line from the stream
+     *
+     * @return string
+     */
+    public function getLine()
+    {
+        return stream_get_line($this->stream, 1024, "\n");
+    }
+    
+    /**
+     * closes an open stream
+     */
+    public function close()
+    {
+        fclose($this->stream);
     }
 }

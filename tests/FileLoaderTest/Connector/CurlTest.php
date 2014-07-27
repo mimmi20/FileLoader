@@ -3,6 +3,7 @@
 namespace FileLoaderTest\Connector;
 
 use FileLoader\Connector;
+use FileLoader\Loader;
 
 /**
  * Browscap.ini parsing class with caching and update capabilities
@@ -72,8 +73,36 @@ class CurlTest extends \PHPUnit_Framework_TestCase
         self::assertSame($helper, $this->object->getHttpHelper());
     }
 
+    public function testGetType()
+    {
+        self::assertSame(Loader::UPDATE_CURL, $this->object->getType());
+    }
+
     public function testGetRemoteData()
     {
-        $this->markTestSkipped('need to be reworked');
+        //$this->markTestSkipped('need to be reworked');
+
+        $loader     = $this->getMock('\FileLoader\Loader', array(), array(), '', false);
+        $httpHelper = $this->getMock(
+            '\FileLoader\Helper\Http',
+            array('getHttpErrorException'),
+            array(),
+            '',
+            false
+        );
+        $httpHelper
+            ->expects(self::once())
+            ->method('getHttpErrorException')
+            ->will(self::returnValue(null))
+        ;
+
+        $this->object
+            ->setHttpHelper($httpHelper)
+            ->setLoader($loader)
+        ;
+
+        $response = $this->object->getRemoteData('http://example.org/test.ini');
+
+        self::assertInternalType('string', $response);
     }
 }

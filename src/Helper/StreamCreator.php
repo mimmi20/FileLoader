@@ -90,6 +90,7 @@ class StreamCreator
                 // ignore errors, handle them manually
                 'ignore_errors'   => true,
                 'request_fulluri' => true,
+                'timeout'         => $this->loader->getTimeout(),
             )
         );
 

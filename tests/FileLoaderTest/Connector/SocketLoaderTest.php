@@ -3,6 +3,7 @@
 namespace FileLoaderTest\Connector;
 
 use FileLoader\Connector;
+use FileLoader\Loader;
 
 /**
  * Browscap.ini parsing class with caching and update capabilities
@@ -52,25 +53,20 @@ class SocketloaderTest extends \PHPUnit_Framework_TestCase
         $this->object = new Connector\SocketLoader();
     }
 
-    public function createContext()
-    {
-        $config = array(
-            'tcp' => array(
-                'user_agent'    => 'Test-UserAgent',
-                // ignore errors, handle them manually
-                'ignore_errors' => true,
-            )
-        );
-
-        return stream_context_create($config);
-    }
-
     public function testSetGetLoader()
     {
         $loader = $this->getMock('\FileLoader\Loader', array(), array(), '', false);
 
         self::assertSame($this->object, $this->object->setLoader($loader));
         self::assertSame($loader, $this->object->getLoader());
+    }
+
+    public function testSetGetHttpHelper()
+    {
+        $helper = $this->getMock('\FileLoader\Helper\Http', array(), array(), '', false);
+
+        self::assertSame($this->object, $this->object->setHttpHelper($helper));
+        self::assertSame($helper, $this->object->getHttpHelper());
     }
 
     public function testSetGetStreamHelper()
@@ -81,11 +77,33 @@ class SocketloaderTest extends \PHPUnit_Framework_TestCase
         self::assertSame($helper, $this->object->getStreamHelper());
     }
 
+    public function testGetType()
+    {
+        self::assertSame(Loader::UPDATE_FSOCKOPEN, $this->object->getType());
+    }
+
+    public function createContext()
+    {
+        $config = array(
+            'tcp' => array(
+                'method'          => 'GET',
+                'user_agent'      => 'Test-UserAgent',
+                // ignore errors, handle them manually
+                'ignore_errors'   => true,
+                'request_fulluri' => true,
+                'timeout'         => 60,
+            )
+        );
+
+        return stream_context_create($config);
+    }
+
     public function testGetRemoteData()
     {
-        $this->markTestSkipped('need to be reworked');
+        //$this->markTestSkipped('need to be reworked');
 
-        $loader      = $this->getMock('\FileLoader\Loader', array(), array(), '', false);
+        $loader = $this->getMock('\FileLoader\Loader', array(), array(), '', false);
+
         $steamHelper = $this->getMock(
             '\FileLoader\Helper\StreamCreator',
             array('getStreamContext'),
@@ -99,10 +117,26 @@ class SocketloaderTest extends \PHPUnit_Framework_TestCase
             ->will(self::returnCallback(array($this, 'createContext')))
         ;
 
-        $socketLoader = new Connector\SocketLoader($loader);
-        $socketLoader->setStreamHelper($steamHelper);
+        $httpHelper = $this->getMock(
+            '\FileLoader\Helper\Http',
+            array('getHttpErrorException'),
+            array(),
+            '',
+            false
+        );
+        $httpHelper
+            ->expects(self::once())
+            ->method('getHttpErrorException')
+            ->will(self::returnValue(null))
+        ;
 
-        $response = $socketLoader->getRemoteData('tcp://www.example.com');
+        $this->object
+            ->setStreamHelper($steamHelper)
+            ->setHttpHelper($httpHelper)
+            ->setLoader($loader)
+        ;
+
+        $response = $this->object->getRemoteData('http://browscap.org/stream?q=PHP_BrowsCapINI');
 
         self::assertInternalType('string', $response);
     }

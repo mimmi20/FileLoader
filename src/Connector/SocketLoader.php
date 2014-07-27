@@ -35,6 +35,7 @@
 namespace FileLoader\Connector;
 
 use FileLoader\Exception;
+use FileLoader\Helper\Http;
 use FileLoader\Helper\StreamCreator;
 use FileLoader\Loader;
 
@@ -60,9 +61,30 @@ class SocketLoader implements ConnectorInterface
     /**
      * a HTTP Helper instance
      *
+     * @var \FileLoader\Helper\Http
+     */
+    private $httpHelper = null;
+
+    /**
+     * a HTTP Helper instance
+     *
      * @var \FileLoader\Helper\StreamCreator
      */
     private $streamHelper = null;
+    
+    /**
+     * a file handle created by fsockopen
+     *
+     * @var resource
+     */
+    private $stream = null;
+    
+    /**
+     * holds the parts of the target url
+     *
+     * @var array
+     */
+    private $urlParts = array();
 
     /**
      * @param \FileLoader\Loader $loader
@@ -82,6 +104,38 @@ class SocketLoader implements ConnectorInterface
     public function getLoader()
     {
         return $this->loader;
+    }
+
+    /**
+     * @return string
+     */
+    public function getType()
+    {
+        return Loader::UPDATE_FSOCKOPEN;
+    }
+
+    /**
+     * sets a http helper instance
+     *
+     * @param \FileLoader\Helper\Http $helper
+     *
+     * @return \FileLoader\Loader\RemoteLoader
+     */
+    public function setHttpHelper(Http $helper)
+    {
+        $this->httpHelper = $helper;
+
+        return $this;
+    }
+
+    /**
+     * returns a http helper instance
+     *
+     * @return \FileLoader\Helper\Http
+     */
+    public function getHttpHelper()
+    {
+        return $this->httpHelper;
     }
 
     /**
@@ -118,72 +172,53 @@ class SocketLoader implements ConnectorInterface
      */
     public function getRemoteData($url)
     {
-        $errno  = 0;
-        $errstr = '';
-
-        list($remoteUrl, $fullRemoteUrl, $context, $timeout) = $this->init($url);
-
-        $stream = stream_socket_client(
-            $fullRemoteUrl,
-            $errno,
-            $errstr,
-            $timeout,
-            STREAM_CLIENT_CONNECT,
-            $context
-        );
-
-        if (false === $stream) {
+        if (false === $this->init($url)) {
             return false;
         }
-
-        stream_set_timeout($stream, $timeout);
-        stream_set_blocking($stream, 1);
-
-        if (isset($remoteUrl['query'])) {
-            $remoteUrl['path'] .= '?' . $remoteUrl['query'];
+        
+        if (isset($this->urlParts['query'])) {
+            $this->urlParts['path'] .= '?' . $this->urlParts['query'];
         }
 
         $out = sprintf(
             Loader::REQUEST_HEADERS,
-            $remoteUrl['path'],
-            $remoteUrl['host'],
+            $this->urlParts['path'],
+            $this->urlParts['host'],
             $this->getLoader()->getUserAgent()
         );
 
-        fwrite($stream, $out);
+        fwrite($this->stream, $out);
 
-        $response = stream_get_line($stream, 1024, "\n");
-        $response = $this->getFile($response, $stream);
+        $meta = stream_get_meta_data($this->stream);
+        
+        foreach ($meta['wrapper_data'] as $metaData) {
+            if ('http/' === substr(strtolower($metaData), 0, 5)) {
+                $tmp_status_parts = explode(' ', $metaData, 3);
+                $http_code        = $tmp_status_parts[1];
+                
+                // check for HTTP error
+                $http_exception = $this->getHttpHelper()->getHttpErrorException($http_code);
 
-        fclose($stream);
-
-        return $response;
-    }
-
-    /**
-     * @param string   $response
-     * @param resource $stream
-     *
-     * @return string|null
-     */
-    private function getFile($response, $stream)
-    {
-        $file = null;
-
-        if (strpos($response, '200 OK') !== false) {
-            $file = '';
-            while (!feof($stream)) {
-                $file .= stream_get_line($stream, 1024, "\n");
+                if ($http_exception !== null) {
+                    throw $http_exception;
+                }
             }
-
-            $file = str_replace("\r\n", "\n", $file);
-            $file = explode("\n\n", $file);
-            array_shift($file);
-
-            $file = implode("\n\n", $file);
+        }
+        
+        $response = '';
+        while ($this->isValid()) {
+            $response .= $this->getLine();
         }
 
-        return $file;
+        $this->close();
+
+        $response = str_replace("\r\n", "\n", $response);
+        $response = explode("\n\n", $response);
+        array_shift($response);
+
+        $response = implode("\n\n", $response);
+
+        return $response;
     }
 
     /**
@@ -191,36 +226,75 @@ class SocketLoader implements ConnectorInterface
      *
      * @param string $url the url of the data
      *
-     * @return array
+     * @return boolean
      */
-    private function init($url)
+    public function init($url)
     {
-        $remoteUrl = parse_url($url);
+        $errno  = 0;
+        $errstr = '';
 
-        $port          = $this->getPort($remoteUrl);
-        $fullRemoteUrl = $remoteUrl['scheme'] . '://' . $remoteUrl['host'] . ':' . $port;
+        $this->urlParts = parse_url($url);
+        $timeout        = $this->getLoader()->getTimeout();
 
-        $context = $this->getStreamHelper()->getStreamContext();
-        $timeout = $this->getLoader()->getTimeout();
+        $this->stream = fsockopen(
+            $this->urlParts['host'],
+            $this->getPort(),
+            $errno,
+            $errstr,
+            $timeout
+        );
 
-        return array($remoteUrl, $fullRemoteUrl, $context, $timeout);
+        if (false === $this->stream) {
+            return false;
+        }
+        
+        stream_set_timeout($this->stream, $timeout);
+        stream_set_blocking($this->stream, 1);
+        
+        return true;
     }
 
     /**
-     * @param array $remoteUrl
-     *
      * @return integer
      */
-    private function getPort(array $remoteUrl)
+    private function getPort()
     {
-        if (isset($remoteUrl['port'])) {
-            return (int) $remoteUrl['port'];
+        if (isset($this->urlParts['port'])) {
+            return (int) $this->urlParts['port'];
         }
 
-        if (isset($remoteUrl['scheme']) && $remoteUrl['scheme'] === 'https') {
+        if (isset($this->urlParts['scheme']) && $this->urlParts['scheme'] === 'https') {
             return 443;
         }
 
         return 80;
+    }
+    
+    /**
+     * checks if the end of the stream is reached
+     *
+     * @return boolean
+     */
+    public function isValid()
+    {
+        return (!feof($this->stream));
+    }
+    
+    /**
+     * reads one line from the stream
+     *
+     * @return string
+     */
+    public function getLine()
+    {
+        return stream_get_line($this->stream, 1024, "\n");
+    }
+    
+    /**
+     * closes an open stream
+     */
+    public function close()
+    {
+        fclose($this->stream);
     }
 }

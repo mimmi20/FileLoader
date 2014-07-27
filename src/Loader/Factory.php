@@ -98,7 +98,10 @@ class Factory
             ;
         } elseif (null === $mode || Loader::UPDATE_FSOCKOPEN === $mode) {
             $connector = new SocketLoader();
-            $connector->setStreamHelper($streamHelper);
+            $connector
+                ->setStreamHelper($streamHelper)
+                ->setHttpHelper($httpHelper)
+            ;
         } else {
             throw new Exception('no valid connector found');
         }

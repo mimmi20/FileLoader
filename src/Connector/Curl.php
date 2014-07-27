@@ -86,6 +86,14 @@ class Curl implements ConnectorInterface
     }
 
     /**
+     * @return string
+     */
+    public function getType()
+    {
+        return Loader::UPDATE_CURL;
+    }
+
+    /**
      * sets a http helper instance
      *
      * @param \FileLoader\Helper\Http $helper
