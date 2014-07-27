@@ -164,7 +164,7 @@ class CurlTest extends \PHPUnit_Framework_TestCase
 
         $loader = $this->getMock('\FileLoader\Loader', array('getOption'), array(), '', false);
         $loader
-            ->expects(self::exactly(5))
+            ->expects(self::exactly(4))
             ->method('getOption')
             ->will(self::returnValueMap($map))
         ;
@@ -317,10 +317,6 @@ class CurlTest extends \PHPUnit_Framework_TestCase
         self::assertInternalType('string', $response);
     }
 
-    /**
-     * @expectedException \FileLoader\Exception
-     * @expectedExceptionMessage Invalid/unsupported value "ntlm" for option "ProxyAuth".
-     */
     public function testGetStreamContextWithWrongProxyAuthMethod()
     {
         $map = array(
