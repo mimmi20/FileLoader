@@ -182,7 +182,7 @@ class FopenLoader implements ConnectorInterface, LoadLinesInterface
 
         $response = '';
         while ($this->isValid()) {
-            $response .= $this->getLine();
+            $response .= $this->getLine() . "\n";
         }
 
         $meta = stream_get_meta_data($this->stream);

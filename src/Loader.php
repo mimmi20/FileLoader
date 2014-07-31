@@ -36,6 +36,10 @@
 
 namespace FileLoader;
 
+use FileLoader\Interfaces\LoaderInterface;
+use FileLoader\Interfaces\LoadLinesInterface;
+
+
 /**
  * class to load a file from a local or remote source
  *
@@ -45,7 +49,7 @@ namespace FileLoader;
  * @license    http://www.opensource.org/licenses/MIT MIT License
  * @link       https://github.com/mimmi20/FileLoader/
  */
-class Loader
+class Loader implements LoaderInterface, LoadLinesInterface
 {
     /**
      * The library version
@@ -324,6 +328,16 @@ class Loader
     }
 
     /**
+     * returns the uri, used for download
+     *
+     * @return string
+     */
+    public function getUri()
+    {
+        return $this->getLoader()->getUri();
+    }
+
+    /**
      * loads the file from a remote or local location and stores it into the cache
      *
      * @return string the file content
@@ -353,5 +367,54 @@ class Loader
     public function getLoader()
     {
         return Loader\Factory::build($this, $this->mode, $this->localFile);
+    }
+    /**
+     * return TRUE, if this connector is able to return a file line per line
+     *
+     * @return bool
+     */
+    public function isSupportingLoadingLines()
+    {
+        return $this->getLoader()->isSupportingLoadingLines();
+    }
+
+    /**
+     * initialize the connection
+     *
+     * @param string $url the url of the data
+     *
+     * @return boolean
+     */
+    public function init($url)
+    {
+        return $this->getLoader()->init();
+    }
+
+    /**
+     * checks if the end of the stream is reached
+     *
+     * @return boolean
+     */
+    public function isValid()
+    {
+        return $this->getLoader()->isValid();
+    }
+
+    /**
+     * reads one line from the stream
+     *
+     * @return string
+     */
+    public function getLine()
+    {
+        return $this->getLoader()->getLine();
+    }
+
+    /**
+     * closes an open stream
+     */
+    public function close()
+    {
+        return $this->getLoader()->close();
     }
 }

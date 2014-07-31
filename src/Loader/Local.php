@@ -116,19 +116,11 @@ class Local implements LoaderInterface, LoadLinesInterface
     {
         if (!is_readable($this->localFile)
             || !is_file($this->localFile)
-            || false === $this->init($this->getUri())
         ) {
             throw new Exception('Local file is not readable', Exception::LOCAL_FILE_NOT_READABLE);
         }
 
-        $response = '';
-        while ($this->isValid()) {
-            $response .= $this->getLine();
-        }
-
-        $this->close();
-
-        return $response;
+        return file_get_contents($this->localFile);
     }
 
     /**

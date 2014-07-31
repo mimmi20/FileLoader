@@ -221,7 +221,7 @@ class SocketLoader implements ConnectorInterface, LoadLinesInterface
 
         $response = '';
         while ($this->isValid()) {
-            $response .= $this->getLine();
+            $response .= $this->getLine() . "\n";
         }
 
         $this->close();
