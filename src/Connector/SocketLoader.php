@@ -2,9 +2,7 @@
 /**
  * class to load a file from a remote source via fsockopen|stream_socket_client
  *
- * PHP version 5
- *
- * Copyright (c) 2006-2012 Jonathan Stoppani
+ * Copyright (c) 2012-2014 Thomas Müller
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -24,10 +22,10 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  *
- * @package    Browscap
+ * @category   FileLoader
+ * @package    Connector
+ * @copyright  2012-2014 Thomas Müller
  * @author     Thomas Müller <t_mueller_stolzenhain@yahoo.de>
- * @copyright  Copyright (c) 2014 Thomas Müller
- * @version    1.0
  * @license    http://www.opensource.org/licenses/MIT MIT License
  * @link       https://github.com/mimmi20/FileLoader/
  */
@@ -44,10 +42,10 @@ use FileLoader\Interfaces\LoadLinesInterface;
 /**
  * class to load a file from a remote source via fsockopen|stream_socket_client
  *
- * @package    Browscap
+ * @package    Connector
  * @author     Thomas Müller <t_mueller_stolzenhain@yahoo.de>
- * @copyright  Copyright (c) 2014 Thomas Müller
- * @version    1.0
+ * @copyright  Copyright (c) 2012-2014 Thomas Müller
+ * @version    1.2
  * @license    http://www.opensource.org/licenses/MIT MIT License
  * @link       https://github.com/mimmi20/FileLoader/
  */

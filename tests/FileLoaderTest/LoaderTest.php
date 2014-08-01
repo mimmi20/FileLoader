@@ -1,15 +1,8 @@
 <?php
-
-namespace FileLoaderTest;
-
-use FileLoader\Loader;
-
 /**
- * Browscap.ini parsing class with caching and update capabilities
+ * class to load a file from a local or remote source
  *
- * PHP version 5
- *
- * Copyright (c) 2006-2012 Jonathan Stoppani
+ * Copyright (c) 2012-2014 Thomas Müller
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -29,12 +22,25 @@ use FileLoader\Loader;
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  *
- * @package    Browscap
- * @author     Vítor Brandão <noisebleed@noiselabs.org>
- * @copyright  Copyright (c) 2006-2012 Jonathan Stoppani
- * @version    1.0
+ * @category   FileLoader
+ * @package    Loader
+ * @copyright  2012-2014 Thomas Müller
+ * @author     Thomas Müller <t_mueller_stolzenhain@yahoo.de>
  * @license    http://www.opensource.org/licenses/MIT MIT License
- * @link       https://github.com/GaretJax/phpbrowscap/
+ * @link       https://github.com/mimmi20/FileLoader/
+ */
+
+namespace FileLoaderTest;
+
+use FileLoader\Loader;
+
+/**
+ * @package    Loader
+ * @author     Thomas Müller <t_mueller_stolzenhain@yahoo.de>
+ * @copyright  Copyright (c) 2012-2014 Thomas Müller
+ * @version    1.2
+ * @license    http://www.opensource.org/licenses/MIT MIT License
+ * @link       https://github.com/mimmi20/FileLoader/
  */
 class LoaderTest extends \PHPUnit_Framework_TestCase
 {

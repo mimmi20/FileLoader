@@ -1,15 +1,8 @@
 <?php
-
-namespace FileLoaderTest\Helper;
-
-use FileLoader\Helper\Http;
-
 /**
- * Browscap.ini parsing class with caching and update capabilities
+ * a helper class to handle http errors
  *
- * PHP version 5
- *
- * Copyright (c) 2006-2012 Jonathan Stoppani
+ * Copyright (c) 2012-2014 Thomas Müller
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -29,12 +22,25 @@ use FileLoader\Helper\Http;
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  *
- * @package    Browscap
- * @author     Vítor Brandão <noisebleed@noiselabs.org>
- * @copyright  Copyright (c) 2006-2012 Jonathan Stoppani
- * @version    1.0
+ * @category   FileLoader
+ * @package    Helper
+ * @copyright  2012-2014 Thomas Müller
+ * @author     Thomas Müller <t_mueller_stolzenhain@yahoo.de>
  * @license    http://www.opensource.org/licenses/MIT MIT License
- * @link       https://github.com/GaretJax/phpbrowscap/
+ * @link       https://github.com/mimmi20/FileLoader/
+ */
+
+namespace FileLoaderTest\Helper;
+
+use FileLoader\Helper\Http;
+
+/**
+ * @package    Helper
+ * @author     Thomas Müller <t_mueller_stolzenhain@yahoo.de>
+ * @copyright  Copyright (c) 2012-2014 Thomas Müller
+ * @version    1.2
+ * @license    http://www.opensource.org/licenses/MIT MIT License
+ * @link       https://github.com/mimmi20/FileLoader/
  */
 class HttpTest extends \PHPUnit_Framework_TestCase
 {
