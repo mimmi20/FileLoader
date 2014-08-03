@@ -194,7 +194,7 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
             ->setLocalFile(__DIR__ . '/../data/test.txt')
         ;
 
-        self::assertSame('This is a test', $this->object->load());
+        self::assertSame('This is a test' . "\n", $this->object->load());
     }
 
     public function testGetMtime()

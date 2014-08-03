@@ -82,7 +82,7 @@ class LocalTest extends \PHPUnit_Framework_TestCase
     {
         $this->object->setLocalFile(__DIR__ . '/../../data/test.txt');
 
-        self::assertSame('This is a test', $this->object->load());
+        self::assertSame('This is a test' . "\n", $this->object->load());
     }
 
     /**

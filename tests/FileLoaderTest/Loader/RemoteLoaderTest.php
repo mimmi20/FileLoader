@@ -116,7 +116,7 @@ class RemoteLoaderTest extends \PHPUnit_Framework_TestCase
 
         $this->object->setConnector($connector);
 
-        self::assertSame('This is a test' . "\n", $this->object->load());
+        self::assertSame('This is a test', $this->object->load());
     }
 
     /**
@@ -317,7 +317,7 @@ class RemoteLoaderTest extends \PHPUnit_Framework_TestCase
 
         $this->object->setConnector($connector);
 
-        self::assertSame('This is a test' . "\n", $this->object->getLine());
+        self::assertSame('This is a test', $this->object->getLine());
     }
 
     public function testClose()
