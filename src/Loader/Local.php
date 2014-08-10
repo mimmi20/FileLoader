@@ -112,9 +112,11 @@ class Local implements LoaderInterface, LoadLinesInterface
      */
     public function load()
     {
-        if (!is_readable($this->localFile)
-            || !is_file($this->localFile)
-        ) {
+        if (!is_file($this->localFile)) {
+            throw new Exception('The given Local file is not a file', Exception::LOCAL_FILE_NOT_READABLE);
+        }
+
+        if (!is_readable($this->localFile)) {
             throw new Exception('Local file is not readable', Exception::LOCAL_FILE_NOT_READABLE);
         }
 
