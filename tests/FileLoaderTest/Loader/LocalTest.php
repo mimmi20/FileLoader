@@ -87,7 +87,7 @@ class LocalTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @expectedException \FileLoader\Exception
-     * @expectedExceptionMessage Local file is not readable
+     * @expectedExceptionMessage The given Local file is not a file
      */
     public function testLoadFileMissing()
     {
