@@ -97,6 +97,11 @@ class Loader implements LoaderInterface, LoadLinesInterface
         'ProxyUser'     => null,
         'ProxyPassword' => null,
     );
+    
+    /**
+     * @var \FileLoader\Interfaces\LoaderInterface
+     */
+    private $loader = null;
 
     /**
      * The path of the local version of the browscap.ini file from which to
@@ -362,7 +367,11 @@ class Loader implements LoaderInterface, LoadLinesInterface
      */
     public function getLoader()
     {
-        return Loader\Factory::build($this, $this->mode, $this->localFile);
+        if (null === $this->loader) {
+            $this->loader = Loader\Factory::build($this, $this->mode, $this->localFile);
+        }
+        
+        return $this->loader;
     }
     /**
      * return TRUE, if this connector is able to return a file line per line
@@ -383,7 +392,7 @@ class Loader implements LoaderInterface, LoadLinesInterface
      */
     public function init($url)
     {
-        return $this->getLoader()->init();
+        return $this->getLoader()->init($url);
     }
 
     /**
