@@ -255,7 +255,7 @@ class FopenLoader implements ConnectorInterface, LoadLinesInterface
      */
     public function getLine()
     {
-        return stream_get_line($this->stream, 1024, "\n");
+        return stream_get_line($this->stream, 8192, "\n");
     }
 
     /**
