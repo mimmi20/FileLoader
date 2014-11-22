@@ -221,8 +221,6 @@ class FopenLoader implements ConnectorInterface, LoadLinesInterface
      */
     public function init($url)
     {
-        ini_set('user_agent', $this->getLoader()->getUserAgent());
-
         $context      = $this->getStreamHelper()->getStreamContext();
         $this->stream = @fopen($url, 'rb', false, $context);
 
