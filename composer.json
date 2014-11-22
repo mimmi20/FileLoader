@@ -1,6 +1,7 @@
 {
     "name": "mimmi20/file-loader",
     "type": "library",
+    "license": "MIT",
     "description": "a class to load remote or local files",
     "homepage": "http://github.com/mimmi20/FileLoader",
     "authors": [

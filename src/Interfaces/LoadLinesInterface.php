@@ -32,8 +32,6 @@
 
 namespace FileLoader\Interfaces;
 
-use FileLoader\Loader;
-
 /**
  * the interface for all supported connectors
  *

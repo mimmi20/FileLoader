@@ -1,19 +1,15 @@
 <?php
 /**
  * a helper class to handle http errors
- *
  * Copyright (c) 2012-2014 Thomas Müller
- *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation
  * the rights to use, copy, modify, merge, publish, distribute, sublicense,
  * and/or sell copies of the Software, and to permit persons to whom the
  * Software is furnished to do so, subject to the following conditions:
- *
  * The above copyright notice and this permission notice shall be included
  * in all copies or substantial portions of the Software.
- *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
  * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -32,7 +28,6 @@
 
 namespace FileLoader\Helper;
 
-use FileLoader\Loader;
 use FileLoader\Exception;
 
 /**
@@ -50,15 +45,15 @@ class Http
     /**
      * Gets the exception to throw if the given HTTP status code is an error code (4xx or 5xx)
      *
-     * @param int $http_code
+     * @param int $httpCode
      *
      * @return \FileLoader\Exception|null
      */
-    public function getHttpErrorException($http_code)
+    public function getHttpErrorException($httpCode)
     {
-        $http_code = (int) $http_code;
+        $httpCode = (int) $httpCode;
 
-        if ($http_code < 400) {
+        if ($httpCode < 400) {
             return null;
         }
 
@@ -70,12 +65,12 @@ class Http
             500 => "HTTP server error 500: Internal Server Error",
         );
 
-        if (isset($httpCodes[$http_code])) {
-            return new Exception($httpCodes[$http_code], $http_code);
-        } elseif ($http_code >= 500) {
-            return new Exception("HTTP server error $http_code", $http_code);
+        if (isset($httpCodes[$httpCode])) {
+            return new Exception($httpCodes[$httpCode], $httpCode);
+        } elseif ($httpCode >= 500) {
+            return new Exception("HTTP server error $httpCode", $httpCode);
         }
 
-        return new Exception("HTTP client error $http_code", $http_code);
+        return new Exception("HTTP client error $httpCode", $httpCode);
     }
 }

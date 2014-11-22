@@ -102,8 +102,6 @@ class Local implements LoaderInterface, LoadLinesInterface
     }
 
     /**
-     * XXX save
-     *
      * loads the ini file from a remote or local location and stores it into
      * the cache dir, parses the ini file
      *

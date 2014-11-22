@@ -167,8 +167,6 @@ class RemoteLoader implements LoaderInterface, LoadLinesInterface
     }
 
     /**
-     * XXX save
-     *
      * loads the ini file from a remote location
      *
      * @return string the file content
