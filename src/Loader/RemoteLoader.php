@@ -210,7 +210,7 @@ class RemoteLoader implements LoaderInterface, LoadLinesInterface
             throw new Exception('Bad datetime format from ' . $remoteVersionUrl, Exception::INVALID_DATETIME);
         }
 
-        return (int) $remoteDatetime;
+        return $remoteDatetime;
     }
 
     /**
