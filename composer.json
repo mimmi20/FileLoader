@@ -1,39 +1,41 @@
 {
-    "name": "mimmi20/file-loader",
-    "type": "library",
-    "license": "MIT",
-    "description": "a class to load remote or local files",
-    "homepage": "http://github.com/mimmi20/FileLoader",
-    "authors": [
-        {
-            "name": "Thomas Müller",
-            "homepage": "https://github.com/mimmi20",
-            "role": "Developer"
-        },
-        {
-            "name": "Contributors",
-            "homepage": "https://github.com/mimmi20/FileLoader/graphs/contributors"
-        }
-    ],
-    "support": {
-        "issues": "https://github.com/mimmi20/FileLoader/issues",
-        "source": "https://github.com/mimmi20/FileLoader"
+  "name": "mimmi20/file-loader",
+  "type": "library",
+  "license": "MIT",
+  "description": "a class to load remote or local files",
+  "homepage": "http://github.com/mimmi20/FileLoader",
+  "authors": [
+    {
+      "name": "Thomas Müller",
+      "homepage": "https://github.com/mimmi20",
+      "role": "Developer"
     },
-    "require": {
-        "php": ">=5.3.0"
-    },
-    "require-dev": {
-        "phpunit/phpunit": "*",
-        "mikey179/vfsStream": "1.3.*@dev",
-        "monolog/monolog": "1.*@dev"
-    },
-    "suggest": {
-        "ext-curl": "to use curl requests to get the file"
-    },
-    "autoload": {
-        "psr-4": {
-            "FileLoader\\": "src/",
-            "FileLoaderTest\\": "tests/FileLoaderTest/"
-        }
+    {
+      "name": "Contributors",
+      "homepage": "https://github.com/mimmi20/FileLoader/graphs/contributors"
     }
+  ],
+  "support": {
+    "issues": "https://github.com/mimmi20/FileLoader/issues",
+    "source": "https://github.com/mimmi20/FileLoader"
+  },
+  "require": {
+    "php": ">=5.3.0"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "*",
+    "mikey179/vfsStream": "1.3.*@dev",
+    "monolog/monolog": "1.*@dev",
+    "squizlabs/php_codesniffer": "2.*",
+    "fabpot/php-cs-fixer": "*"
+  },
+  "suggest": {
+    "ext-curl": "to use curl requests to get the file"
+  },
+  "autoload": {
+    "psr-4": {
+      "FileLoader\\": "src/",
+      "FileLoaderTest\\": "tests/FileLoaderTest/"
+    }
+  }
 }
