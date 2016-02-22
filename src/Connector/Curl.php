@@ -23,29 +23,32 @@
  * THE SOFTWARE.
  *
  * @category   FileLoader
- * @package    Connector
+ *
  * @copyright  2012-2014 Thomas Müller
  * @author     Thomas Müller <t_mueller_stolzenhain@yahoo.de>
  * @license    http://www.opensource.org/licenses/MIT MIT License
+ *
  * @link       https://github.com/mimmi20/FileLoader/
  */
 
 namespace FileLoader\Connector;
 
+use FileLoader\Exception;
 use FileLoader\Helper\Http;
 use FileLoader\Helper\StreamCreator;
-use FileLoader\Loader;
-use FileLoader\Exception;
 use FileLoader\Interfaces\ConnectorInterface;
+use FileLoader\Loader;
 
 /**
  * class to load a file from a remote source with the curl extension
  *
- * @package    Connector
  * @author     Thomas Müller <t_mueller_stolzenhain@yahoo.de>
  * @copyright  Copyright (c) 2012-2014 Thomas Müller
+ *
  * @version    1.2
+ *
  * @license    http://www.opensource.org/licenses/MIT MIT License
+ *
  * @link       https://github.com/mimmi20/FileLoader/
  */
 class Curl implements ConnectorInterface
@@ -139,7 +142,8 @@ class Curl implements ConnectorInterface
      * @param string $url the url of the data
      *
      * @throws \FileLoader\Exception
-     * @return string|boolean the retrieved data
+     *
+     * @return string|bool the retrieved data
      */
     public function getRemoteData($url)
     {
@@ -166,6 +170,7 @@ class Curl implements ConnectorInterface
      * @param string $url
      *
      * @throws \FileLoader\Exception
+     *
      * @return resource
      */
     private function init($url)
@@ -184,7 +189,7 @@ class Curl implements ConnectorInterface
             $proxy_protocol = $this->getLoader()->getOption('ProxyProtocol');
 
             if ($proxy_protocol !== null) {
-                $allowedProtocolls = array(StreamCreator::PROXY_PROTOCOL_HTTP, StreamCreator::PROXY_PROTOCOL_HTTPS);
+                $allowedProtocolls = [StreamCreator::PROXY_PROTOCOL_HTTP, StreamCreator::PROXY_PROTOCOL_HTTPS];
 
                 if (!in_array($proxy_protocol, $allowedProtocolls)) {
                     throw new Exception(
@@ -213,7 +218,7 @@ class Curl implements ConnectorInterface
 
                 $proxy_auth = $this->getLoader()->getOption('ProxyAuth');
                 if ($proxy_auth !== null) {
-                    $allowedAuth = array(StreamCreator::PROXY_AUTH_BASIC, StreamCreator::PROXY_AUTH_NTLM);
+                    $allowedAuth = [StreamCreator::PROXY_AUTH_BASIC, StreamCreator::PROXY_AUTH_NTLM];
 
                     if (!in_array($proxy_auth, $allowedAuth)) {
                         throw new Exception(

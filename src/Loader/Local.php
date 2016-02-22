@@ -23,28 +23,31 @@
  * THE SOFTWARE.
  *
  * @category   FileLoader
- * @package    Loader
+ *
  * @copyright  2012-2014 Thomas Müller
  * @author     Thomas Müller <t_mueller_stolzenhain@yahoo.de>
  * @license    http://www.opensource.org/licenses/MIT MIT License
+ *
  * @link       https://github.com/mimmi20/FileLoader/
  */
 
 namespace FileLoader\Loader;
 
 use FileLoader\Exception;
-use FileLoader\Loader;
 use FileLoader\Interfaces\LoaderInterface;
 use FileLoader\Interfaces\LoadLinesInterface;
+use FileLoader\Loader;
 
 /**
  * class to load a file from a local source
  *
- * @package    Loader
  * @author     Thomas Müller <t_mueller_stolzenhain@yahoo.de>
  * @copyright  Copyright (c) 2012-2014 Thomas Müller
+ *
  * @version    1.2
+ *
  * @license    http://www.opensource.org/licenses/MIT MIT License
+ *
  * @link       https://github.com/mimmi20/FileLoader/
  */
 class Local implements LoaderInterface, LoadLinesInterface
@@ -70,6 +73,7 @@ class Local implements LoaderInterface, LoadLinesInterface
      * @param string $filename the file name
      *
      * @throws \FileLoader\Exception
+     *
      * @return \FileLoader\Loader\Local
      */
     public function setLocalFile($filename)
@@ -106,6 +110,7 @@ class Local implements LoaderInterface, LoadLinesInterface
      * the cache dir, parses the ini file
      *
      * @throws \FileLoader\Exception
+     *
      * @return string the content of the local ini file
      */
     public function load()
@@ -135,6 +140,7 @@ class Local implements LoaderInterface, LoadLinesInterface
      * Gets the local ini file update timestamp
      *
      * @throws Exception
+     *
      * @return int the local modification timestamp
      */
     public function getMTime()
@@ -151,7 +157,7 @@ class Local implements LoaderInterface, LoadLinesInterface
      *
      * @param string $url
      *
-     * @return boolean
+     * @return bool
      */
     public function init($url)
     {
@@ -167,7 +173,7 @@ class Local implements LoaderInterface, LoadLinesInterface
     /**
      * checks if the end of the stream is reached
      *
-     * @return boolean
+     * @return bool
      */
     public function isValid()
     {

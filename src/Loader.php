@@ -23,10 +23,11 @@
  * THE SOFTWARE.
  *
  * @category   FileLoader
- * @package    FileLoader
+ *
  * @copyright  2012-2014 Thomas Müller
  * @author     Thomas Müller <t_mueller_stolzenhain@yahoo.de>
  * @license    http://www.opensource.org/licenses/MIT MIT License
+ *
  * @link       https://github.com/mimmi20/FileLoader/
  */
 
@@ -38,11 +39,13 @@ use FileLoader\Interfaces\LoadLinesInterface;
 /**
  * class to load a file from a local or remote source
  *
- * @package    FileLoader
  * @author     Thomas Müller <t_mueller_stolzenhain@yahoo.de>
  * @copyright  Copyright (c) 2012-2014 Thomas Müller
+ *
  * @version    1.2
+ *
  * @license    http://www.opensource.org/licenses/MIT MIT License
+ *
  * @link       https://github.com/mimmi20/FileLoader/
  */
 class Loader implements LoaderInterface, LoadLinesInterface
@@ -89,15 +92,15 @@ class Loader implements LoaderInterface, LoadLinesInterface
      *
      * @var array
      */
-    private $options = array(
+    private $options = [
         'ProxyProtocol' => null,
         'ProxyHost'     => null,
         'ProxyPort'     => null,
         'ProxyAuth'     => null,
         'ProxyUser'     => null,
         'ProxyPassword' => null,
-    );
-    
+    ];
+
     /**
      * @var \FileLoader\Interfaces\LoaderInterface
      */
@@ -160,6 +163,7 @@ class Loader implements LoaderInterface, LoadLinesInterface
         foreach ($options as $option_key => $option_value) {
             $this->setOption($option_key, $option_value);
         }
+
         return $this;
     }
 
@@ -169,8 +173,9 @@ class Loader implements LoaderInterface, LoadLinesInterface
      * @param string $key
      * @param mixed  $value
      *
-     * @return \FileLoader\Loader
      * @throws \FileLoader\Exception
+     *
+     * @return \FileLoader\Loader
      */
     public function setOption($key, $value)
     {
@@ -179,6 +184,7 @@ class Loader implements LoaderInterface, LoadLinesInterface
         } else {
             throw new Exception('Invalid option key "' . (string) $key . '".', Exception::INVALID_OPTION);
         }
+
         return $this;
     }
 
@@ -195,7 +201,7 @@ class Loader implements LoaderInterface, LoadLinesInterface
             return $this->options[$key];
         }
 
-        return null;
+        return;
     }
 
     /**
@@ -204,6 +210,7 @@ class Loader implements LoaderInterface, LoadLinesInterface
      * @param string $filename the file name
      *
      * @throws \FileLoader\Exception
+     *
      * @return \FileLoader\Loader
      */
     public function setLocalFile($filename)
@@ -223,6 +230,7 @@ class Loader implements LoaderInterface, LoadLinesInterface
      * @param string $remoteDataUrl
      *
      * @throws \FileLoader\Exception
+     *
      * @return \FileLoader\Loader
      */
     public function setRemoteDataUrl($remoteDataUrl)
@@ -252,6 +260,7 @@ class Loader implements LoaderInterface, LoadLinesInterface
      * @param string $remoteVerUrl
      *
      * @throws \FileLoader\Exception
+     *
      * @return \FileLoader\Loader
      */
     public function setRemoteVerUrl($remoteVerUrl)
@@ -278,7 +287,7 @@ class Loader implements LoaderInterface, LoadLinesInterface
     /**
      * returns the timeout
      *
-     * @param integer $timeout
+     * @param int $timeout
      *
      * @return \FileLoader\Loader
      */
@@ -292,7 +301,7 @@ class Loader implements LoaderInterface, LoadLinesInterface
     /**
      * returns the timeout
      *
-     * @return integer
+     * @return int
      */
     public function getTimeout()
     {
@@ -370,7 +379,7 @@ class Loader implements LoaderInterface, LoadLinesInterface
         if (null === $this->loader) {
             $this->loader = Loader\Factory::build($this, $this->mode, $this->localFile);
         }
-        
+
         return $this->loader;
     }
     /**
@@ -388,7 +397,7 @@ class Loader implements LoaderInterface, LoadLinesInterface
      *
      * @param string $url the url of the data
      *
-     * @return boolean
+     * @return bool
      */
     public function init($url)
     {
@@ -398,7 +407,7 @@ class Loader implements LoaderInterface, LoadLinesInterface
     /**
      * checks if the end of the stream is reached
      *
-     * @return boolean
+     * @return bool
      */
     public function isValid()
     {

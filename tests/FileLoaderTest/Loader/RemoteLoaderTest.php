@@ -23,10 +23,11 @@
  * THE SOFTWARE.
  *
  * @category   FileLoader
- * @package    Loader
+ *
  * @copyright  2012-2014 Thomas Müller
  * @author     Thomas Müller <t_mueller_stolzenhain@yahoo.de>
  * @license    http://www.opensource.org/licenses/MIT MIT License
+ *
  * @link       https://github.com/mimmi20/FileLoader/
  */
 
@@ -35,11 +36,13 @@ namespace FileLoaderTest\Loader;
 use FileLoader\Loader;
 
 /**
- * @package    Loader
  * @author     Thomas Müller <t_mueller_stolzenhain@yahoo.de>
  * @copyright  Copyright (c) 2012-2014 Thomas Müller
+ *
  * @version    1.2
+ *
  * @license    http://www.opensource.org/licenses/MIT MIT License
+ *
  * @link       https://github.com/mimmi20/FileLoader/
  */
 class RemoteLoaderTest extends \PHPUnit_Framework_TestCase
@@ -60,7 +63,7 @@ class RemoteLoaderTest extends \PHPUnit_Framework_TestCase
 
     public function testSetGetLoader()
     {
-        $loader = $this->getMock('\FileLoader\Loader', array(), array(), '', false);
+        $loader = $this->getMock('\FileLoader\Loader', [], [], '', false);
 
         self::assertSame($this->object, $this->object->setLoader($loader));
         self::assertSame($loader, $this->object->getLoader());
@@ -68,7 +71,7 @@ class RemoteLoaderTest extends \PHPUnit_Framework_TestCase
 
     public function testSetGetHttpHelper()
     {
-        $helper = $this->getMock('\FileLoader\Helper\Http', array(), array(), '', false);
+        $helper = $this->getMock('\FileLoader\Helper\Http', [], [], '', false);
 
         self::assertSame($this->object, $this->object->setHttpHelper($helper));
         self::assertSame($helper, $this->object->getHttpHelper());
@@ -76,7 +79,7 @@ class RemoteLoaderTest extends \PHPUnit_Framework_TestCase
 
     public function testSetGetStreamHelper()
     {
-        $helper = $this->getMock('\FileLoader\Helper\StreamCreator', array(), array(), '', false);
+        $helper = $this->getMock('\FileLoader\Helper\StreamCreator', [], [], '', false);
 
         self::assertSame($this->object, $this->object->setStreamHelper($helper));
         self::assertSame($helper, $this->object->getStreamHelper());
@@ -84,7 +87,7 @@ class RemoteLoaderTest extends \PHPUnit_Framework_TestCase
 
     public function testSetGetConnector()
     {
-        $connector = $this->getMock('\FileLoader\Connector\Curl', array(), array(), '', false);
+        $connector = $this->getMock('\FileLoader\Connector\Curl', [], [], '', false);
 
         self::assertSame($this->object, $this->object->setConnector($connector));
         self::assertSame($connector, $this->object->getConnector());
@@ -94,8 +97,8 @@ class RemoteLoaderTest extends \PHPUnit_Framework_TestCase
     {
         $loader = $this->getMock(
             '\FileLoader\Loader',
-            array(),
-            array(),
+            [],
+            [],
             '',
             false
         );
@@ -103,16 +106,15 @@ class RemoteLoaderTest extends \PHPUnit_Framework_TestCase
 
         $connector = $this->getMock(
             '\FileLoader\Connector\Curl',
-            array('getRemoteData'),
-            array(),
+            ['getRemoteData'],
+            [],
             '',
             false
         );
         $connector
             ->expects(self::once())
             ->method('getRemoteData')
-            ->will(self::returnValue('This is a test'))
-        ;
+            ->will(self::returnValue('This is a test'));
 
         $this->object->setConnector($connector);
 
@@ -127,8 +129,8 @@ class RemoteLoaderTest extends \PHPUnit_Framework_TestCase
     {
         $loader = $this->getMock(
             '\FileLoader\Loader',
-            array(),
-            array(),
+            [],
+            [],
             '',
             false
         );
@@ -136,16 +138,15 @@ class RemoteLoaderTest extends \PHPUnit_Framework_TestCase
 
         $connector = $this->getMock(
             '\FileLoader\Connector\Curl',
-            array('getRemoteData'),
-            array(),
+            ['getRemoteData'],
+            [],
             '',
             false
         );
         $connector
             ->expects(self::once())
             ->method('getRemoteData')
-            ->will(self::returnValue(false))
-        ;
+            ->will(self::returnValue(false));
 
         $this->object->setConnector($connector);
 
@@ -156,8 +157,8 @@ class RemoteLoaderTest extends \PHPUnit_Framework_TestCase
     {
         $loader = $this->getMock(
             '\FileLoader\Loader',
-            array(),
-            array(),
+            [],
+            [],
             '',
             false
         );
@@ -165,16 +166,15 @@ class RemoteLoaderTest extends \PHPUnit_Framework_TestCase
 
         $connector = $this->getMock(
             '\FileLoader\Connector\Curl',
-            array('getRemoteData'),
-            array(),
+            ['getRemoteData'],
+            [],
             '',
             false
         );
         $connector
             ->expects(self::once())
             ->method('getRemoteData')
-            ->will(self::returnValue(time()))
-        ;
+            ->will(self::returnValue(time()));
 
         $this->object->setConnector($connector);
 
@@ -189,31 +189,29 @@ class RemoteLoaderTest extends \PHPUnit_Framework_TestCase
     {
         $loader = $this->getMock(
             '\FileLoader\Loader',
-            array('getRemoteVerUrl'),
-            array(),
+            ['getRemoteVerUrl'],
+            [],
             '',
             false
         );
         $loader
             ->expects(self::once())
             ->method('getRemoteVerUrl')
-            ->will(self::returnValue('http://example.org/version'))
-        ;
+            ->will(self::returnValue('http://example.org/version'));
 
         $this->object->setLoader($loader);
 
         $connector = $this->getMock(
             '\FileLoader\Connector\Curl',
-            array('getRemoteData'),
-            array(),
+            ['getRemoteData'],
+            [],
             '',
             false
         );
         $connector
             ->expects(self::once())
             ->method('getRemoteData')
-            ->will(self::returnValue(false))
-        ;
+            ->will(self::returnValue(false));
 
         $this->object->setConnector($connector);
 
@@ -224,16 +222,15 @@ class RemoteLoaderTest extends \PHPUnit_Framework_TestCase
     {
         $loader = $this->getMock(
             '\FileLoader\Loader',
-            array('getRemoteDataUrl'),
-            array(),
+            ['getRemoteDataUrl'],
+            [],
             '',
             false
         );
         $loader
             ->expects(self::once())
             ->method('getRemoteDataUrl')
-            ->will(self::returnValue('http://example.org/data'))
-        ;
+            ->will(self::returnValue('http://example.org/data'));
 
         $this->object->setLoader($loader);
 
@@ -244,16 +241,15 @@ class RemoteLoaderTest extends \PHPUnit_Framework_TestCase
     {
         $connector = $this->getMock(
             '\FileLoader\Connector\SocketLoader',
-            array('isSupportingLoadingLines'),
-            array(),
+            ['isSupportingLoadingLines'],
+            [],
             '',
             false
         );
         $connector
             ->expects(self::once())
             ->method('isSupportingLoadingLines')
-            ->will(self::returnValue(true))
-        ;
+            ->will(self::returnValue(true));
 
         $this->object->setConnector($connector);
 
@@ -264,16 +260,15 @@ class RemoteLoaderTest extends \PHPUnit_Framework_TestCase
     {
         $connector = $this->getMock(
             '\FileLoader\Connector\SocketLoader',
-            array('init'),
-            array(),
+            ['init'],
+            [],
             '',
             false
         );
         $connector
             ->expects(self::once())
             ->method('init')
-            ->will(self::returnValue(true))
-        ;
+            ->will(self::returnValue(true));
 
         $this->object->setConnector($connector);
 
@@ -284,16 +279,15 @@ class RemoteLoaderTest extends \PHPUnit_Framework_TestCase
     {
         $connector = $this->getMock(
             '\FileLoader\Connector\SocketLoader',
-            array('isValid'),
-            array(),
+            ['isValid'],
+            [],
             '',
             false
         );
         $connector
             ->expects(self::once())
             ->method('isValid')
-            ->will(self::returnValue(false))
-        ;
+            ->will(self::returnValue(false));
 
         $this->object->setConnector($connector);
 
@@ -304,16 +298,15 @@ class RemoteLoaderTest extends \PHPUnit_Framework_TestCase
     {
         $connector = $this->getMock(
             '\FileLoader\Connector\SocketLoader',
-            array('getLine'),
-            array(),
+            ['getLine'],
+            [],
             '',
             false
         );
         $connector
             ->expects(self::once())
             ->method('getLine')
-            ->will(self::returnValue('This is a test'))
-        ;
+            ->will(self::returnValue('This is a test'));
 
         $this->object->setConnector($connector);
 
@@ -324,16 +317,15 @@ class RemoteLoaderTest extends \PHPUnit_Framework_TestCase
     {
         $connector = $this->getMock(
             '\FileLoader\Connector\SocketLoader',
-            array('close'),
-            array(),
+            ['close'],
+            [],
             '',
             false
         );
         $connector
             ->expects(self::once())
             ->method('close')
-            ->will(self::returnValue(null))
-        ;
+            ->will(self::returnValue(null));
 
         $this->object->setConnector($connector);
 

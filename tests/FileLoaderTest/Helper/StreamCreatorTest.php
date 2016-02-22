@@ -23,10 +23,11 @@
  * THE SOFTWARE.
  *
  * @category   FileLoader
- * @package    Helper
+ *
  * @copyright  2012-2014 Thomas Müller
  * @author     Thomas Müller <t_mueller_stolzenhain@yahoo.de>
  * @license    http://www.opensource.org/licenses/MIT MIT License
+ *
  * @link       https://github.com/mimmi20/FileLoader/
  */
 
@@ -35,11 +36,13 @@ namespace FileLoaderTest\Helper;
 use FileLoader\Helper\StreamCreator;
 
 /**
- * @package    Helper
  * @author     Thomas Müller <t_mueller_stolzenhain@yahoo.de>
  * @copyright  Copyright (c) 2012-2014 Thomas Müller
+ *
  * @version    1.2
+ *
  * @license    http://www.opensource.org/licenses/MIT MIT License
+ *
  * @link       https://github.com/mimmi20/FileLoader/
  */
 class StreamCreatorTest extends \PHPUnit_Framework_TestCase
@@ -60,19 +63,18 @@ class StreamCreatorTest extends \PHPUnit_Framework_TestCase
 
     public function testSetLoader()
     {
-        $loader = $this->getMock('\FileLoader\Loader', array(), array(), '', false);
+        $loader = $this->getMock('\FileLoader\Loader', [], [], '', false);
 
         self::assertSame($this->object, $this->object->setLoader($loader));
     }
 
     public function testGetStreamContextWithoutProxy()
     {
-        $loader = $this->getMock('\FileLoader\Loader', array('getOption'), array(), '', false);
+        $loader = $this->getMock('\FileLoader\Loader', ['getOption'], [], '', false);
         $loader
             ->expects(self::once())
             ->method('getOption')
-            ->will(self::returnValue(null))
-        ;
+            ->will(self::returnValue(null));
 
         self::assertSame($this->object, $this->object->setLoader($loader));
         self::assertTrue(is_resource($this->object->getStreamContext()));
@@ -80,20 +82,19 @@ class StreamCreatorTest extends \PHPUnit_Framework_TestCase
 
     public function testGetStreamContextWithProxyWithoutAuthAndUser()
     {
-        $map = array(
-            array('ProxyHost', 'example.org'),
-            array('ProxyProtocol', 'http'),
-            array('ProxyPort', 80),
-            array('ProxyAuth', null),
-            array('ProxyUser', null),
-        );
+        $map = [
+            ['ProxyHost', 'example.org'],
+            ['ProxyProtocol', 'http'],
+            ['ProxyPort', 80],
+            ['ProxyAuth', null],
+            ['ProxyUser', null],
+        ];
 
-        $loader = $this->getMock('\FileLoader\Loader', array('getOption'), array(), '', false);
+        $loader = $this->getMock('\FileLoader\Loader', ['getOption'], [], '', false);
         $loader
             ->expects(self::exactly(5))
             ->method('getOption')
-            ->will(self::returnValueMap($map))
-        ;
+            ->will(self::returnValueMap($map));
 
         self::assertSame($this->object, $this->object->setLoader($loader));
         self::assertTrue(is_resource($this->object->getStreamContext()));
@@ -101,20 +102,19 @@ class StreamCreatorTest extends \PHPUnit_Framework_TestCase
 
     public function testGetStreamContextWithProxyWithoutAuthUserPortAndProtocol()
     {
-        $map = array(
-            array('ProxyHost', 'example.org'),
-            array('ProxyProtocol', null),
-            array('ProxyPort', null),
-            array('ProxyAuth', null),
-            array('ProxyUser', null),
-        );
+        $map = [
+            ['ProxyHost', 'example.org'],
+            ['ProxyProtocol', null],
+            ['ProxyPort', null],
+            ['ProxyAuth', null],
+            ['ProxyUser', null],
+        ];
 
-        $loader = $this->getMock('\FileLoader\Loader', array('getOption'), array(), '', false);
+        $loader = $this->getMock('\FileLoader\Loader', ['getOption'], [], '', false);
         $loader
             ->expects(self::exactly(5))
             ->method('getOption')
-            ->will(self::returnValueMap($map))
-        ;
+            ->will(self::returnValueMap($map));
 
         self::assertSame($this->object, $this->object->setLoader($loader));
         self::assertTrue(is_resource($this->object->getStreamContext()));
@@ -122,21 +122,20 @@ class StreamCreatorTest extends \PHPUnit_Framework_TestCase
 
     public function testGetStreamContextWithProxyWithAuthAndUser()
     {
-        $map = array(
-            array('ProxyHost', 'example.org'),
-            array('ProxyProtocol', 'http'),
-            array('ProxyPort', 80),
-            array('ProxyAuth', StreamCreator::PROXY_AUTH_BASIC),
-            array('ProxyUser', 'testUser'),
-            array('ProxyPassword', 'testPassword'),
-        );
+        $map = [
+            ['ProxyHost', 'example.org'],
+            ['ProxyProtocol', 'http'],
+            ['ProxyPort', 80],
+            ['ProxyAuth', StreamCreator::PROXY_AUTH_BASIC],
+            ['ProxyUser', 'testUser'],
+            ['ProxyPassword', 'testPassword'],
+        ];
 
-        $loader = $this->getMock('\FileLoader\Loader', array('getOption'), array(), '', false);
+        $loader = $this->getMock('\FileLoader\Loader', ['getOption'], [], '', false);
         $loader
             ->expects(self::exactly(6))
             ->method('getOption')
-            ->will(self::returnValueMap($map))
-        ;
+            ->will(self::returnValueMap($map));
 
         self::assertSame($this->object, $this->object->setLoader($loader));
         self::assertTrue(is_resource($this->object->getStreamContext()));
@@ -144,21 +143,20 @@ class StreamCreatorTest extends \PHPUnit_Framework_TestCase
 
     public function testGetStreamContextWithProxyWithAuthAndUserWithoutPassword()
     {
-        $map = array(
-            array('ProxyHost', 'example.org'),
-            array('ProxyProtocol', 'http'),
-            array('ProxyPort', 80),
-            array('ProxyAuth', StreamCreator::PROXY_AUTH_BASIC),
-            array('ProxyUser', 'testUser'),
-            array('ProxyPassword', null),
-        );
+        $map = [
+            ['ProxyHost', 'example.org'],
+            ['ProxyProtocol', 'http'],
+            ['ProxyPort', 80],
+            ['ProxyAuth', StreamCreator::PROXY_AUTH_BASIC],
+            ['ProxyUser', 'testUser'],
+            ['ProxyPassword', null],
+        ];
 
-        $loader = $this->getMock('\FileLoader\Loader', array('getOption'), array(), '', false);
+        $loader = $this->getMock('\FileLoader\Loader', ['getOption'], [], '', false);
         $loader
             ->expects(self::exactly(6))
             ->method('getOption')
-            ->will(self::returnValueMap($map))
-        ;
+            ->will(self::returnValueMap($map));
 
         self::assertSame($this->object, $this->object->setLoader($loader));
         self::assertTrue(is_resource($this->object->getStreamContext()));
@@ -170,21 +168,20 @@ class StreamCreatorTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetStreamContextWithWrongProtocol()
     {
-        $map = array(
-            array('ProxyHost', 'example.org'),
-            array('ProxyProtocol', 'htt'),
-            array('ProxyPort', 80),
-            array('ProxyAuth', StreamCreator::PROXY_AUTH_BASIC),
-            array('ProxyUser', 'testUser'),
-            array('ProxyPassword', 'testPassword'),
-        );
+        $map = [
+            ['ProxyHost', 'example.org'],
+            ['ProxyProtocol', 'htt'],
+            ['ProxyPort', 80],
+            ['ProxyAuth', StreamCreator::PROXY_AUTH_BASIC],
+            ['ProxyUser', 'testUser'],
+            ['ProxyPassword', 'testPassword'],
+        ];
 
-        $loader = $this->getMock('\FileLoader\Loader', array('getOption'), array(), '', false);
+        $loader = $this->getMock('\FileLoader\Loader', ['getOption'], [], '', false);
         $loader
             ->expects(self::exactly(2))
             ->method('getOption')
-            ->will(self::returnValueMap($map))
-        ;
+            ->will(self::returnValueMap($map));
 
         $this->object->setLoader($loader);
         $this->object->getStreamContext();
@@ -196,21 +193,20 @@ class StreamCreatorTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetStreamContextWithWrongProxyAuthMethod()
     {
-        $map = array(
-            array('ProxyHost', 'example.org'),
-            array('ProxyProtocol', 'http'),
-            array('ProxyPort', 80),
-            array('ProxyAuth', StreamCreator::PROXY_AUTH_NTLM),
-            array('ProxyUser', 'testUser'),
-            array('ProxyPassword', 'testPassword'),
-        );
+        $map = [
+            ['ProxyHost', 'example.org'],
+            ['ProxyProtocol', 'http'],
+            ['ProxyPort', 80],
+            ['ProxyAuth', StreamCreator::PROXY_AUTH_NTLM],
+            ['ProxyUser', 'testUser'],
+            ['ProxyPassword', 'testPassword'],
+        ];
 
-        $loader = $this->getMock('\FileLoader\Loader', array('getOption'), array(), '', false);
+        $loader = $this->getMock('\FileLoader\Loader', ['getOption'], [], '', false);
         $loader
             ->expects(self::exactly(4))
             ->method('getOption')
-            ->will(self::returnValueMap($map))
-        ;
+            ->will(self::returnValueMap($map));
 
         $this->object->setLoader($loader);
         $this->object->getStreamContext();

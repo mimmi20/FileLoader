@@ -23,10 +23,11 @@
  * THE SOFTWARE.
  *
  * @category   FileLoader
- * @package    Loader
+ *
  * @copyright  2012-2014 Thomas Müller
  * @author     Thomas Müller <t_mueller_stolzenhain@yahoo.de>
  * @license    http://www.opensource.org/licenses/MIT MIT License
+ *
  * @link       https://github.com/mimmi20/FileLoader/
  */
 
@@ -35,11 +36,13 @@ namespace FileLoaderTest;
 use FileLoader\Loader;
 
 /**
- * @package    Loader
  * @author     Thomas Müller <t_mueller_stolzenhain@yahoo.de>
  * @copyright  Copyright (c) 2012-2014 Thomas Müller
+ *
  * @version    1.2
+ *
  * @license    http://www.opensource.org/licenses/MIT MIT License
+ *
  * @link       https://github.com/mimmi20/FileLoader/
  */
 class LoaderTest extends \PHPUnit_Framework_TestCase
@@ -100,7 +103,7 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
 
     public function testConstructWithValidOption()
     {
-        $options = array('ProxyProtocol' => 'http');
+        $options = ['ProxyProtocol' => 'http'];
         new Loader($options);
     }
 
@@ -191,8 +194,7 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
     {
         $this->object
             ->setMode(Loader::UPDATE_LOCAL)
-            ->setLocalFile(__DIR__ . '/../data/test.txt')
-        ;
+            ->setLocalFile(__DIR__ . '/../data/test.txt');
 
         self::assertSame('This is a test', $this->object->load());
     }
@@ -201,8 +203,7 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
     {
         $this->object
             ->setMode(Loader::UPDATE_LOCAL)
-            ->setLocalFile(__DIR__ . '/../data/test.txt')
-        ;
+            ->setLocalFile(__DIR__ . '/../data/test.txt');
 
         self::assertInternalType('integer', $this->object->getMTime());
     }

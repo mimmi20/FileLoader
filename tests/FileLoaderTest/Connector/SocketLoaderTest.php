@@ -23,10 +23,11 @@
  * THE SOFTWARE.
  *
  * @category   FileLoader
- * @package    Connector
+ *
  * @copyright  2012-2014 Thomas Müller
  * @author     Thomas Müller <t_mueller_stolzenhain@yahoo.de>
  * @license    http://www.opensource.org/licenses/MIT MIT License
+ *
  * @link       https://github.com/mimmi20/FileLoader/
  */
 
@@ -36,14 +37,16 @@ use FileLoader\Connector;
 use FileLoader\Loader;
 
 /**
- * @package    Connector
  * @author     Thomas Müller <t_mueller_stolzenhain@yahoo.de>
  * @copyright  Copyright (c) 2012-2014 Thomas Müller
+ *
  * @version    1.2
+ *
  * @license    http://www.opensource.org/licenses/MIT MIT License
+ *
  * @link       https://github.com/mimmi20/FileLoader/
  */
-class SocketloaderTest extends \PHPUnit_Framework_TestCase
+class SocketLoaderTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @var Connector\SocketLoader
@@ -61,7 +64,7 @@ class SocketloaderTest extends \PHPUnit_Framework_TestCase
 
     public function testSetGetLoader()
     {
-        $loader = $this->getMock('\FileLoader\Loader', array(), array(), '', false);
+        $loader = $this->getMock('\FileLoader\Loader', [], [], '', false);
 
         self::assertSame($this->object, $this->object->setLoader($loader));
         self::assertSame($loader, $this->object->getLoader());
@@ -69,7 +72,7 @@ class SocketloaderTest extends \PHPUnit_Framework_TestCase
 
     public function testSetGetHttpHelper()
     {
-        $helper = $this->getMock('\FileLoader\Helper\Http', array(), array(), '', false);
+        $helper = $this->getMock('\FileLoader\Helper\Http', [], [], '', false);
 
         self::assertSame($this->object, $this->object->setHttpHelper($helper));
         self::assertSame($helper, $this->object->getHttpHelper());
@@ -77,7 +80,7 @@ class SocketloaderTest extends \PHPUnit_Framework_TestCase
 
     public function testSetGetStreamHelper()
     {
-        $helper = $this->getMock('\FileLoader\Helper\StreamCreator', array(), array(), '', false);
+        $helper = $this->getMock('\FileLoader\Helper\StreamCreator', [], [], '', false);
 
         self::assertSame($this->object, $this->object->setStreamHelper($helper));
         self::assertSame($helper, $this->object->getStreamHelper());
@@ -90,16 +93,16 @@ class SocketloaderTest extends \PHPUnit_Framework_TestCase
 
     public function createContext()
     {
-        $config = array(
-            'tcp' => array(
+        $config = [
+            'tcp' => [
                 'method'          => 'GET',
                 'user_agent'      => 'Test-UserAgent',
                 // ignore errors, handle them manually
                 'ignore_errors'   => true,
                 'request_fulluri' => true,
                 'timeout'         => 60,
-            )
-        );
+            ],
+        ];
 
         return stream_context_create($config);
     }
@@ -108,25 +111,23 @@ class SocketloaderTest extends \PHPUnit_Framework_TestCase
     {
         $this->markTestSkipped('need to be reworked');
 
-        $loader = $this->getMock('\FileLoader\Loader', array(), array(), '', false);
+        $loader = $this->getMock('\FileLoader\Loader', [], [], '', false);
 
         $httpHelper = $this->getMock(
             '\FileLoader\Helper\Http',
-            array('getHttpErrorException'),
-            array(),
+            ['getHttpErrorException'],
+            [],
             '',
             false
         );
         $httpHelper
             ->expects(self::never())
             ->method('getHttpErrorException')
-            ->will(self::returnValue(null))
-        ;
+            ->will(self::returnValue(null));
 
         $this->object
             ->setHttpHelper($httpHelper)
-            ->setLoader($loader)
-        ;
+            ->setLoader($loader);
 
         $response = $this->object->getRemoteData('http://browscap.org/stream?q=PHP_BrowsCapINI');
 

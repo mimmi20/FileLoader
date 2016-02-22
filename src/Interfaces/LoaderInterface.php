@@ -23,10 +23,11 @@
  * THE SOFTWARE.
  *
  * @category   FileLoader
- * @package    Interfaces
+ *
  * @copyright  2012-2014 Thomas Müller
  * @author     Thomas Müller <t_mueller_stolzenhain@yahoo.de>
  * @license    http://www.opensource.org/licenses/MIT MIT License
+ *
  * @link       https://github.com/mimmi20/FileLoader/
  */
 
@@ -37,11 +38,13 @@ use FileLoader\Exception;
 /**
  * interface to load files
  *
- * @package    Interfaces
  * @author     Thomas Müller <t_mueller_stolzenhain@yahoo.de>
  * @copyright  Copyright (c) 2012-2014 Thomas Müller
+ *
  * @version    1.2
+ *
  * @license    http://www.opensource.org/licenses/MIT MIT License
+ *
  * @link       https://github.com/mimmi20/FileLoader/
  */
 interface LoaderInterface
@@ -51,6 +54,7 @@ interface LoaderInterface
      * the cache dir, parses the ini file
      *
      * @throws \FileLoader\Exception
+     *
      * @return string the content of the local ini file
      */
     public function load();
@@ -66,6 +70,7 @@ interface LoaderInterface
      * Gets the local ini file update timestamp
      *
      * @throws Exception
+     *
      * @return int the local modification timestamp
      */
     public function getMTime();

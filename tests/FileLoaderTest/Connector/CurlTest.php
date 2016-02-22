@@ -23,25 +23,28 @@
  * THE SOFTWARE.
  *
  * @category   FileLoader
- * @package    Connector
+ *
  * @copyright  2012-2014 Thomas Müller
  * @author     Thomas Müller <t_mueller_stolzenhain@yahoo.de>
  * @license    http://www.opensource.org/licenses/MIT MIT License
+ *
  * @link       https://github.com/mimmi20/FileLoader/
  */
 
 namespace FileLoaderTest\Connector;
 
 use FileLoader\Connector;
-use FileLoader\Loader;
 use FileLoader\Helper\StreamCreator;
+use FileLoader\Loader;
 
 /**
- * @package    Connector
  * @author     Thomas Müller <t_mueller_stolzenhain@yahoo.de>
  * @copyright  Copyright (c) 2012-2014 Thomas Müller
+ *
  * @version    1.2
+ *
  * @license    http://www.opensource.org/licenses/MIT MIT License
+ *
  * @link       https://github.com/mimmi20/FileLoader/
  */
 class CurlTest extends \PHPUnit_Framework_TestCase
@@ -66,7 +69,7 @@ class CurlTest extends \PHPUnit_Framework_TestCase
 
     public function testSetGetLoader()
     {
-        $loader = $this->getMock('\FileLoader\Loader', array(), array(), '', false);
+        $loader = $this->getMock('\FileLoader\Loader', [], [], '', false);
 
         self::assertSame($this->object, $this->object->setLoader($loader));
         self::assertSame($loader, $this->object->getLoader());
@@ -74,7 +77,7 @@ class CurlTest extends \PHPUnit_Framework_TestCase
 
     public function testSetGetHttpHelper()
     {
-        $helper = $this->getMock('\FileLoader\Helper\Http', array(), array(), '', false);
+        $helper = $this->getMock('\FileLoader\Helper\Http', [], [], '', false);
 
         self::assertSame($this->object, $this->object->setHttpHelper($helper));
         self::assertSame($helper, $this->object->getHttpHelper());
@@ -89,24 +92,22 @@ class CurlTest extends \PHPUnit_Framework_TestCase
     {
         $this->markTestSkipped('need to be reworked');
 
-        $loader     = $this->getMock('\FileLoader\Loader', array(), array(), '', false);
+        $loader     = $this->getMock('\FileLoader\Loader', [], [], '', false);
         $httpHelper = $this->getMock(
             '\FileLoader\Helper\Http',
-            array('getHttpErrorException'),
-            array(),
+            ['getHttpErrorException'],
+            [],
             '',
             false
         );
         $httpHelper
             ->expects(self::once())
             ->method('getHttpErrorException')
-            ->will(self::returnValue(null))
-        ;
+            ->will(self::returnValue(null));
 
         $this->object
             ->setHttpHelper($httpHelper)
-            ->setLoader($loader)
-        ;
+            ->setLoader($loader);
 
         $response = $this->object->getRemoteData('http://example.org/test.ini');
 
@@ -122,38 +123,35 @@ class CurlTest extends \PHPUnit_Framework_TestCase
     {
         $this->markTestSkipped('need to be reworked');
 
-        $map = array(
-            array('ProxyHost', 'example.org'),
-            array('ProxyProtocol', 'http'),
-            array('ProxyPort', 80),
-            array('ProxyAuth', null),
-            array('ProxyUser', null),
-        );
+        $map = [
+            ['ProxyHost', 'example.org'],
+            ['ProxyProtocol', 'http'],
+            ['ProxyPort', 80],
+            ['ProxyAuth', null],
+            ['ProxyUser', null],
+        ];
 
-        $loader = $this->getMock('\FileLoader\Loader', array('getOption'), array(), '', false);
+        $loader = $this->getMock('\FileLoader\Loader', ['getOption'], [], '', false);
         $loader
             ->expects(self::exactly(4))
             ->method('getOption')
-            ->will(self::returnValueMap($map))
-        ;
+            ->will(self::returnValueMap($map));
 
         $httpHelper = $this->getMock(
             '\FileLoader\Helper\Http',
-            array('getHttpErrorException'),
-            array(),
+            ['getHttpErrorException'],
+            [],
             '',
             false
         );
         $httpHelper
             ->expects(self::once())
             ->method('getHttpErrorException')
-            ->will(self::returnValue(null))
-        ;
+            ->will(self::returnValue(null));
 
         $this->object
             ->setHttpHelper($httpHelper)
-            ->setLoader($loader)
-        ;
+            ->setLoader($loader);
 
         $response = $this->object->getRemoteData('http://example.org/test.ini');
 
@@ -162,38 +160,35 @@ class CurlTest extends \PHPUnit_Framework_TestCase
 
     public function testGetStreamContextWithProxyWithoutAuthUserPortAndProtocol()
     {
-        $map = array(
-            array('ProxyHost', 'example.org'),
-            array('ProxyProtocol', null),
-            array('ProxyPort', null),
-            array('ProxyAuth', null),
-            array('ProxyUser', null),
-        );
+        $map = [
+            ['ProxyHost', 'example.org'],
+            ['ProxyProtocol', null],
+            ['ProxyPort', null],
+            ['ProxyAuth', null],
+            ['ProxyUser', null],
+        ];
 
-        $loader = $this->getMock('\FileLoader\Loader', array('getOption'), array(), '', false);
+        $loader = $this->getMock('\FileLoader\Loader', ['getOption'], [], '', false);
         $loader
             ->expects(self::exactly(4))
             ->method('getOption')
-            ->will(self::returnValueMap($map))
-        ;
+            ->will(self::returnValueMap($map));
 
         $httpHelper = $this->getMock(
             '\FileLoader\Helper\Http',
-            array('getHttpErrorException'),
-            array(),
+            ['getHttpErrorException'],
+            [],
             '',
             false
         );
         $httpHelper
             ->expects(self::once())
             ->method('getHttpErrorException')
-            ->will(self::returnValue(null))
-        ;
+            ->will(self::returnValue(null));
 
         $this->object
             ->setHttpHelper($httpHelper)
-            ->setLoader($loader)
-        ;
+            ->setLoader($loader);
 
         self::assertFalse($this->object->getRemoteData('http://example.org/test.ini'));
     }
@@ -202,39 +197,36 @@ class CurlTest extends \PHPUnit_Framework_TestCase
     {
         $this->markTestSkipped('need to be reworked');
 
-        $map = array(
-            array('ProxyHost', 'example.org'),
-            array('ProxyProtocol', 'http'),
-            array('ProxyPort', 80),
-            array('ProxyAuth', StreamCreator::PROXY_AUTH_BASIC),
-            array('ProxyUser', 'testUser'),
-            array('ProxyPassword', 'testPassword'),
-        );
+        $map = [
+            ['ProxyHost', 'example.org'],
+            ['ProxyProtocol', 'http'],
+            ['ProxyPort', 80],
+            ['ProxyAuth', StreamCreator::PROXY_AUTH_BASIC],
+            ['ProxyUser', 'testUser'],
+            ['ProxyPassword', 'testPassword'],
+        ];
 
-        $loader = $this->getMock('\FileLoader\Loader', array('getOption'), array(), '', false);
+        $loader = $this->getMock('\FileLoader\Loader', ['getOption'], [], '', false);
         $loader
             ->expects(self::exactly(6))
             ->method('getOption')
-            ->will(self::returnValueMap($map))
-        ;
+            ->will(self::returnValueMap($map));
 
         $httpHelper = $this->getMock(
             '\FileLoader\Helper\Http',
-            array('getHttpErrorException'),
-            array(),
+            ['getHttpErrorException'],
+            [],
             '',
             false
         );
         $httpHelper
             ->expects(self::once())
             ->method('getHttpErrorException')
-            ->will(self::returnValue(null))
-        ;
+            ->will(self::returnValue(null));
 
         $this->object
             ->setHttpHelper($httpHelper)
-            ->setLoader($loader)
-        ;
+            ->setLoader($loader);
 
         $response = $this->object->getRemoteData('http://example.org/test.ini');
 
@@ -245,39 +237,36 @@ class CurlTest extends \PHPUnit_Framework_TestCase
     {
         $this->markTestSkipped('need to be reworked');
 
-        $map = array(
-            array('ProxyHost', 'example.org'),
-            array('ProxyProtocol', 'http'),
-            array('ProxyPort', 80),
-            array('ProxyAuth', StreamCreator::PROXY_AUTH_BASIC),
-            array('ProxyUser', 'testUser'),
-            array('ProxyPassword', null),
-        );
+        $map = [
+            ['ProxyHost', 'example.org'],
+            ['ProxyProtocol', 'http'],
+            ['ProxyPort', 80],
+            ['ProxyAuth', StreamCreator::PROXY_AUTH_BASIC],
+            ['ProxyUser', 'testUser'],
+            ['ProxyPassword', null],
+        ];
 
-        $loader = $this->getMock('\FileLoader\Loader', array('getOption'), array(), '', false);
+        $loader = $this->getMock('\FileLoader\Loader', ['getOption'], [], '', false);
         $loader
             ->expects(self::exactly(6))
             ->method('getOption')
-            ->will(self::returnValueMap($map))
-        ;
+            ->will(self::returnValueMap($map));
 
         $httpHelper = $this->getMock(
             '\FileLoader\Helper\Http',
-            array('getHttpErrorException'),
-            array(),
+            ['getHttpErrorException'],
+            [],
             '',
             false
         );
         $httpHelper
             ->expects(self::once())
             ->method('getHttpErrorException')
-            ->will(self::returnValue(null))
-        ;
+            ->will(self::returnValue(null));
 
         $this->object
             ->setHttpHelper($httpHelper)
-            ->setLoader($loader)
-        ;
+            ->setLoader($loader);
 
         $response = $this->object->getRemoteData('http://example.org/test.ini');
 
@@ -292,39 +281,36 @@ class CurlTest extends \PHPUnit_Framework_TestCase
     {
         $this->markTestSkipped('need to be reworked');
 
-        $map = array(
-            array('ProxyHost', 'example.org'),
-            array('ProxyProtocol', 'htt'),
-            array('ProxyPort', 80),
-            array('ProxyAuth', StreamCreator::PROXY_AUTH_BASIC),
-            array('ProxyUser', 'testUser'),
-            array('ProxyPassword', 'testPassword'),
-        );
+        $map = [
+            ['ProxyHost', 'example.org'],
+            ['ProxyProtocol', 'htt'],
+            ['ProxyPort', 80],
+            ['ProxyAuth', StreamCreator::PROXY_AUTH_BASIC],
+            ['ProxyUser', 'testUser'],
+            ['ProxyPassword', 'testPassword'],
+        ];
 
-        $loader = $this->getMock('\FileLoader\Loader', array('getOption'), array(), '', false);
+        $loader = $this->getMock('\FileLoader\Loader', ['getOption'], [], '', false);
         $loader
             ->expects(self::exactly(2))
             ->method('getOption')
-            ->will(self::returnValueMap($map))
-        ;
+            ->will(self::returnValueMap($map));
 
         $httpHelper = $this->getMock(
             '\FileLoader\Helper\Http',
-            array('getHttpErrorException'),
-            array(),
+            ['getHttpErrorException'],
+            [],
             '',
             false
         );
         $httpHelper
             ->expects(self::never())
             ->method('getHttpErrorException')
-            ->will(self::returnValue(null))
-        ;
+            ->will(self::returnValue(null));
 
         $this->object
             ->setHttpHelper($httpHelper)
-            ->setLoader($loader)
-        ;
+            ->setLoader($loader);
 
         $response = $this->object->getRemoteData('http://example.org/test.ini');
 
@@ -335,39 +321,36 @@ class CurlTest extends \PHPUnit_Framework_TestCase
     {
         $this->markTestSkipped('need to be reworked');
 
-        $map = array(
-            array('ProxyHost', 'example.org'),
-            array('ProxyProtocol', 'http'),
-            array('ProxyPort', 80),
-            array('ProxyAuth', StreamCreator::PROXY_AUTH_NTLM),
-            array('ProxyUser', 'testUser'),
-            array('ProxyPassword', 'testPassword'),
-        );
+        $map = [
+            ['ProxyHost', 'example.org'],
+            ['ProxyProtocol', 'http'],
+            ['ProxyPort', 80],
+            ['ProxyAuth', StreamCreator::PROXY_AUTH_NTLM],
+            ['ProxyUser', 'testUser'],
+            ['ProxyPassword', 'testPassword'],
+        ];
 
-        $loader = $this->getMock('\FileLoader\Loader', array('getOption'), array(), '', false);
+        $loader = $this->getMock('\FileLoader\Loader', ['getOption'], [], '', false);
         $loader
             ->expects(self::exactly(6))
             ->method('getOption')
-            ->will(self::returnValueMap($map))
-        ;
+            ->will(self::returnValueMap($map));
 
         $httpHelper = $this->getMock(
             '\FileLoader\Helper\Http',
-            array('getHttpErrorException'),
-            array(),
+            ['getHttpErrorException'],
+            [],
             '',
             false
         );
         $httpHelper
             ->expects(self::once())
             ->method('getHttpErrorException')
-            ->will(self::returnValue(null))
-        ;
+            ->will(self::returnValue(null));
 
         $this->object
             ->setHttpHelper($httpHelper)
-            ->setLoader($loader)
-        ;
+            ->setLoader($loader);
 
         $response = $this->object->getRemoteData('http://example.org/test.ini');
 

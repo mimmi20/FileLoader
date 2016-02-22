@@ -23,10 +23,11 @@
  * THE SOFTWARE.
  *
  * @category   FileLoader
- * @package    Helper
+ *
  * @copyright  2012-2014 Thomas Müller
  * @author     Thomas Müller <t_mueller_stolzenhain@yahoo.de>
  * @license    http://www.opensource.org/licenses/MIT MIT License
+ *
  * @link       https://github.com/mimmi20/FileLoader/
  */
 
@@ -35,11 +36,13 @@ namespace FileLoaderTest\Helper;
 use FileLoader\Helper\Http;
 
 /**
- * @package    Helper
  * @author     Thomas Müller <t_mueller_stolzenhain@yahoo.de>
  * @copyright  Copyright (c) 2012-2014 Thomas Müller
+ *
  * @version    1.2
+ *
  * @license    http://www.opensource.org/licenses/MIT MIT License
+ *
  * @link       https://github.com/mimmi20/FileLoader/
  */
 class HttpTest extends \PHPUnit_Framework_TestCase
@@ -69,7 +72,7 @@ class HttpTest extends \PHPUnit_Framework_TestCase
 
         self::assertInstanceOf('\FileLoader\Exception', $exception);
         self::assertSame(404, $exception->getCode());
-        self::assertSame("HTTP client error 404: Not Found", $exception->getMessage());
+        self::assertSame('HTTP client error 404: Not Found', $exception->getMessage());
     }
 
     public function testGetHttpErrorException501()
@@ -78,7 +81,7 @@ class HttpTest extends \PHPUnit_Framework_TestCase
 
         self::assertInstanceOf('\FileLoader\Exception', $exception);
         self::assertSame(501, $exception->getCode());
-        self::assertSame("HTTP server error 501", $exception->getMessage());
+        self::assertSame('HTTP server error 501', $exception->getMessage());
     }
 
     public function testGetHttpErrorException400()
@@ -87,6 +90,6 @@ class HttpTest extends \PHPUnit_Framework_TestCase
 
         self::assertInstanceOf('\FileLoader\Exception', $exception);
         self::assertSame(400, $exception->getCode());
-        self::assertSame("HTTP client error 400", $exception->getMessage());
+        self::assertSame('HTTP client error 400', $exception->getMessage());
     }
 }

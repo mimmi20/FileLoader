@@ -19,10 +19,11 @@
  * THE SOFTWARE.
  *
  * @category   FileLoader
- * @package    Helper
+ *
  * @copyright  2012-2014 Thomas Müller
  * @author     Thomas Müller <t_mueller_stolzenhain@yahoo.de>
  * @license    http://www.opensource.org/licenses/MIT MIT License
+ *
  * @link       https://github.com/mimmi20/FileLoader/
  */
 
@@ -33,11 +34,13 @@ use FileLoader\Exception;
 /**
  * a helper class to handle http errors
  *
- * @package    Helper
  * @author     Thomas Müller <t_mueller_stolzenhain@yahoo.de>
  * @copyright  Copyright (c) 2012-2014 Thomas Müller
+ *
  * @version    1.2
+ *
  * @license    http://www.opensource.org/licenses/MIT MIT License
+ *
  * @link       https://github.com/mimmi20/FileLoader/
  */
 class Http
@@ -54,16 +57,16 @@ class Http
         $httpCode = (int) $httpCode;
 
         if ($httpCode < 400) {
-            return null;
+            return;
         }
 
-        $httpCodes = array(
-            401 => "HTTP client error 401: Unauthorized",
-            403 => "HTTP client error 403: Forbidden",
-            404 => "HTTP client error 404: Not Found",
-            429 => "HTTP client error 429: Too many request",
-            500 => "HTTP server error 500: Internal Server Error",
-        );
+        $httpCodes = [
+            401 => 'HTTP client error 401: Unauthorized',
+            403 => 'HTTP client error 403: Forbidden',
+            404 => 'HTTP client error 404: Not Found',
+            429 => 'HTTP client error 429: Too many request',
+            500 => 'HTTP server error 500: Internal Server Error',
+        ];
 
         if (isset($httpCodes[$httpCode])) {
             return new Exception($httpCodes[$httpCode], $httpCode);

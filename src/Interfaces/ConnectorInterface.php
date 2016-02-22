@@ -23,10 +23,11 @@
  * THE SOFTWARE.
  *
  * @category   FileLoader
- * @package    Interfaces
+ *
  * @copyright  2012-2014 Thomas Müller
  * @author     Thomas Müller <t_mueller_stolzenhain@yahoo.de>
  * @license    http://www.opensource.org/licenses/MIT MIT License
+ *
  * @link       https://github.com/mimmi20/FileLoader/
  */
 
@@ -37,11 +38,13 @@ use FileLoader\Loader;
 /**
  * the interface for all supported connectors
  *
- * @package    Interfaces
  * @author     Thomas Müller <t_mueller_stolzenhain@yahoo.de>
  * @copyright  Copyright (c) 2012-2014 Thomas Müller
+ *
  * @version    1.2
+ *
  * @license    http://www.opensource.org/licenses/MIT MIT License
+ *
  * @link       https://github.com/mimmi20/FileLoader/
  */
 interface ConnectorInterface
@@ -69,7 +72,8 @@ interface ConnectorInterface
      * @param string $url the url of the data
      *
      * @throws \RuntimeException
-     * @return string|boolean the retrieved data
+     *
+     * @return string|bool the retrieved data
      */
     public function getRemoteData($url);
 }

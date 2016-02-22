@@ -1,9 +1,7 @@
-*~
-/.settings
-/.buildpath
 vendor/
-build/
-/.project
-/.idea
-/tests/output
-result.txt
+.idea/
+.buildpath
+.settings
+.project
+composer.phar
+composer.lock

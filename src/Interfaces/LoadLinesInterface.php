@@ -23,10 +23,11 @@
  * THE SOFTWARE.
  *
  * @category   FileLoader
- * @package    Interfaces
+ *
  * @copyright  2012-2014 Thomas Müller
  * @author     Thomas Müller <t_mueller_stolzenhain@yahoo.de>
  * @license    http://www.opensource.org/licenses/MIT MIT License
+ *
  * @link       https://github.com/mimmi20/FileLoader/
  */
 
@@ -35,11 +36,13 @@ namespace FileLoader\Interfaces;
 /**
  * the interface for all supported connectors
  *
- * @package    Interfaces
  * @author     Thomas Müller <t_mueller_stolzenhain@yahoo.de>
  * @copyright  Copyright (c) 2012-2014 Thomas Müller
+ *
  * @version    1.2
+ *
  * @license    http://www.opensource.org/licenses/MIT MIT License
+ *
  * @link       https://github.com/mimmi20/FileLoader/
  */
 interface LoadLinesInterface
@@ -56,14 +59,14 @@ interface LoadLinesInterface
      *
      * @param string $url the url of the data
      *
-     * @return boolean
+     * @return bool
      */
     public function init($url);
 
     /**
      * checks if the end of the stream is reached
      *
-     * @return boolean
+     * @return bool
      */
     public function isValid();
 

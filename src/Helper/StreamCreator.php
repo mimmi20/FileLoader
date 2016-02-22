@@ -23,26 +23,29 @@
  * THE SOFTWARE.
  *
  * @category   FileLoader
- * @package    Helper
+ *
  * @copyright  2012-2014 Thomas Müller
  * @author     Thomas Müller <t_mueller_stolzenhain@yahoo.de>
  * @license    http://www.opensource.org/licenses/MIT MIT License
+ *
  * @link       https://github.com/mimmi20/FileLoader/
  */
 
 namespace FileLoader\Helper;
 
-use FileLoader\Loader;
 use FileLoader\Exception;
+use FileLoader\Loader;
 
 /**
  * a helper class to create a file stream
  *
- * @package    Helper
  * @author     Thomas Müller <t_mueller_stolzenhain@yahoo.de>
  * @copyright  Copyright (c) 2012-2014 Thomas Müller
+ *
  * @version    1.2
+ *
  * @license    http://www.opensource.org/licenses/MIT MIT License
+ *
  * @link       https://github.com/mimmi20/FileLoader/
  */
 class StreamCreator
@@ -75,22 +78,23 @@ class StreamCreator
     }
 
     /**
-     * @return resource
      * @throws \FileLoader\Exception
+     *
+     * @return resource
      */
     public function getStreamContext()
     {
         // set basic stream context configuration
-        $config = array(
-            'tcp' => array(
+        $config = [
+            'tcp' => [
                 'method'          => 'GET',
                 'user_agent'      => $this->loader->getUserAgent(),
                 // ignore errors, handle them manually
                 'ignore_errors'   => true,
                 'request_fulluri' => true,
                 'timeout'         => $this->loader->getTimeout(),
-            )
-        );
+            ],
+        ];
 
         // check and set proxy settings
         $proxy_host = $this->loader->getOption('ProxyHost');
@@ -98,7 +102,7 @@ class StreamCreator
             // check for supported protocol
             $proxy_protocol = $this->loader->getOption('ProxyProtocol');
             if ($proxy_protocol !== null) {
-                if (!in_array($proxy_protocol, array(self::PROXY_PROTOCOL_HTTP, self::PROXY_PROTOCOL_HTTPS))) {
+                if (!in_array($proxy_protocol, [self::PROXY_PROTOCOL_HTTP, self::PROXY_PROTOCOL_HTTPS])) {
                     throw new Exception(
                         'Invalid/unsupported value "' . $proxy_protocol . '" for option "ProxyProtocol".',
                         Exception::INVALID_OPTION
@@ -111,15 +115,15 @@ class StreamCreator
             // prepare port for the proxy server address
             $proxy_port = $this->loader->getOption('ProxyPort');
             if ($proxy_port !== null) {
-                $proxy_port = ":" . $proxy_port;
+                $proxy_port = ':' . $proxy_port;
             } else {
-                $proxy_port = "";
+                $proxy_port = '';
             }
 
             // check auth settings
             $proxy_auth = $this->loader->getOption('ProxyAuth');
             if ($proxy_auth !== null) {
-                if (!in_array($proxy_auth, array(self::PROXY_AUTH_BASIC))) {
+                if (!in_array($proxy_auth, [self::PROXY_AUTH_BASIC])) {
                     throw new Exception(
                         'Invalid/unsupported value "' . $proxy_auth . '" for option "ProxyAuth".',
                         Exception::INVALID_OPTION
@@ -141,8 +145,8 @@ class StreamCreator
                 if ($proxy_password === null) {
                     $proxy_password = '';
                 }
-                $auth                     = base64_encode($proxy_user . ":" . $proxy_password);
-                $config['http']['header'] = "Proxy-Authorization: Basic " . $auth;
+                $auth                     = base64_encode($proxy_user . ':' . $proxy_password);
+                $config['http']['header'] = 'Proxy-Authorization: Basic ' . $auth;
             }
 
             if ($proxy_protocol === self::PROXY_PROTOCOL_HTTPS) {

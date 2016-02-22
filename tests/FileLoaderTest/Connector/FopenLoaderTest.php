@@ -23,10 +23,11 @@
  * THE SOFTWARE.
  *
  * @category   FileLoader
- * @package    Connector
+ *
  * @copyright  2012-2014 Thomas Müller
  * @author     Thomas Müller <t_mueller_stolzenhain@yahoo.de>
  * @license    http://www.opensource.org/licenses/MIT MIT License
+ *
  * @link       https://github.com/mimmi20/FileLoader/
  */
 
@@ -36,11 +37,13 @@ use FileLoader\Connector;
 use FileLoader\Loader;
 
 /**
- * @package    Connector
  * @author     Thomas Müller <t_mueller_stolzenhain@yahoo.de>
  * @copyright  Copyright (c) 2012-2014 Thomas Müller
+ *
  * @version    1.2
+ *
  * @license    http://www.opensource.org/licenses/MIT MIT License
+ *
  * @link       https://github.com/mimmi20/FileLoader/
  */
 class FopenLoaderTest extends \PHPUnit_Framework_TestCase
@@ -65,7 +68,7 @@ class FopenLoaderTest extends \PHPUnit_Framework_TestCase
 
     public function testSetGetLoader()
     {
-        $loader = $this->getMock('\FileLoader\Loader', array(), array(), '', false);
+        $loader = $this->getMock('\FileLoader\Loader', [], [], '', false);
 
         self::assertSame($this->object, $this->object->setLoader($loader));
         self::assertSame($loader, $this->object->getLoader());
@@ -73,7 +76,7 @@ class FopenLoaderTest extends \PHPUnit_Framework_TestCase
 
     public function testSetGetHttpHelper()
     {
-        $helper = $this->getMock('\FileLoader\Helper\Http', array(), array(), '', false);
+        $helper = $this->getMock('\FileLoader\Helper\Http', [], [], '', false);
 
         self::assertSame($this->object, $this->object->setHttpHelper($helper));
         self::assertSame($helper, $this->object->getHttpHelper());
@@ -81,7 +84,7 @@ class FopenLoaderTest extends \PHPUnit_Framework_TestCase
 
     public function testSetGetStreamHelper()
     {
-        $helper = $this->getMock('\FileLoader\Helper\StreamCreator', array(), array(), '', false);
+        $helper = $this->getMock('\FileLoader\Helper\StreamCreator', [], [], '', false);
 
         self::assertSame($this->object, $this->object->setStreamHelper($helper));
         self::assertSame($helper, $this->object->getStreamHelper());
@@ -94,54 +97,51 @@ class FopenLoaderTest extends \PHPUnit_Framework_TestCase
 
     public function createContext()
     {
-        $config = array(
-            'http' => array(
+        $config = [
+            'http' => [
                 'method'          => 'GET',
                 'user_agent'      => 'Test-UserAgent',
                 // ignore errors, handle them manually
                 'ignore_errors'   => true,
                 'request_fulluri' => true,
                 'timeout'         => 60,
-            )
-        );
+            ],
+        ];
 
         return stream_context_create($config);
     }
 
     public function testGetRemoteData()
     {
-        $loader      = $this->getMock('\FileLoader\Loader', array(), array(), '', false);
+        $loader      = $this->getMock('\FileLoader\Loader', [], [], '', false);
         $steamHelper = $this->getMock(
             '\FileLoader\Helper\StreamCreator',
-            array('getStreamContext'),
-            array(),
+            ['getStreamContext'],
+            [],
             '',
             false
         );
         $steamHelper
             ->expects(self::once())
             ->method('getStreamContext')
-            ->will(self::returnCallback(array($this, 'createContext')))
-        ;
+            ->will(self::returnCallback([$this, 'createContext']));
 
         $httpHelper = $this->getMock(
             '\FileLoader\Helper\Http',
-            array('getHttpErrorException'),
-            array(),
+            ['getHttpErrorException'],
+            [],
             '',
             false
         );
         $httpHelper
             ->expects(self::once())
             ->method('getHttpErrorException')
-            ->will(self::returnValue(null))
-        ;
+            ->will(self::returnValue(null));
 
         $this->object
             ->setStreamHelper($steamHelper)
             ->setHttpHelper($httpHelper)
-            ->setLoader($loader)
-        ;
+            ->setLoader($loader);
 
         $response = $this->object->getRemoteData('http://example.org/test.ini');
 

@@ -23,10 +23,11 @@
  * THE SOFTWARE.
  *
  * @category   FileLoader
- * @package    Loader
+ *
  * @copyright  2012-2014 Thomas Müller
  * @author     Thomas Müller <t_mueller_stolzenhain@yahoo.de>
  * @license    http://www.opensource.org/licenses/MIT MIT License
+ *
  * @link       https://github.com/mimmi20/FileLoader/
  */
 
@@ -35,11 +36,13 @@ namespace FileLoaderTest\Loader;
 use FileLoader\Loader;
 
 /**
- * @package    Loader
  * @author     Thomas Müller <t_mueller_stolzenhain@yahoo.de>
  * @copyright  Copyright (c) 2012-2014 Thomas Müller
+ *
  * @version    1.2
+ *
  * @license    http://www.opensource.org/licenses/MIT MIT License
+ *
  * @link       https://github.com/mimmi20/FileLoader/
  */
 class FactoryTest extends \PHPUnit_Framework_TestCase
@@ -123,7 +126,7 @@ class FactoryTest extends \PHPUnit_Framework_TestCase
 
     public function testBuildForcedCustomLoader()
     {
-        $connector = $this->getMock('\FileLoader\Connector\FopenLoader', array(), array(), '', false);
+        $connector = $this->getMock('\FileLoader\Connector\FopenLoader', [], [], '', false);
         $result    = Loader\Factory::build($this->object, $connector);
 
         self::assertInstanceOf('\FileLoader\Loader\RemoteLoader', $result);

@@ -23,32 +23,35 @@
  * THE SOFTWARE.
  *
  * @category   FileLoader
- * @package    Loader
+ *
  * @copyright  2012-2014 Thomas Müller
  * @author     Thomas Müller <t_mueller_stolzenhain@yahoo.de>
  * @license    http://www.opensource.org/licenses/MIT MIT License
+ *
  * @link       https://github.com/mimmi20/FileLoader/
  */
 
 namespace FileLoader\Loader;
 
-use FileLoader\Interfaces\ConnectorInterface;
 use FileLoader\Connector\Curl;
 use FileLoader\Connector\FopenLoader;
 use FileLoader\Connector\SocketLoader;
 use FileLoader\Exception;
 use FileLoader\Helper\Http;
 use FileLoader\Helper\StreamCreator;
+use FileLoader\Interfaces\ConnectorInterface;
 use FileLoader\Loader;
 
 /**
  * a factory class to build the required loader and the needed helpers
  *
- * @package    Loader
  * @author     Thomas Müller <t_mueller_stolzenhain@yahoo.de>
  * @copyright  Copyright (c) 2012-2014 Thomas Müller
+ *
  * @version    1.2
+ *
  * @license    http://www.opensource.org/licenses/MIT MIT License
+ *
  * @link       https://github.com/mimmi20/FileLoader/
  */
 class Factory
@@ -61,8 +64,9 @@ class Factory
      * @param string|\FileLoader\Interfaces\ConnectorInterface $mode
      * @param string                                           $localFile
      *
-     * @return \FileLoader\Interfaces\LoaderInterface|\FileLoader\Interfaces\LoadLinesInterface the loader to use
      * @throws \FileLoader\Exception
+     *
+     * @return \FileLoader\Interfaces\LoaderInterface|\FileLoader\Interfaces\LoadLinesInterface the loader to use
      */
     public static function build(Loader $loader, $mode = null, $localFile = null)
     {
@@ -92,14 +96,12 @@ class Factory
             $connector = new FopenLoader();
             $connector
                 ->setStreamHelper($streamHelper)
-                ->setHttpHelper($httpHelper)
-            ;
+                ->setHttpHelper($httpHelper);
         } elseif (null === $mode || Loader::UPDATE_FSOCKOPEN === $mode) {
             $connector = new SocketLoader();
             $connector
                 ->setStreamHelper($streamHelper)
-                ->setHttpHelper($httpHelper)
-            ;
+                ->setHttpHelper($httpHelper);
         } else {
             throw new Exception('no valid connector found');
         }
@@ -111,8 +113,7 @@ class Factory
             ->setLoader($loader)
             ->setHttpHelper($httpHelper)
             ->setStreamHelper($streamHelper)
-            ->setConnector($connector)
-        ;
+            ->setConnector($connector);
 
         return $internalLoader;
     }

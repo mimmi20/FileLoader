@@ -23,31 +23,34 @@
  * THE SOFTWARE.
  *
  * @category   FileLoader
- * @package    Loader
+ *
  * @copyright  2012-2014 Thomas Müller
  * @author     Thomas Müller <t_mueller_stolzenhain@yahoo.de>
  * @license    http://www.opensource.org/licenses/MIT MIT License
+ *
  * @link       https://github.com/mimmi20/FileLoader/
  */
 
 namespace FileLoader\Loader;
 
-use FileLoader\Interfaces\ConnectorInterface;
-use FileLoader\Interfaces\LoaderInterface;
-use FileLoader\Interfaces\LoadLinesInterface;
 use FileLoader\Exception;
 use FileLoader\Helper\Http;
 use FileLoader\Helper\StreamCreator;
+use FileLoader\Interfaces\ConnectorInterface;
+use FileLoader\Interfaces\LoaderInterface;
+use FileLoader\Interfaces\LoadLinesInterface;
 use FileLoader\Loader;
 
 /**
  * class to load a file from a remote source
  *
- * @package    Loader
  * @author     Thomas Müller <t_mueller_stolzenhain@yahoo.de>
  * @copyright  Copyright (c) 2012-2014 Thomas Müller
+ *
  * @version    1.2
+ *
  * @license    http://www.opensource.org/licenses/MIT MIT License
+ *
  * @link       https://github.com/mimmi20/FileLoader/
  */
 class RemoteLoader implements LoaderInterface, LoadLinesInterface
@@ -169,8 +172,9 @@ class RemoteLoader implements LoaderInterface, LoadLinesInterface
     /**
      * loads the ini file from a remote location
      *
-     * @return string the file content
      * @throws \FileLoader\Exception
+     *
+     * @return string the file content
      */
     public function load()
     {
@@ -199,7 +203,8 @@ class RemoteLoader implements LoaderInterface, LoadLinesInterface
      * Gets the remote file update timestamp
      *
      * @throws \FileLoader\Exception
-     * @return integer the remote modification timestamp
+     *
+     * @return int the remote modification timestamp
      */
     public function getMTime()
     {
@@ -228,7 +233,7 @@ class RemoteLoader implements LoaderInterface, LoadLinesInterface
      *
      * @param string $url the url of the data
      *
-     * @return boolean
+     * @return bool
      */
     public function init($url)
     {
@@ -238,7 +243,7 @@ class RemoteLoader implements LoaderInterface, LoadLinesInterface
     /**
      * checks if the end of the stream is reached
      *
-     * @return boolean
+     * @return bool
      */
     public function isValid()
     {
