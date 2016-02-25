@@ -63,7 +63,7 @@ class RemoteLoaderTest extends \PHPUnit_Framework_TestCase
 
     public function testSetGetLoader()
     {
-        $loader = $this->getMock('\FileLoader\Loader', [], [], '', false);
+        $loader = $this->getMock('\FileLoader\Loader', array(), array(), '', false);
 
         self::assertSame($this->object, $this->object->setLoader($loader));
         self::assertSame($loader, $this->object->getLoader());
@@ -71,7 +71,7 @@ class RemoteLoaderTest extends \PHPUnit_Framework_TestCase
 
     public function testSetGetHttpHelper()
     {
-        $helper = $this->getMock('\FileLoader\Helper\Http', [], [], '', false);
+        $helper = $this->getMock('\FileLoader\Helper\Http', array(), array(), '', false);
 
         self::assertSame($this->object, $this->object->setHttpHelper($helper));
         self::assertSame($helper, $this->object->getHttpHelper());
@@ -79,7 +79,7 @@ class RemoteLoaderTest extends \PHPUnit_Framework_TestCase
 
     public function testSetGetStreamHelper()
     {
-        $helper = $this->getMock('\FileLoader\Helper\StreamCreator', [], [], '', false);
+        $helper = $this->getMock('\FileLoader\Helper\StreamCreator', array(), array(), '', false);
 
         self::assertSame($this->object, $this->object->setStreamHelper($helper));
         self::assertSame($helper, $this->object->getStreamHelper());
@@ -87,7 +87,7 @@ class RemoteLoaderTest extends \PHPUnit_Framework_TestCase
 
     public function testSetGetConnector()
     {
-        $connector = $this->getMock('\FileLoader\Connector\Curl', [], [], '', false);
+        $connector = $this->getMock('\FileLoader\Connector\Curl', array(), array(), '', false);
 
         self::assertSame($this->object, $this->object->setConnector($connector));
         self::assertSame($connector, $this->object->getConnector());
@@ -97,8 +97,8 @@ class RemoteLoaderTest extends \PHPUnit_Framework_TestCase
     {
         $loader = $this->getMock(
             '\FileLoader\Loader',
-            [],
-            [],
+            array(),
+            array(),
             '',
             false
         );
@@ -106,8 +106,8 @@ class RemoteLoaderTest extends \PHPUnit_Framework_TestCase
 
         $connector = $this->getMock(
             '\FileLoader\Connector\Curl',
-            ['getRemoteData'],
-            [],
+            array('getRemoteData'),
+            array(),
             '',
             false
         );
@@ -129,8 +129,8 @@ class RemoteLoaderTest extends \PHPUnit_Framework_TestCase
     {
         $loader = $this->getMock(
             '\FileLoader\Loader',
-            [],
-            [],
+            array(),
+            array(),
             '',
             false
         );
@@ -138,8 +138,8 @@ class RemoteLoaderTest extends \PHPUnit_Framework_TestCase
 
         $connector = $this->getMock(
             '\FileLoader\Connector\Curl',
-            ['getRemoteData'],
-            [],
+            array('getRemoteData'),
+            array(),
             '',
             false
         );
@@ -157,8 +157,8 @@ class RemoteLoaderTest extends \PHPUnit_Framework_TestCase
     {
         $loader = $this->getMock(
             '\FileLoader\Loader',
-            [],
-            [],
+            array(),
+            array(),
             '',
             false
         );
@@ -166,8 +166,8 @@ class RemoteLoaderTest extends \PHPUnit_Framework_TestCase
 
         $connector = $this->getMock(
             '\FileLoader\Connector\Curl',
-            ['getRemoteData'],
-            [],
+            array('getRemoteData'),
+            array(),
             '',
             false
         );
@@ -189,8 +189,8 @@ class RemoteLoaderTest extends \PHPUnit_Framework_TestCase
     {
         $loader = $this->getMock(
             '\FileLoader\Loader',
-            ['getRemoteVerUrl'],
-            [],
+            array('getRemoteVerUrl'),
+            array(),
             '',
             false
         );
@@ -203,8 +203,8 @@ class RemoteLoaderTest extends \PHPUnit_Framework_TestCase
 
         $connector = $this->getMock(
             '\FileLoader\Connector\Curl',
-            ['getRemoteData'],
-            [],
+            array('getRemoteData'),
+            array(),
             '',
             false
         );
@@ -222,8 +222,8 @@ class RemoteLoaderTest extends \PHPUnit_Framework_TestCase
     {
         $loader = $this->getMock(
             '\FileLoader\Loader',
-            ['getRemoteDataUrl'],
-            [],
+            array('getRemoteDataUrl'),
+            array(),
             '',
             false
         );
@@ -241,8 +241,8 @@ class RemoteLoaderTest extends \PHPUnit_Framework_TestCase
     {
         $connector = $this->getMock(
             '\FileLoader\Connector\SocketLoader',
-            ['isSupportingLoadingLines'],
-            [],
+            array('isSupportingLoadingLines'),
+            array(),
             '',
             false
         );
@@ -260,8 +260,8 @@ class RemoteLoaderTest extends \PHPUnit_Framework_TestCase
     {
         $connector = $this->getMock(
             '\FileLoader\Connector\SocketLoader',
-            ['init'],
-            [],
+            array('init'),
+            array(),
             '',
             false
         );
@@ -279,8 +279,8 @@ class RemoteLoaderTest extends \PHPUnit_Framework_TestCase
     {
         $connector = $this->getMock(
             '\FileLoader\Connector\SocketLoader',
-            ['isValid'],
-            [],
+            array('isValid'),
+            array(),
             '',
             false
         );
@@ -298,8 +298,8 @@ class RemoteLoaderTest extends \PHPUnit_Framework_TestCase
     {
         $connector = $this->getMock(
             '\FileLoader\Connector\SocketLoader',
-            ['getLine'],
-            [],
+            array('getLine'),
+            array(),
             '',
             false
         );
@@ -317,8 +317,8 @@ class RemoteLoaderTest extends \PHPUnit_Framework_TestCase
     {
         $connector = $this->getMock(
             '\FileLoader\Connector\SocketLoader',
-            ['close'],
-            [],
+            array('close'),
+            array(),
             '',
             false
         );

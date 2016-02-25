@@ -68,7 +68,7 @@ class FopenLoaderTest extends \PHPUnit_Framework_TestCase
 
     public function testSetGetLoader()
     {
-        $loader = $this->getMock('\FileLoader\Loader', [], [], '', false);
+        $loader = $this->getMock('\FileLoader\Loader', array(), array(), '', false);
 
         self::assertSame($this->object, $this->object->setLoader($loader));
         self::assertSame($loader, $this->object->getLoader());
@@ -76,7 +76,7 @@ class FopenLoaderTest extends \PHPUnit_Framework_TestCase
 
     public function testSetGetHttpHelper()
     {
-        $helper = $this->getMock('\FileLoader\Helper\Http', [], [], '', false);
+        $helper = $this->getMock('\FileLoader\Helper\Http', array(), array(), '', false);
 
         self::assertSame($this->object, $this->object->setHttpHelper($helper));
         self::assertSame($helper, $this->object->getHttpHelper());
@@ -84,7 +84,7 @@ class FopenLoaderTest extends \PHPUnit_Framework_TestCase
 
     public function testSetGetStreamHelper()
     {
-        $helper = $this->getMock('\FileLoader\Helper\StreamCreator', [], [], '', false);
+        $helper = $this->getMock('\FileLoader\Helper\StreamCreator', array(), array(), '', false);
 
         self::assertSame($this->object, $this->object->setStreamHelper($helper));
         self::assertSame($helper, $this->object->getStreamHelper());
@@ -97,39 +97,39 @@ class FopenLoaderTest extends \PHPUnit_Framework_TestCase
 
     public function createContext()
     {
-        $config = [
-            'http' => [
+        $config = array(
+            'http' => array(
                 'method'          => 'GET',
                 'user_agent'      => 'Test-UserAgent',
                 // ignore errors, handle them manually
                 'ignore_errors'   => true,
                 'request_fulluri' => true,
                 'timeout'         => 60,
-            ],
-        ];
+            ),
+        );
 
         return stream_context_create($config);
     }
 
     public function testGetRemoteData()
     {
-        $loader      = $this->getMock('\FileLoader\Loader', [], [], '', false);
+        $loader      = $this->getMock('\FileLoader\Loader', array(), array(), '', false);
         $steamHelper = $this->getMock(
             '\FileLoader\Helper\StreamCreator',
-            ['getStreamContext'],
-            [],
+            array('getStreamContext'),
+            array(),
             '',
             false
         );
         $steamHelper
             ->expects(self::once())
             ->method('getStreamContext')
-            ->will(self::returnCallback([$this, 'createContext']));
+            ->will(self::returnCallback(array($this, 'createContext')));
 
         $httpHelper = $this->getMock(
             '\FileLoader\Helper\Http',
-            ['getHttpErrorException'],
-            [],
+            array('getHttpErrorException'),
+            array(),
             '',
             false
         );

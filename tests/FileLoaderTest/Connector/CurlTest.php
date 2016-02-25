@@ -69,7 +69,7 @@ class CurlTest extends \PHPUnit_Framework_TestCase
 
     public function testSetGetLoader()
     {
-        $loader = $this->getMock('\FileLoader\Loader', [], [], '', false);
+        $loader = $this->getMock('\FileLoader\Loader', array(), array(), '', false);
 
         self::assertSame($this->object, $this->object->setLoader($loader));
         self::assertSame($loader, $this->object->getLoader());
@@ -77,7 +77,7 @@ class CurlTest extends \PHPUnit_Framework_TestCase
 
     public function testSetGetHttpHelper()
     {
-        $helper = $this->getMock('\FileLoader\Helper\Http', [], [], '', false);
+        $helper = $this->getMock('\FileLoader\Helper\Http', array(), array(), '', false);
 
         self::assertSame($this->object, $this->object->setHttpHelper($helper));
         self::assertSame($helper, $this->object->getHttpHelper());
@@ -92,11 +92,11 @@ class CurlTest extends \PHPUnit_Framework_TestCase
     {
         $this->markTestSkipped('need to be reworked');
 
-        $loader     = $this->getMock('\FileLoader\Loader', [], [], '', false);
+        $loader     = $this->getMock('\FileLoader\Loader', array(), array(), '', false);
         $httpHelper = $this->getMock(
             '\FileLoader\Helper\Http',
-            ['getHttpErrorException'],
-            [],
+            array('getHttpErrorException'),
+            array(),
             '',
             false
         );
@@ -123,15 +123,15 @@ class CurlTest extends \PHPUnit_Framework_TestCase
     {
         $this->markTestSkipped('need to be reworked');
 
-        $map = [
-            ['ProxyHost', 'example.org'],
-            ['ProxyProtocol', 'http'],
-            ['ProxyPort', 80],
-            ['ProxyAuth', null],
-            ['ProxyUser', null],
-        ];
+        $map = array(
+            array('ProxyHost', 'example.org'),
+            array('ProxyProtocol', 'http'),
+            array('ProxyPort', 80),
+            array('ProxyAuth', null),
+            array('ProxyUser', null),
+        );
 
-        $loader = $this->getMock('\FileLoader\Loader', ['getOption'], [], '', false);
+        $loader = $this->getMock('\FileLoader\Loader', array('getOption'), array(), '', false);
         $loader
             ->expects(self::exactly(4))
             ->method('getOption')
@@ -139,8 +139,8 @@ class CurlTest extends \PHPUnit_Framework_TestCase
 
         $httpHelper = $this->getMock(
             '\FileLoader\Helper\Http',
-            ['getHttpErrorException'],
-            [],
+            array('getHttpErrorException'),
+            array(),
             '',
             false
         );
@@ -160,15 +160,15 @@ class CurlTest extends \PHPUnit_Framework_TestCase
 
     public function testGetStreamContextWithProxyWithoutAuthUserPortAndProtocol()
     {
-        $map = [
-            ['ProxyHost', 'example.org'],
-            ['ProxyProtocol', null],
-            ['ProxyPort', null],
-            ['ProxyAuth', null],
-            ['ProxyUser', null],
-        ];
+        $map = array(
+            array('ProxyHost', 'example.org'),
+            array('ProxyProtocol', null),
+            array('ProxyPort', null),
+            array('ProxyAuth', null),
+            array('ProxyUser', null),
+        );
 
-        $loader = $this->getMock('\FileLoader\Loader', ['getOption'], [], '', false);
+        $loader = $this->getMock('\FileLoader\Loader', array('getOption'), array(), '', false);
         $loader
             ->expects(self::exactly(4))
             ->method('getOption')
@@ -176,8 +176,8 @@ class CurlTest extends \PHPUnit_Framework_TestCase
 
         $httpHelper = $this->getMock(
             '\FileLoader\Helper\Http',
-            ['getHttpErrorException'],
-            [],
+            array('getHttpErrorException'),
+            array(),
             '',
             false
         );
@@ -197,16 +197,16 @@ class CurlTest extends \PHPUnit_Framework_TestCase
     {
         $this->markTestSkipped('need to be reworked');
 
-        $map = [
-            ['ProxyHost', 'example.org'],
-            ['ProxyProtocol', 'http'],
-            ['ProxyPort', 80],
-            ['ProxyAuth', StreamCreator::PROXY_AUTH_BASIC],
-            ['ProxyUser', 'testUser'],
-            ['ProxyPassword', 'testPassword'],
-        ];
+        $map = array(
+            array('ProxyHost', 'example.org'),
+            array('ProxyProtocol', 'http'),
+            array('ProxyPort', 80),
+            array('ProxyAuth', StreamCreator::PROXY_AUTH_BASIC),
+            array('ProxyUser', 'testUser'),
+            array('ProxyPassword', 'testPassword'),
+        );
 
-        $loader = $this->getMock('\FileLoader\Loader', ['getOption'], [], '', false);
+        $loader = $this->getMock('\FileLoader\Loader', array('getOption'), array(), '', false);
         $loader
             ->expects(self::exactly(6))
             ->method('getOption')
@@ -214,8 +214,8 @@ class CurlTest extends \PHPUnit_Framework_TestCase
 
         $httpHelper = $this->getMock(
             '\FileLoader\Helper\Http',
-            ['getHttpErrorException'],
-            [],
+            array('getHttpErrorException'),
+            array(),
             '',
             false
         );
@@ -237,16 +237,16 @@ class CurlTest extends \PHPUnit_Framework_TestCase
     {
         $this->markTestSkipped('need to be reworked');
 
-        $map = [
-            ['ProxyHost', 'example.org'],
-            ['ProxyProtocol', 'http'],
-            ['ProxyPort', 80],
-            ['ProxyAuth', StreamCreator::PROXY_AUTH_BASIC],
-            ['ProxyUser', 'testUser'],
-            ['ProxyPassword', null],
-        ];
+        $map = array(
+            array('ProxyHost', 'example.org'),
+            array('ProxyProtocol', 'http'),
+            array('ProxyPort', 80),
+            array('ProxyAuth', StreamCreator::PROXY_AUTH_BASIC),
+            array('ProxyUser', 'testUser'),
+            array('ProxyPassword', null),
+        );
 
-        $loader = $this->getMock('\FileLoader\Loader', ['getOption'], [], '', false);
+        $loader = $this->getMock('\FileLoader\Loader', array('getOption'), array(), '', false);
         $loader
             ->expects(self::exactly(6))
             ->method('getOption')
@@ -254,8 +254,8 @@ class CurlTest extends \PHPUnit_Framework_TestCase
 
         $httpHelper = $this->getMock(
             '\FileLoader\Helper\Http',
-            ['getHttpErrorException'],
-            [],
+            array('getHttpErrorException'),
+            array(),
             '',
             false
         );
@@ -281,16 +281,16 @@ class CurlTest extends \PHPUnit_Framework_TestCase
     {
         $this->markTestSkipped('need to be reworked');
 
-        $map = [
-            ['ProxyHost', 'example.org'],
-            ['ProxyProtocol', 'htt'],
-            ['ProxyPort', 80],
-            ['ProxyAuth', StreamCreator::PROXY_AUTH_BASIC],
-            ['ProxyUser', 'testUser'],
-            ['ProxyPassword', 'testPassword'],
-        ];
+        $map = array(
+            array('ProxyHost', 'example.org'),
+            array('ProxyProtocol', 'htt'),
+            array('ProxyPort', 80),
+            array('ProxyAuth', StreamCreator::PROXY_AUTH_BASIC),
+            array('ProxyUser', 'testUser'),
+            array('ProxyPassword', 'testPassword'),
+        );
 
-        $loader = $this->getMock('\FileLoader\Loader', ['getOption'], [], '', false);
+        $loader = $this->getMock('\FileLoader\Loader', array('getOption'), array(), '', false);
         $loader
             ->expects(self::exactly(2))
             ->method('getOption')
@@ -298,8 +298,8 @@ class CurlTest extends \PHPUnit_Framework_TestCase
 
         $httpHelper = $this->getMock(
             '\FileLoader\Helper\Http',
-            ['getHttpErrorException'],
-            [],
+            array('getHttpErrorException'),
+            array(),
             '',
             false
         );
@@ -321,16 +321,16 @@ class CurlTest extends \PHPUnit_Framework_TestCase
     {
         $this->markTestSkipped('need to be reworked');
 
-        $map = [
-            ['ProxyHost', 'example.org'],
-            ['ProxyProtocol', 'http'],
-            ['ProxyPort', 80],
-            ['ProxyAuth', StreamCreator::PROXY_AUTH_NTLM],
-            ['ProxyUser', 'testUser'],
-            ['ProxyPassword', 'testPassword'],
-        ];
+        $map = array(
+            array('ProxyHost', 'example.org'),
+            array('ProxyProtocol', 'http'),
+            array('ProxyPort', 80),
+            array('ProxyAuth', StreamCreator::PROXY_AUTH_NTLM),
+            array('ProxyUser', 'testUser'),
+            array('ProxyPassword', 'testPassword'),
+        );
 
-        $loader = $this->getMock('\FileLoader\Loader', ['getOption'], [], '', false);
+        $loader = $this->getMock('\FileLoader\Loader', array('getOption'), array(), '', false);
         $loader
             ->expects(self::exactly(6))
             ->method('getOption')
@@ -338,8 +338,8 @@ class CurlTest extends \PHPUnit_Framework_TestCase
 
         $httpHelper = $this->getMock(
             '\FileLoader\Helper\Http',
-            ['getHttpErrorException'],
-            [],
+            array('getHttpErrorException'),
+            array(),
             '',
             false
         );

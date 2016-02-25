@@ -103,7 +103,7 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
 
     public function testConstructWithValidOption()
     {
-        $options = ['ProxyProtocol' => 'http'];
+        $options = array('ProxyProtocol' => 'http');
         new Loader($options);
     }
 

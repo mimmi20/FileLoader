@@ -189,7 +189,7 @@ class Curl implements ConnectorInterface
             $proxy_protocol = $this->getLoader()->getOption('ProxyProtocol');
 
             if ($proxy_protocol !== null) {
-                $allowedProtocolls = [StreamCreator::PROXY_PROTOCOL_HTTP, StreamCreator::PROXY_PROTOCOL_HTTPS];
+                $allowedProtocolls = array(StreamCreator::PROXY_PROTOCOL_HTTP, StreamCreator::PROXY_PROTOCOL_HTTPS);
 
                 if (!in_array($proxy_protocol, $allowedProtocolls)) {
                     throw new Exception(
@@ -218,7 +218,7 @@ class Curl implements ConnectorInterface
 
                 $proxy_auth = $this->getLoader()->getOption('ProxyAuth');
                 if ($proxy_auth !== null) {
-                    $allowedAuth = [StreamCreator::PROXY_AUTH_BASIC, StreamCreator::PROXY_AUTH_NTLM];
+                    $allowedAuth = array(StreamCreator::PROXY_AUTH_BASIC, StreamCreator::PROXY_AUTH_NTLM);
 
                     if (!in_array($proxy_auth, $allowedAuth)) {
                         throw new Exception(

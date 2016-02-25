@@ -92,14 +92,14 @@ class Loader implements LoaderInterface, LoadLinesInterface
      *
      * @var array
      */
-    private $options = [
+    private $options = array(
         'ProxyProtocol' => null,
         'ProxyHost'     => null,
         'ProxyPort'     => null,
         'ProxyAuth'     => null,
         'ProxyUser'     => null,
         'ProxyPassword' => null,
-    ];
+    );
 
     /**
      * @var \FileLoader\Interfaces\LoaderInterface

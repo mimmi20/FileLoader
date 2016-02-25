@@ -60,13 +60,13 @@ class Http
             return;
         }
 
-        $httpCodes = [
+        $httpCodes = array(
             401 => 'HTTP client error 401: Unauthorized',
             403 => 'HTTP client error 403: Forbidden',
             404 => 'HTTP client error 404: Not Found',
             429 => 'HTTP client error 429: Too many request',
             500 => 'HTTP server error 500: Internal Server Error',
-        ];
+        );
 
         if (isset($httpCodes[$httpCode])) {
             return new Exception($httpCodes[$httpCode], $httpCode);

@@ -126,7 +126,7 @@ class FactoryTest extends \PHPUnit_Framework_TestCase
 
     public function testBuildForcedCustomLoader()
     {
-        $connector = $this->getMock('\FileLoader\Connector\FopenLoader', [], [], '', false);
+        $connector = $this->getMock('\FileLoader\Connector\FopenLoader', array(), array(), '', false);
         $result    = Loader\Factory::build($this->object, $connector);
 
         self::assertInstanceOf('\FileLoader\Loader\RemoteLoader', $result);
