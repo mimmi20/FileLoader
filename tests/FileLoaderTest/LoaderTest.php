@@ -88,10 +88,14 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
         $object->setOption('InvalidOption', 'test');
     }
 
+    /**
+     * @expectedException \FileLoader\Exception
+     * @expectedExceptionMessage Invalid option key "InvalidOption".
+     */
     public function testGetInvalidOption()
     {
         $object = new Loader();
-        self::assertNull($object->getOption('InvalidOption'));
+        $object->getOption('InvalidOption');
     }
 
     public function testSetGetOption()
@@ -173,38 +177,27 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
         self::assertSame(0, $this->object->getTimeout());
     }
 
-    public function testSetMode()
-    {
-        $return = $this->object->setMode();
-        self::assertInstanceOf('\FileLoader\Loader', $return);
-        self::assertSame($this->object, $return);
-
-        $return = $this->object->setMode(Loader::UPDATE_FOPEN);
-        self::assertInstanceOf('\FileLoader\Loader', $return);
-        self::assertSame($this->object, $return);
-    }
-
     public function testGetUserAgent()
     {
         $userAgent = $this->object->getUserAgent();
-        self::assertSame('File Loader/1.2.0', $userAgent);
+        self::assertSame('FileLoader/3.0.0', $userAgent);
     }
 
     public function testLoad()
     {
-        $this->object
-            ->setMode(Loader::UPDATE_LOCAL)
-            ->setLocalFile(__DIR__ . '/../data/test.txt');
+        $this->object->setLocalFile(__DIR__ . '/../data/test.txt');
 
-        self::assertSame('This is a test', $this->object->load());
+        $result = $this->object->load();
+
+        self::assertInstanceOf('\Psr\Http\Message\ResponseInterface', $result);
     }
 
     public function testGetMtime()
     {
-        $this->object
-            ->setMode(Loader::UPDATE_LOCAL)
-            ->setLocalFile(__DIR__ . '/../data/test.txt');
+        $this->object->setLocalFile(__DIR__ . '/../data/test.txt');
 
-        self::assertInternalType('integer', $this->object->getMTime());
+        $result = $this->object->getMTime();
+
+        self::assertInstanceOf('\Psr\Http\Message\ResponseInterface', $result);
     }
 }

@@ -55,23 +55,16 @@ interface LoaderInterface
      *
      * @throws \FileLoader\Exception
      *
-     * @return string the content of the local ini file
+     * @return \Psr\Http\Message\ResponseInterface
      */
     public function load();
-
-    /**
-     * returns the uri, used for download
-     *
-     * @return string
-     */
-    public function getUri();
 
     /**
      * Gets the local ini file update timestamp
      *
      * @throws Exception
      *
-     * @return int the local modification timestamp
+     * @return \Psr\Http\Message\ResponseInterface
      */
     public function getMTime();
 }

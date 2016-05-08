@@ -1,6 +1,6 @@
 <?php
 /**
- * class to load a file from a local source
+ * class to load a file from a remote source via fsockopen|stream_socket_client
  *
  * Copyright (c) 2012-2014 Thomas Müller
  *
@@ -33,7 +33,7 @@
 
 namespace FileLoaderTest\Loader;
 
-use FileLoader\Loader\Local;
+use FileLoader\Loader\SocketLoader;
 
 /**
  * @author     Thomas Müller <t_mueller_stolzenhain@yahoo.de>
@@ -45,21 +45,47 @@ use FileLoader\Loader\Local;
  *
  * @link       https://github.com/mimmi20/FileLoader/
  */
-class LocalTest extends \PHPUnit_Framework_TestCase
+class SocketLoaderTest extends \PHPUnit_Framework_TestCase
 {
-    /**
-     * @expectedException \FileLoader\Exception
-     * @expectedExceptionMessage the filename can not be empty
-     */
-    public function testSetLocalFileException()
+    private function createContext()
     {
-        new Local('');
+        $config = array(
+            'http' => array(
+                'method'          => 'GET',
+                'user_agent'      => 'Test-UserAgent',
+                // ignore errors, handle them manually
+                'ignore_errors'   => true,
+                'request_fulluri' => true,
+                'timeout'         => 60,
+            ),
+        );
+        return stream_context_create($config);
     }
 
     public function testLoad()
     {
-        $object = new Local(__DIR__ . '/../../data/test.txt');
+        $loader = $this->getMock('\FileLoader\Loader', array('getRemoteDataUrl', 'getRemoteVerUrl'), array(), '', false);
+        $loader
+            ->expects(self::once())
+            ->method('getRemoteDataUrl')
+            ->will(self::returnValue('http://browscap.org/stream?q=Lite_PHP_BrowsCapINI'))
+        ;
+        $loader
+            ->expects(self::never())
+            ->method('getRemoteVerUrl')
+            ->will(self::returnValue('http://browscap.org/version'))
+        ;
 
+        $streamHelper = $this->getMock('\FileLoader\Helper\StreamCreator', array('getStreamContext'), array(), '', false);
+        $streamHelper
+            ->expects(self::never())
+            ->method('getStreamContext')
+            ->will(self::returnValue($this->createContext()))
+        ;
+
+        $object = new SocketLoader($loader, $streamHelper);
+
+        //url: http://browscap.org/stream?q=Lite_PHP_BrowsCapINI
         $result = $object->load();
 
         self::assertInstanceOf('\Psr\Http\Message\ResponseInterface', $result);
@@ -73,18 +99,38 @@ class LocalTest extends \PHPUnit_Framework_TestCase
         $content = $body->getContents();
 
         self::assertInternalType('string', $content);
-        //self::assertSame('string', $content);
     }
 
     public function testGetMtime()
     {
-        $object = new Local(__DIR__ . '/../../data/test.txt');
+        $loader = $this->getMock('\FileLoader\Loader', array('getRemoteDataUrl', 'getRemoteVerUrl'), array(), '', false);
+        $loader
+            ->expects(self::never())
+            ->method('getRemoteDataUrl')
+            ->will(self::returnValue('http://browscap.org/stream?q=Lite_PHP_BrowsCapINI'))
+        ;
+        $loader
+            ->expects(self::once())
+            ->method('getRemoteVerUrl')
+            ->will(self::returnValue('http://browscap.org/version'))
+        ;
 
+        $streamHelper = $this->getMock('\FileLoader\Helper\StreamCreator', array('getStreamContext'), array(), '', false);
+        $streamHelper
+            ->expects(self::never())
+            ->method('getStreamContext')
+            ->will(self::returnValue($this->createContext()))
+        ;
+
+        $object = new SocketLoader($loader, $streamHelper);
+
+        //url: http://browscap.org/version
         $result = $object->getMTime();
 
         self::assertInstanceOf('\Psr\Http\Message\ResponseInterface', $result);
         self::assertSame(200, $result->getStatusCode());
         self::assertSame('OK', $result->getReasonPhrase());
+        self::assertCount(11, $result->getHeaders());
 
         $body = $result->getBody();
 
@@ -93,5 +139,6 @@ class LocalTest extends \PHPUnit_Framework_TestCase
         $content = $body->getContents();
 
         self::assertInternalType('string', $content);
+        self::assertSame('Thu, 21 Apr 2016 09:16:00 +0000', $content);
     }
 }

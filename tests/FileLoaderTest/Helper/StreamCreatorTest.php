@@ -47,27 +47,6 @@ use FileLoader\Helper\StreamCreator;
  */
 class StreamCreatorTest extends \PHPUnit_Framework_TestCase
 {
-    /**
-     * @var \FileLoader\Helper\StreamCreator
-     */
-    private $object = null;
-
-    /**
-     * Sets up the fixture, for example, opens a network connection.
-     * This method is called before a test is executed.
-     */
-    protected function setUp()
-    {
-        $this->object = new StreamCreator();
-    }
-
-    public function testSetLoader()
-    {
-        $loader = $this->getMock('\FileLoader\Loader', array(), array(), '', false);
-
-        self::assertSame($this->object, $this->object->setLoader($loader));
-    }
-
     public function testGetStreamContextWithoutProxy()
     {
         $loader = $this->getMock('\FileLoader\Loader', array('getOption'), array(), '', false);
@@ -76,8 +55,8 @@ class StreamCreatorTest extends \PHPUnit_Framework_TestCase
             ->method('getOption')
             ->will(self::returnValue(null));
 
-        self::assertSame($this->object, $this->object->setLoader($loader));
-        self::assertTrue(is_resource($this->object->getStreamContext()));
+        $object = new StreamCreator($loader);
+        self::assertTrue(is_resource($object->getStreamContext()));
     }
 
     public function testGetStreamContextWithProxyWithoutAuthAndUser()
@@ -96,8 +75,8 @@ class StreamCreatorTest extends \PHPUnit_Framework_TestCase
             ->method('getOption')
             ->will(self::returnValueMap($map));
 
-        self::assertSame($this->object, $this->object->setLoader($loader));
-        self::assertTrue(is_resource($this->object->getStreamContext()));
+        $object = new StreamCreator($loader);
+        self::assertTrue(is_resource($object->getStreamContext()));
     }
 
     public function testGetStreamContextWithProxyWithoutAuthUserPortAndProtocol()
@@ -116,8 +95,8 @@ class StreamCreatorTest extends \PHPUnit_Framework_TestCase
             ->method('getOption')
             ->will(self::returnValueMap($map));
 
-        self::assertSame($this->object, $this->object->setLoader($loader));
-        self::assertTrue(is_resource($this->object->getStreamContext()));
+        $object = new StreamCreator($loader);
+        self::assertTrue(is_resource($object->getStreamContext()));
     }
 
     public function testGetStreamContextWithProxyWithAuthAndUser()
@@ -137,8 +116,8 @@ class StreamCreatorTest extends \PHPUnit_Framework_TestCase
             ->method('getOption')
             ->will(self::returnValueMap($map));
 
-        self::assertSame($this->object, $this->object->setLoader($loader));
-        self::assertTrue(is_resource($this->object->getStreamContext()));
+        $object = new StreamCreator($loader);
+        self::assertTrue(is_resource($object->getStreamContext()));
     }
 
     public function testGetStreamContextWithProxyWithAuthAndUserWithoutPassword()
@@ -158,8 +137,8 @@ class StreamCreatorTest extends \PHPUnit_Framework_TestCase
             ->method('getOption')
             ->will(self::returnValueMap($map));
 
-        self::assertSame($this->object, $this->object->setLoader($loader));
-        self::assertTrue(is_resource($this->object->getStreamContext()));
+        $object = new StreamCreator($loader);
+        self::assertTrue(is_resource($object->getStreamContext()));
     }
 
     /**
@@ -183,8 +162,8 @@ class StreamCreatorTest extends \PHPUnit_Framework_TestCase
             ->method('getOption')
             ->will(self::returnValueMap($map));
 
-        $this->object->setLoader($loader);
-        $this->object->getStreamContext();
+        $object = new StreamCreator($loader);
+        $object->getStreamContext();
     }
 
     /**
@@ -208,7 +187,7 @@ class StreamCreatorTest extends \PHPUnit_Framework_TestCase
             ->method('getOption')
             ->will(self::returnValueMap($map));
 
-        $this->object->setLoader($loader);
-        $this->object->getStreamContext();
+        $object = new StreamCreator($loader);
+        $object->getStreamContext();
     }
 }

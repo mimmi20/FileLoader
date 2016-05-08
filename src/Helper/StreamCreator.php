@@ -70,11 +70,9 @@ class StreamCreator
      *
      * @return \FileLoader\Helper\StreamCreator
      */
-    public function setLoader(Loader $loader)
+    public function __construct(Loader $loader)
     {
         $this->loader = $loader;
-
-        return $this;
     }
 
     /**
