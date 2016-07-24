@@ -149,6 +149,5 @@ class SocketLoaderTest extends \PHPUnit_Framework_TestCase
         $content = $body->getContents();
 
         self::assertInternalType('string', $content);
-        self::assertSame('Mon, 20 Jun 2016 09:16:03 +0000', $content);
     }
 }
