@@ -37,6 +37,7 @@ use FileLoader\Exception;
 use FileLoader\Helper\StreamCreator;
 use FileLoader\Interfaces\LoaderInterface;
 use FileLoader\Loader;
+use FileLoader\Psr7\Stream;
 use GuzzleHttp\Psr7\Response;
 
 /**
@@ -81,7 +82,7 @@ class FopenLoader implements LoaderInterface
     public function __construct(Loader $loader, StreamCreator $streamHelper)
     {
         $this->loader       = $loader;
-        $this->streamHelper = $streamHelper;
+        $streamHelper = $streamHelper;
     }
 
     /**
@@ -117,18 +118,18 @@ class FopenLoader implements LoaderInterface
     private function getRemoteData($url)
     {
         $context      = $this->streamHelper->getStreamContext();
-        $this->stream = @fopen($url, 'rb', false, $context);
+        $stream = @fopen($url, 'rb', false, $context);
 
-        if (false === $this->stream) {
+        if (false === $stream) {
             throw new Exception('could not initialize the connection to load the data');
         }
 
         $timeout = $this->loader->getTimeout();
 
-        stream_set_timeout($this->stream, $timeout);
-        stream_set_blocking($this->stream, 1);
+        stream_set_timeout($stream, $timeout);
+        stream_set_blocking($stream, 1);
 
-        $meta    = stream_get_meta_data($this->stream);
+        $meta    = stream_get_meta_data($stream);
         $headers = [];
         $code    = 200;
 
@@ -144,6 +145,6 @@ class FopenLoader implements LoaderInterface
             }
         }
 
-        return new Response($code, $headers, $this->stream);
+        return new Response($code, $headers, new Stream($stream));
     }
 }

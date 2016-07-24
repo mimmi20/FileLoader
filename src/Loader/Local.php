@@ -35,6 +35,7 @@ namespace FileLoader\Loader;
 
 use FileLoader\Exception;
 use FileLoader\Interfaces\LoaderInterface;
+use FileLoader\Psr7\Stream;
 use GuzzleHttp\Psr7\Response;
 
 /**
@@ -99,7 +100,7 @@ class Local implements LoaderInterface
             throw new Exception('could not read content from Local file', Exception::LOCAL_FILE_NOT_READABLE);
         }
 
-        return new Response(200, [], $stream);
+        return new Response(200, [], new Stream($stream));
     }
 
     /**
