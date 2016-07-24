@@ -33,10 +33,10 @@
 
 namespace FileLoader\Loader;
 
+use FileLoader\Exception;
 use FileLoader\Helper\StreamCreator;
 use FileLoader\Interfaces\LoaderInterface;
 use FileLoader\Loader;
-use FileLoader\Exception;
 use GuzzleHttp\Psr7\Response;
 
 /**

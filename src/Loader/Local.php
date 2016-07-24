@@ -35,7 +35,6 @@ namespace FileLoader\Loader;
 
 use FileLoader\Exception;
 use FileLoader\Interfaces\LoaderInterface;
-use FileLoader\Loader;
 use GuzzleHttp\Psr7\Response;
 
 /**

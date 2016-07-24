@@ -49,15 +49,13 @@ return Symfony\CS\Config\Config::create()
             'phpdoc_no_package',
             'phpdoc_params',
             'phpdoc_scalar',
-            'phpdoc_separation',
-            'phpdoc_to_comment',
             'phpdoc_trim',
             'phpdoc_types',
             'phpdoc_var_without_name',
             'remove_lines_between_uses',
             'return',
             'self_accessor',
-            'long_array_syntax',
+            'short_array_syntax',
             'short_tag',
             'single_line_after_imports',
             'single_quote',
@@ -97,4 +95,3 @@ return Symfony\CS\Config\Config::create()
         )
     )
     ->finder($finder);
-

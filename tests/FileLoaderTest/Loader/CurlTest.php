@@ -68,13 +68,11 @@ class CurlTest extends \PHPUnit_Framework_TestCase
         $loader
             ->expects(self::once())
             ->method('getRemoteDataUrl')
-            ->will(self::returnValue('http://example.org/'))
-        ;
+            ->will(self::returnValue('http://example.org/'));
         $loader
             ->expects(self::never())
             ->method('getRemoteVersionUrl')
-            ->will(self::returnValue('http://browscap.org/version'))
-        ;
+            ->will(self::returnValue('http://browscap.org/version'));
 
         $object = new Curl($loader);
 
@@ -104,13 +102,11 @@ class CurlTest extends \PHPUnit_Framework_TestCase
         $loader
             ->expects(self::never())
             ->method('getRemoteDataUrl')
-            ->will(self::returnValue('http://browscap.org/stream?q=Lite_PHP_BrowsCapINI'))
-        ;
+            ->will(self::returnValue('http://browscap.org/stream?q=Lite_PHP_BrowsCapINI'));
         $loader
             ->expects(self::once())
             ->method('getRemoteVersionUrl')
-            ->will(self::returnValue('http://browscap.org/version'))
-        ;
+            ->will(self::returnValue('http://browscap.org/version'));
 
         $object = new Curl($loader);
 

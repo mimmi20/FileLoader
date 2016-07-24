@@ -83,16 +83,16 @@ class StreamCreator
     public function getStreamContext()
     {
         // set basic stream context configuration
-        $config = array(
-            'tcp' => array(
+        $config = [
+            'tcp' => [
                 'method'          => 'GET',
                 'user_agent'      => $this->loader->getUserAgent(),
                 // ignore errors, handle them manually
                 'ignore_errors'   => true,
                 'request_fulluri' => true,
                 'timeout'         => $this->loader->getTimeout(),
-            ),
-        );
+            ],
+        ];
 
         // check and set proxy settings
         $proxy_host = $this->loader->getOption('ProxyHost');
@@ -100,7 +100,7 @@ class StreamCreator
             // check for supported protocol
             $proxy_protocol = $this->loader->getOption('ProxyProtocol');
             if ($proxy_protocol !== null) {
-                if (!in_array($proxy_protocol, array(self::PROXY_PROTOCOL_HTTP, self::PROXY_PROTOCOL_HTTPS))) {
+                if (!in_array($proxy_protocol, [self::PROXY_PROTOCOL_HTTP, self::PROXY_PROTOCOL_HTTPS])) {
                     throw new Exception(
                         'Invalid/unsupported value "' . $proxy_protocol . '" for option "ProxyProtocol".',
                         Exception::INVALID_OPTION
@@ -121,7 +121,7 @@ class StreamCreator
             // check auth settings
             $proxy_auth = $this->loader->getOption('ProxyAuth');
             if ($proxy_auth !== null) {
-                if (!in_array($proxy_auth, array(self::PROXY_AUTH_BASIC))) {
+                if (!in_array($proxy_auth, [self::PROXY_AUTH_BASIC])) {
                     throw new Exception(
                         'Invalid/unsupported value "' . $proxy_auth . '" for option "ProxyAuth".',
                         Exception::INVALID_OPTION

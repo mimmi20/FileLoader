@@ -49,16 +49,17 @@ class SocketLoaderTest extends \PHPUnit_Framework_TestCase
 {
     private function createContext()
     {
-        $config = array(
-            'http' => array(
+        $config = [
+            'http' => [
                 'method'          => 'GET',
                 'user_agent'      => 'Test-UserAgent',
                 // ignore errors, handle them manually
                 'ignore_errors'   => true,
                 'request_fulluri' => true,
                 'timeout'         => 60,
-            ),
-        );
+            ],
+        ];
+
         return stream_context_create($config);
     }
 
@@ -72,13 +73,11 @@ class SocketLoaderTest extends \PHPUnit_Framework_TestCase
         $loader
             ->expects(self::once())
             ->method('getRemoteDataUrl')
-            ->will(self::returnValue('http://browscap.org/stream?q=Lite_PHP_BrowsCapINI'))
-        ;
+            ->will(self::returnValue('http://browscap.org/stream?q=Lite_PHP_BrowsCapINI'));
         $loader
             ->expects(self::never())
             ->method('getRemoteVersionUrl')
-            ->will(self::returnValue('http://browscap.org/version'))
-        ;
+            ->will(self::returnValue('http://browscap.org/version'));
 
         $streamHelper = $this->getMockBuilder(\FileLoader\Helper\StreamCreator::class)
             ->disableOriginalConstructor()
@@ -88,8 +87,7 @@ class SocketLoaderTest extends \PHPUnit_Framework_TestCase
         $streamHelper
             ->expects(self::never())
             ->method('getStreamContext')
-            ->will(self::returnValue($this->createContext()))
-        ;
+            ->will(self::returnValue($this->createContext()));
 
         $object = new SocketLoader($loader, $streamHelper);
 
@@ -119,13 +117,11 @@ class SocketLoaderTest extends \PHPUnit_Framework_TestCase
         $loader
             ->expects(self::never())
             ->method('getRemoteDataUrl')
-            ->will(self::returnValue('http://browscap.org/stream?q=Lite_PHP_BrowsCapINI'))
-        ;
+            ->will(self::returnValue('http://browscap.org/stream?q=Lite_PHP_BrowsCapINI'));
         $loader
             ->expects(self::once())
             ->method('getRemoteVersionUrl')
-            ->will(self::returnValue('http://browscap.org/version'))
-        ;
+            ->will(self::returnValue('http://browscap.org/version'));
 
         $streamHelper = $this->getMockBuilder(\FileLoader\Helper\StreamCreator::class)
             ->disableOriginalConstructor()
@@ -135,8 +131,7 @@ class SocketLoaderTest extends \PHPUnit_Framework_TestCase
         $streamHelper
             ->expects(self::never())
             ->method('getStreamContext')
-            ->will(self::returnValue($this->createContext()))
-        ;
+            ->will(self::returnValue($this->createContext()));
 
         $object = new SocketLoader($loader, $streamHelper);
 

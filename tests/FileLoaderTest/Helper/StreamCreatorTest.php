@@ -65,13 +65,13 @@ class StreamCreatorTest extends \PHPUnit_Framework_TestCase
 
     public function testGetStreamContextWithProxyWithoutAuthAndUser()
     {
-        $map = array(
-            array('ProxyHost', 'example.org'),
-            array('ProxyProtocol', 'http'),
-            array('ProxyPort', 80),
-            array('ProxyAuth', null),
-            array('ProxyUser', null),
-        );
+        $map = [
+            ['ProxyHost', 'example.org'],
+            ['ProxyProtocol', 'http'],
+            ['ProxyPort', 80],
+            ['ProxyAuth', null],
+            ['ProxyUser', null],
+        ];
 
         $loader = $this->getMockBuilder(\FileLoader\Loader::class)
             ->disableOriginalConstructor()
@@ -89,13 +89,13 @@ class StreamCreatorTest extends \PHPUnit_Framework_TestCase
 
     public function testGetStreamContextWithProxyWithoutAuthUserPortAndProtocol()
     {
-        $map = array(
-            array('ProxyHost', 'example.org'),
-            array('ProxyProtocol', null),
-            array('ProxyPort', null),
-            array('ProxyAuth', null),
-            array('ProxyUser', null),
-        );
+        $map = [
+            ['ProxyHost', 'example.org'],
+            ['ProxyProtocol', null],
+            ['ProxyPort', null],
+            ['ProxyAuth', null],
+            ['ProxyUser', null],
+        ];
 
         $loader = $this->getMockBuilder(\FileLoader\Loader::class)
             ->disableOriginalConstructor()
@@ -113,14 +113,14 @@ class StreamCreatorTest extends \PHPUnit_Framework_TestCase
 
     public function testGetStreamContextWithProxyWithAuthAndUser()
     {
-        $map = array(
-            array('ProxyHost', 'example.org'),
-            array('ProxyProtocol', 'http'),
-            array('ProxyPort', 80),
-            array('ProxyAuth', StreamCreator::PROXY_AUTH_BASIC),
-            array('ProxyUser', 'testUser'),
-            array('ProxyPassword', 'testPassword'),
-        );
+        $map = [
+            ['ProxyHost', 'example.org'],
+            ['ProxyProtocol', 'http'],
+            ['ProxyPort', 80],
+            ['ProxyAuth', StreamCreator::PROXY_AUTH_BASIC],
+            ['ProxyUser', 'testUser'],
+            ['ProxyPassword', 'testPassword'],
+        ];
 
         $loader = $this->getMockBuilder(\FileLoader\Loader::class)
             ->disableOriginalConstructor()
@@ -138,14 +138,14 @@ class StreamCreatorTest extends \PHPUnit_Framework_TestCase
 
     public function testGetStreamContextWithProxyWithAuthAndUserWithoutPassword()
     {
-        $map = array(
-            array('ProxyHost', 'example.org'),
-            array('ProxyProtocol', 'http'),
-            array('ProxyPort', 80),
-            array('ProxyAuth', StreamCreator::PROXY_AUTH_BASIC),
-            array('ProxyUser', 'testUser'),
-            array('ProxyPassword', null),
-        );
+        $map = [
+            ['ProxyHost', 'example.org'],
+            ['ProxyProtocol', 'http'],
+            ['ProxyPort', 80],
+            ['ProxyAuth', StreamCreator::PROXY_AUTH_BASIC],
+            ['ProxyUser', 'testUser'],
+            ['ProxyPassword', null],
+        ];
 
         $loader = $this->getMockBuilder(\FileLoader\Loader::class)
             ->disableOriginalConstructor()
@@ -167,14 +167,14 @@ class StreamCreatorTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetStreamContextWithWrongProtocol()
     {
-        $map = array(
-            array('ProxyHost', 'example.org'),
-            array('ProxyProtocol', 'htt'),
-            array('ProxyPort', 80),
-            array('ProxyAuth', StreamCreator::PROXY_AUTH_BASIC),
-            array('ProxyUser', 'testUser'),
-            array('ProxyPassword', 'testPassword'),
-        );
+        $map = [
+            ['ProxyHost', 'example.org'],
+            ['ProxyProtocol', 'htt'],
+            ['ProxyPort', 80],
+            ['ProxyAuth', StreamCreator::PROXY_AUTH_BASIC],
+            ['ProxyUser', 'testUser'],
+            ['ProxyPassword', 'testPassword'],
+        ];
 
         $loader = $this->getMockBuilder(\FileLoader\Loader::class)
             ->disableOriginalConstructor()
@@ -196,14 +196,14 @@ class StreamCreatorTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetStreamContextWithWrongProxyAuthMethod()
     {
-        $map = array(
-            array('ProxyHost', 'example.org'),
-            array('ProxyProtocol', 'http'),
-            array('ProxyPort', 80),
-            array('ProxyAuth', StreamCreator::PROXY_AUTH_NTLM),
-            array('ProxyUser', 'testUser'),
-            array('ProxyPassword', 'testPassword'),
-        );
+        $map = [
+            ['ProxyHost', 'example.org'],
+            ['ProxyProtocol', 'http'],
+            ['ProxyPort', 80],
+            ['ProxyAuth', StreamCreator::PROXY_AUTH_NTLM],
+            ['ProxyUser', 'testUser'],
+            ['ProxyPassword', 'testPassword'],
+        ];
 
         $loader = $this->getMockBuilder(\FileLoader\Loader::class)
             ->disableOriginalConstructor()

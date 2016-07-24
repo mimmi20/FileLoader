@@ -33,12 +33,12 @@
 
 namespace FileLoader;
 
+use FileLoader\Helper\StreamCreator;
 use FileLoader\Interfaces\LoaderInterface;
 use FileLoader\Loader\Curl;
 use FileLoader\Loader\FopenLoader;
-use FileLoader\Loader\SocketLoader;
-use FileLoader\Helper\StreamCreator;
 use FileLoader\Loader\Local;
+use FileLoader\Loader\SocketLoader;
 
 /**
  * class to load a file from a local or remote source
@@ -79,14 +79,14 @@ class Loader implements LoaderInterface
      *
      * @var array
      */
-    private $options = array(
+    private $options = [
         'ProxyProtocol' => null,
         'ProxyHost'     => null,
         'ProxyPort'     => null,
         'ProxyAuth'     => null,
         'ProxyUser'     => null,
         'ProxyPassword' => null,
-    );
+    ];
 
     /**
      * The path of the local version of the browscap.ini file from which to
@@ -334,11 +334,13 @@ class Loader implements LoaderInterface
 
         if ($this->localFile !== null) {
             $this->loader = new Local($this->localFile);
+
             return $this->loader;
         }
 
         if (extension_loaded('curl')) {
             $this->loader = new Curl($this);
+
             return $this->loader;
         }
 
@@ -346,10 +348,12 @@ class Loader implements LoaderInterface
 
         if (ini_get('allow_url_fopen')) {
             $this->loader = new FopenLoader($this, $streamHelper);
+
             return $this->loader;
         }
 
         $this->loader = new SocketLoader($this, $streamHelper);
+
         return $this->loader;
     }
 }

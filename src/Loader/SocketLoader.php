@@ -79,7 +79,7 @@ class SocketLoader implements LoaderInterface
      *
      * @var array
      */
-    private $urlParts = array();
+    private $urlParts = [];
 
     /**
      * @param \FileLoader\Loader               $loader
