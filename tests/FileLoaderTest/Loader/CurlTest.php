@@ -116,7 +116,6 @@ class CurlTest extends \PHPUnit_Framework_TestCase
         self::assertInstanceOf('\Psr\Http\Message\ResponseInterface', $result);
         self::assertSame(200, $result->getStatusCode());
         self::assertSame('OK', $result->getReasonPhrase());
-        self::assertCount(12, $result->getHeaders());
 
         $body = $result->getBody();
 

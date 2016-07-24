@@ -81,7 +81,7 @@ class Local implements LoaderInterface
      * the cache dir, parses the ini file
      *
      * @throws \FileLoader\Exception
-     * @return \Psr\Http\Message\ResponseInterface
+     * @return \GuzzleHttp\Psr7\Response
      */
     public function load()
     {
@@ -106,7 +106,7 @@ class Local implements LoaderInterface
      * Gets the local ini file update timestamp
      *
      * @throws \FileLoader\Exception
-     * @return \Psr\Http\Message\ResponseInterface
+     * @return \GuzzleHttp\Psr7\Response
      */
     public function getMTime()
     {

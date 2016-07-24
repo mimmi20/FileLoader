@@ -73,7 +73,6 @@ class LocalTest extends \PHPUnit_Framework_TestCase
         $content = $body->getContents();
 
         self::assertInternalType('string', $content);
-        //self::assertSame('string', $content);
     }
 
     public function testGetMtime()

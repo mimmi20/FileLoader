@@ -81,7 +81,7 @@ class Curl implements LoaderInterface
      * loads the ini file from a remote location
      *
      * @throws \FileLoader\Exception
-     * @return \Psr\Http\Message\ResponseInterface
+     * @return \GuzzleHttp\Psr7\Response
      */
     public function load()
     {
@@ -92,7 +92,7 @@ class Curl implements LoaderInterface
      * Gets the remote file update timestamp
      *
      * @throws \FileLoader\Exception
-     * @return \Psr\Http\Message\ResponseInterface
+     * @return \GuzzleHttp\Psr7\Response
      */
     public function getMTime()
     {
@@ -105,7 +105,7 @@ class Curl implements LoaderInterface
      * @param string $url the url of the data
      *
      * @throws \FileLoader\Exception
-     * @return \Psr\Http\Message\ResponseInterface
+     * @return \GuzzleHttp\Psr7\Response
      */
     private function getRemoteData($url)
     {
