@@ -68,7 +68,7 @@ class LocalTest extends \PHPUnit_Framework_TestCase
 
         $body = $result->getBody();
 
-        self::assertInstanceOf('\GuzzleHttp\Psr7\Stream', $body);
+        self::assertInstanceOf('\FileLoader\Psr7\Stream', $body);
 
         $content = $body->getContents();
 
