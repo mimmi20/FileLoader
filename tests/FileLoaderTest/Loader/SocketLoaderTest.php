@@ -141,7 +141,7 @@ class SocketLoaderTest extends \PHPUnit_Framework_TestCase
         self::assertInstanceOf('\Psr\Http\Message\ResponseInterface', $result);
         self::assertSame(200, $result->getStatusCode());
         self::assertSame('OK', $result->getReasonPhrase());
-        self::assertCount(11, $result->getHeaders());
+        self::assertCount(11, $result->getHeaders());var_dump($result->getHeaders());
 
         $body = $result->getBody();
 
