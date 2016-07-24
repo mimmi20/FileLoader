@@ -111,7 +111,11 @@ class Local implements LoaderInterface
      */
     public function getMTime()
     {
-        if (!is_readable($this->file) || !is_file($this->file)) {
+        if (!is_file($this->file)) {
+            throw new Exception('The given Local file is not a file', Exception::LOCAL_FILE_NOT_READABLE);
+        }
+
+        if (!is_readable($this->file)) {
             throw new Exception('Local file is not readable', Exception::LOCAL_FILE_NOT_READABLE);
         }
 

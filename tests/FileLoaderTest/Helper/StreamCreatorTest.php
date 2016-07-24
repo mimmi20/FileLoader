@@ -49,7 +49,11 @@ class StreamCreatorTest extends \PHPUnit_Framework_TestCase
 {
     public function testGetStreamContextWithoutProxy()
     {
-        $loader = $this->getMock('\FileLoader\Loader', array('getOption'), array(), '', false);
+        $loader = $this->getMockBuilder(\FileLoader\Loader::class)
+            ->disableOriginalConstructor()
+            ->setMethods(['getOption'])
+            ->getMock();
+
         $loader
             ->expects(self::once())
             ->method('getOption')
@@ -69,7 +73,11 @@ class StreamCreatorTest extends \PHPUnit_Framework_TestCase
             array('ProxyUser', null),
         );
 
-        $loader = $this->getMock('\FileLoader\Loader', array('getOption'), array(), '', false);
+        $loader = $this->getMockBuilder(\FileLoader\Loader::class)
+            ->disableOriginalConstructor()
+            ->setMethods(['getOption'])
+            ->getMock();
+
         $loader
             ->expects(self::exactly(5))
             ->method('getOption')
@@ -89,7 +97,11 @@ class StreamCreatorTest extends \PHPUnit_Framework_TestCase
             array('ProxyUser', null),
         );
 
-        $loader = $this->getMock('\FileLoader\Loader', array('getOption'), array(), '', false);
+        $loader = $this->getMockBuilder(\FileLoader\Loader::class)
+            ->disableOriginalConstructor()
+            ->setMethods(['getOption'])
+            ->getMock();
+
         $loader
             ->expects(self::exactly(5))
             ->method('getOption')
@@ -110,7 +122,11 @@ class StreamCreatorTest extends \PHPUnit_Framework_TestCase
             array('ProxyPassword', 'testPassword'),
         );
 
-        $loader = $this->getMock('\FileLoader\Loader', array('getOption'), array(), '', false);
+        $loader = $this->getMockBuilder(\FileLoader\Loader::class)
+            ->disableOriginalConstructor()
+            ->setMethods(['getOption'])
+            ->getMock();
+
         $loader
             ->expects(self::exactly(6))
             ->method('getOption')
@@ -131,7 +147,11 @@ class StreamCreatorTest extends \PHPUnit_Framework_TestCase
             array('ProxyPassword', null),
         );
 
-        $loader = $this->getMock('\FileLoader\Loader', array('getOption'), array(), '', false);
+        $loader = $this->getMockBuilder(\FileLoader\Loader::class)
+            ->disableOriginalConstructor()
+            ->setMethods(['getOption'])
+            ->getMock();
+
         $loader
             ->expects(self::exactly(6))
             ->method('getOption')
@@ -156,7 +176,11 @@ class StreamCreatorTest extends \PHPUnit_Framework_TestCase
             array('ProxyPassword', 'testPassword'),
         );
 
-        $loader = $this->getMock('\FileLoader\Loader', array('getOption'), array(), '', false);
+        $loader = $this->getMockBuilder(\FileLoader\Loader::class)
+            ->disableOriginalConstructor()
+            ->setMethods(['getOption'])
+            ->getMock();
+
         $loader
             ->expects(self::exactly(2))
             ->method('getOption')
@@ -181,7 +205,11 @@ class StreamCreatorTest extends \PHPUnit_Framework_TestCase
             array('ProxyPassword', 'testPassword'),
         );
 
-        $loader = $this->getMock('\FileLoader\Loader', array('getOption'), array(), '', false);
+        $loader = $this->getMockBuilder(\FileLoader\Loader::class)
+            ->disableOriginalConstructor()
+            ->setMethods(['getOption'])
+            ->getMock();
+
         $loader
             ->expects(self::exactly(4))
             ->method('getOption')

@@ -60,7 +60,11 @@ class CurlTest extends \PHPUnit_Framework_TestCase
 
     public function testLoad()
     {
-        $loader = $this->getMock('\FileLoader\Loader', array('getRemoteDataUrl', 'getRemoteVerUrl'), array(), '', false);
+        $loader = $this->getMockBuilder(\FileLoader\Loader::class)
+            ->disableOriginalConstructor()
+            ->setMethods(['getRemoteDataUrl', 'getRemoteVersionUrl'])
+            ->getMock();
+
         $loader
             ->expects(self::once())
             ->method('getRemoteDataUrl')
@@ -68,7 +72,7 @@ class CurlTest extends \PHPUnit_Framework_TestCase
         ;
         $loader
             ->expects(self::never())
-            ->method('getRemoteVerUrl')
+            ->method('getRemoteVersionUrl')
             ->will(self::returnValue('http://browscap.org/version'))
         ;
 
@@ -92,7 +96,11 @@ class CurlTest extends \PHPUnit_Framework_TestCase
 
     public function testGetMtime()
     {
-        $loader = $this->getMock('\FileLoader\Loader', array('getRemoteDataUrl', 'getRemoteVerUrl'), array(), '', false);
+        $loader = $this->getMockBuilder(\FileLoader\Loader::class)
+            ->disableOriginalConstructor()
+            ->setMethods(['getRemoteDataUrl', 'getRemoteVersionUrl'])
+            ->getMock();
+
         $loader
             ->expects(self::never())
             ->method('getRemoteDataUrl')
@@ -100,7 +108,7 @@ class CurlTest extends \PHPUnit_Framework_TestCase
         ;
         $loader
             ->expects(self::once())
-            ->method('getRemoteVerUrl')
+            ->method('getRemoteVersionUrl')
             ->will(self::returnValue('http://browscap.org/version'))
         ;
 
@@ -121,6 +129,6 @@ class CurlTest extends \PHPUnit_Framework_TestCase
         $content = $body->getContents();
 
         self::assertInternalType('string', $content);
-        self::assertSame('Thu, 21 Apr 2016 09:16:00 +0000', $content);
+        self::assertSame('Mon, 20 Jun 2016 09:16:03 +0000', $content);
     }
 }

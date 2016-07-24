@@ -75,7 +75,11 @@ class FopenLoaderTest extends \PHPUnit_Framework_TestCase
 
     public function testLoad()
     {
-        $loader = $this->getMock('\FileLoader\Loader', array('getRemoteDataUrl', 'getRemoteVerUrl'), array(), '', false);
+        $loader = $this->getMockBuilder(\FileLoader\Loader::class)
+            ->disableOriginalConstructor()
+            ->setMethods(['getRemoteDataUrl', 'getRemoteVersionUrl'])
+            ->getMock();
+
         $loader
             ->expects(self::once())
             ->method('getRemoteDataUrl')
@@ -83,11 +87,15 @@ class FopenLoaderTest extends \PHPUnit_Framework_TestCase
         ;
         $loader
             ->expects(self::never())
-            ->method('getRemoteVerUrl')
+            ->method('getRemoteVersionUrl')
             ->will(self::returnValue('http://browscap.org/version'))
         ;
 
-        $streamHelper = $this->getMock('\FileLoader\Helper\StreamCreator', array('getStreamContext'), array(), '', false);
+        $streamHelper = $this->getMockBuilder(\FileLoader\Helper\StreamCreator::class)
+            ->disableOriginalConstructor()
+            ->setMethods(['getStreamContext'])
+            ->getMock();
+
         $streamHelper
             ->expects(self::once())
             ->method('getStreamContext')
@@ -115,7 +123,11 @@ class FopenLoaderTest extends \PHPUnit_Framework_TestCase
 
     public function testGetMtime()
     {
-        $loader = $this->getMock('\FileLoader\Loader', array('getRemoteDataUrl', 'getRemoteVerUrl'), array(), '', false);
+        $loader = $this->getMockBuilder(\FileLoader\Loader::class)
+            ->disableOriginalConstructor()
+            ->setMethods(['getRemoteDataUrl', 'getRemoteVersionUrl'])
+            ->getMock();
+
         $loader
             ->expects(self::never())
             ->method('getRemoteDataUrl')
@@ -123,11 +135,15 @@ class FopenLoaderTest extends \PHPUnit_Framework_TestCase
         ;
         $loader
             ->expects(self::once())
-            ->method('getRemoteVerUrl')
+            ->method('getRemoteVersionUrl')
             ->will(self::returnValue('http://browscap.org/version'))
         ;
 
-        $streamHelper = $this->getMock('\FileLoader\Helper\StreamCreator', array('getStreamContext'), array(), '', false);
+        $streamHelper = $this->getMockBuilder(\FileLoader\Helper\StreamCreator::class)
+            ->disableOriginalConstructor()
+            ->setMethods(['getStreamContext'])
+            ->getMock();
+
         $streamHelper
             ->expects(self::once())
             ->method('getStreamContext')
@@ -151,6 +167,6 @@ class FopenLoaderTest extends \PHPUnit_Framework_TestCase
         $content = $body->getContents();
 
         self::assertInternalType('string', $content);
-        self::assertSame('Thu, 21 Apr 2016 09:16:00 +0000', $content);
+        self::assertSame('Mon, 20 Jun 2016 09:16:03 +0000', $content);
     }
 }

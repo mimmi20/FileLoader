@@ -111,14 +111,19 @@ class Loader implements LoaderInterface
     private $remoteVersionUrl = null;
 
     /**
-     * @param array|null $options
+     * @var \FileLoader\Interfaces\LoaderInterface
+     */
+    private $loader = null;
+
+    /**
+     * @param array|\Traversable|null $options
      *
      * @throws \FileLoader\Exception
      */
     public function __construct($options = null)
     {
         if ($options !== null) {
-            if (is_array($options)) {
+            if (is_array($options) || $options instanceof \Traversable) {
                 $this->setOptions($options);
             } else {
                 throw new Exception('Invalid value for "options", array expected.', Exception::INVALID_OPTION);
@@ -129,14 +134,14 @@ class Loader implements LoaderInterface
     /**
      * Sets multiple loader options at once
      *
-     * @param array $options
+     * @param array|\Traversable $options
      *
      * @return \FileLoader\Loader
      */
-    public function setOptions(array $options)
+    public function setOptions($options)
     {
-        foreach ($options as $option_key => $option_value) {
-            $this->setOption($option_key, $option_value);
+        foreach ($options as $optionKey => $optionValue) {
+            $this->setOption($optionKey, $optionValue);
         }
 
         return $this;
@@ -195,6 +200,7 @@ class Loader implements LoaderInterface
         }
 
         $this->localFile = $filename;
+        $this->loader    = null;
 
         return $this;
     }
@@ -237,7 +243,7 @@ class Loader implements LoaderInterface
      *
      * @return \FileLoader\Loader
      */
-    public function setRemoteVerUrl($remoteVerUrl)
+    public function setRemoteVersionUrl($remoteVerUrl)
     {
         if (empty($remoteVerUrl)) {
             throw new Exception('the parameter ' . $remoteVerUrl . ' can not be empty', Exception::VERSION_URL_MISSING);
@@ -253,7 +259,7 @@ class Loader implements LoaderInterface
      *
      * @return string
      */
-    public function getRemoteVerUrl()
+    public function getRemoteVersionUrl()
     {
         return $this->remoteVersionUrl;
     }
@@ -320,22 +326,30 @@ class Loader implements LoaderInterface
      *
      * @return \FileLoader\Interfaces\LoaderInterface
      */
-    public function getLoader()
+    private function getLoader()
     {
+        if (null !== $this->loader) {
+            return $this->loader;
+        }
+
         if ($this->localFile !== null) {
-            return new Local($this->localFile);
+            $this->loader = new Local($this->localFile);
+            return $this->loader;
+        }
+
+        if (extension_loaded('curl')) {
+            $this->loader = new Curl($this);
+            return $this->loader;
         }
 
         $streamHelper = new StreamCreator($this);
 
-        if (extension_loaded('curl')) {
-            return new Curl($this);
-        }
-
         if (ini_get('allow_url_fopen')) {
-            return new FopenLoader($this, $streamHelper);
+            $this->loader = new FopenLoader($this, $streamHelper);
+            return $this->loader;
         }
 
-        return new SocketLoader($this, $streamHelper);
+        $this->loader = new SocketLoader($this, $streamHelper);
+        return $this->loader;
     }
 }

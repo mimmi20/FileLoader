@@ -148,16 +148,16 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
      */
     public function testSetRemoteVerUrlException()
     {
-        $this->object->setRemoteVerUrl('');
+        $this->object->setRemoteVersionUrl('');
     }
 
     public function testSetRemoteVerUrl()
     {
         $remoteVerUrl = 'aa';
-        $return       = $this->object->setRemoteVerUrl($remoteVerUrl);
+        $return       = $this->object->setRemoteVersionUrl($remoteVerUrl);
         self::assertInstanceOf('\FileLoader\Loader', $return);
         self::assertSame($this->object, $return);
-        self::assertSame($remoteVerUrl, $this->object->getRemoteVerUrl());
+        self::assertSame($remoteVerUrl, $this->object->getRemoteVersionUrl());
     }
 
     public function testSetTimeout()

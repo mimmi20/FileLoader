@@ -85,9 +85,7 @@ class Curl implements LoaderInterface
      */
     public function load()
     {
-        // Choose the right url
-        $remoteDataUri = $this->loader->getRemoteDataUrl();
-        return $this->getRemoteData($remoteDataUri);
+        return $this->getRemoteData($this->loader->getRemoteDataUrl());
     }
 
     /**
@@ -98,8 +96,7 @@ class Curl implements LoaderInterface
      */
     public function getMTime()
     {
-        $remoteVersionUrl = $this->loader->getRemoteVerUrl();
-        return $this->getRemoteData($remoteVersionUrl);
+        return $this->getRemoteData($this->loader->getRemoteVersionUrl());
     }
 
     /**
@@ -113,6 +110,7 @@ class Curl implements LoaderInterface
     private function getRemoteData($url)
     {
         $this->init($url);
+        $version = '1.1';
 
         $response   = curl_exec($this->resource);
         $httpCode   = curl_getinfo($this->resource, CURLINFO_HTTP_CODE);
@@ -138,7 +136,7 @@ class Curl implements LoaderInterface
 
         $body = substr($response, $headerSize);
 
-        return new Response($httpCode, $headers, $body);
+        return new Response($httpCode, $headers, $body, $version);
     }
 
     /**

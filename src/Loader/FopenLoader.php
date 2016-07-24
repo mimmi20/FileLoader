@@ -92,9 +92,7 @@ class FopenLoader implements LoaderInterface
      */
     public function load()
     {
-        // Choose the right url
-        $remoteDataUri = $this->loader->getRemoteDataUrl();
-        return $this->getRemoteData($remoteDataUri);
+        return $this->getRemoteData($this->loader->getRemoteDataUrl());
     }
 
     /**
@@ -105,8 +103,7 @@ class FopenLoader implements LoaderInterface
      */
     public function getMTime()
     {
-        $remoteVersionUrl = $this->loader->getRemoteVerUrl();
-        return $this->getRemoteData($remoteVersionUrl);
+        return $this->getRemoteData($this->loader->getRemoteVersionUrl());
     }
 
     /**
