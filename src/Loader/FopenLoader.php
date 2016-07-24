@@ -82,7 +82,7 @@ class FopenLoader implements LoaderInterface
     public function __construct(Loader $loader, StreamCreator $streamHelper)
     {
         $this->loader       = $loader;
-        $streamHelper = $streamHelper;
+        $this->streamHelper = $streamHelper;
     }
 
     /**
