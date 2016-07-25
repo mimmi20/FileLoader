@@ -91,7 +91,7 @@ class Local implements LoaderInterface
         }
 
         if (!is_readable($this->file)) {
-            throw new Exception('Local file is not readable', Exception::LOCAL_FILE_NOT_READABLE);
+            throw new Exception('The given Local file is not readable', Exception::LOCAL_FILE_NOT_READABLE);
         }
 
         $stream = fopen($this->file, 'rb', false);
@@ -116,7 +116,7 @@ class Local implements LoaderInterface
         }
 
         if (!is_readable($this->file)) {
-            throw new Exception('Local file is not readable', Exception::LOCAL_FILE_NOT_READABLE);
+            throw new Exception('The given Local file is not readable', Exception::LOCAL_FILE_NOT_READABLE);
         }
 
         return new Response(200, [], date('r', filemtime($this->file)));
