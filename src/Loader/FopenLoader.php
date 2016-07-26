@@ -118,7 +118,7 @@ class FopenLoader implements LoaderInterface
     private function getRemoteData($url)
     {
         $context      = $this->streamHelper->getStreamContext();
-        $stream = @fopen($url, 'rb', false, $context);
+        $stream       = @fopen($url, 'rb', false, $context);
 
         if (false === $stream) {
             throw new Exception('could not initialize the connection to load the data');
