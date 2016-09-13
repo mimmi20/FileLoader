@@ -86,18 +86,20 @@ class Local implements LoaderInterface
      */
     public function load()
     {
-        if (!is_file($this->file)) {
-            throw new Exception('The given Local file is not a file', Exception::LOCAL_FILE_NOT_READABLE);
-        }
+        if (false === strpos($this->file, '://')) {
+            if (!is_file($this->file)) {
+                throw new Exception('The given local file [' . $this->file . '] is not a file', Exception::LOCAL_FILE_NOT_READABLE);
+            }
 
-        if (!is_readable($this->file)) {
-            throw new Exception('The given Local file is not readable', Exception::LOCAL_FILE_NOT_READABLE);
+            if (!is_readable($this->file)) {
+                throw new Exception('The given local file [' . $this->file . '] is not readable', Exception::LOCAL_FILE_NOT_READABLE);
+            }
         }
 
         $stream = fopen($this->file, 'rb', false);
 
         if (false === $stream) {
-            throw new Exception('could not read content from Local file', Exception::LOCAL_FILE_NOT_READABLE);
+            throw new Exception('could not read content from the given local file  [' . $this->file . ']', Exception::LOCAL_FILE_NOT_READABLE);
         }
 
         return new Response(200, [], new Stream($stream));
