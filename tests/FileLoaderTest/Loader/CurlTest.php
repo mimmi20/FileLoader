@@ -1,6 +1,6 @@
 <?php
 /**
- * class to load a file from a local source
+ * class to load a file from a remote source with the curl extension
  *
  * Copyright (c) 2012-2014 Thomas Müller
  *
@@ -33,7 +33,7 @@
 
 namespace FileLoaderTest\Loader;
 
-use FileLoader\Loader\Local;
+use FileLoader\Loader\Curl;
 
 /**
  * @author     Thomas Müller <t_mueller_stolzenhain@yahoo.de>
@@ -45,21 +45,38 @@ use FileLoader\Loader\Local;
  *
  * @link       https://github.com/mimmi20/FileLoader/
  */
-class LocalTest extends \PHPUnit_Framework_TestCase
+class CurlTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @expectedException \FileLoader\Exception
-     * @expectedExceptionMessage the filename can not be empty
+     * Sets up the fixture, for example, opens a network connection.
+     * This method is called before a test is executed.
      */
-    public function testSetLocalFileException()
+    protected function setUp()
     {
-        new Local('');
+        if (!extension_loaded('curl')) {
+            self::markTestSkipped('PHP must have cURL support.');
+        }
     }
 
     public function testLoad()
     {
-        $object = new Local(__DIR__ . '/../../data/test.txt');
+        $loader = $this->getMockBuilder(\FileLoader\Loader::class)
+            ->disableOriginalConstructor()
+            ->setMethods(['getRemoteDataUrl', 'getRemoteVersionUrl'])
+            ->getMock();
 
+        $loader
+            ->expects(self::once())
+            ->method('getRemoteDataUrl')
+            ->will(self::returnValue('http://example.org/'));
+        $loader
+            ->expects(self::never())
+            ->method('getRemoteVersionUrl')
+            ->will(self::returnValue('http://browscap.org/version'));
+
+        $object = new Curl($loader);
+
+        //url: http://browscap.org/stream?q=Lite_PHP_BrowsCapINI
         $result = $object->load();
 
         self::assertInstanceOf('\Psr\Http\Message\ResponseInterface', $result);
@@ -68,7 +85,7 @@ class LocalTest extends \PHPUnit_Framework_TestCase
 
         $body = $result->getBody();
 
-        self::assertInstanceOf('\FileLoader\Psr7\Stream', $body);
+        self::assertInstanceOf('\GuzzleHttp\Psr7\Stream', $body);
 
         $content = $body->getContents();
 
@@ -77,8 +94,23 @@ class LocalTest extends \PHPUnit_Framework_TestCase
 
     public function testGetMtime()
     {
-        $object = new Local(__DIR__ . '/../../data/test.txt');
+        $loader = $this->getMockBuilder(\FileLoader\Loader::class)
+            ->disableOriginalConstructor()
+            ->setMethods(['getRemoteDataUrl', 'getRemoteVersionUrl'])
+            ->getMock();
 
+        $loader
+            ->expects(self::never())
+            ->method('getRemoteDataUrl')
+            ->will(self::returnValue('http://browscap.org/stream?q=Lite_PHP_BrowsCapINI'));
+        $loader
+            ->expects(self::once())
+            ->method('getRemoteVersionUrl')
+            ->will(self::returnValue('http://browscap.org/version'));
+
+        $object = new Curl($loader);
+
+        //url: http://browscap.org/version
         $result = $object->getMTime();
 
         self::assertInstanceOf('\Psr\Http\Message\ResponseInterface', $result);

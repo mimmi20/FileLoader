@@ -33,40 +33,27 @@
 
 namespace FileLoader;
 
+use FileLoader\Helper\StreamCreator;
 use FileLoader\Interfaces\LoaderInterface;
-use FileLoader\Interfaces\LoadLinesInterface;
+use FileLoader\Loader\Curl;
+use FileLoader\Loader\FopenLoader;
+use FileLoader\Loader\Local;
+use FileLoader\Loader\SocketLoader;
 
 /**
  * class to load a file from a local or remote source
  *
  * @author     Thomas Müller <t_mueller_stolzenhain@yahoo.de>
  * @copyright  Copyright (c) 2012-2014 Thomas Müller
- *
- * @version    1.2
- *
  * @license    http://www.opensource.org/licenses/MIT MIT License
- *
  * @link       https://github.com/mimmi20/FileLoader/
  */
-class Loader implements LoaderInterface, LoadLinesInterface
+class Loader implements LoaderInterface
 {
     /**
      * The library version
      */
-    const VERSION = '1.2.0';
-
-    /**
-     * Different ways to access remote and local files.
-     *
-     * UPDATE_FOPEN: Uses the fopen url wrapper (use file_get_contents).
-     * UPDATE_FSOCKOPEN: Uses the socket functions (fsockopen).
-     * UPDATE_CURL: Uses the cURL extension.
-     * UPDATE_LOCAL: Updates from a local file (file_get_contents).
-     */
-    const UPDATE_FOPEN     = 'URL-wrapper';
-    const UPDATE_FSOCKOPEN = 'socket';
-    const UPDATE_CURL      = 'cURL';
-    const UPDATE_LOCAL     = 'local';
+    const VERSION = '3.0.0';
 
     /**
      * The headers to be sent for checking the version and requesting the file.
@@ -84,7 +71,7 @@ class Loader implements LoaderInterface, LoadLinesInterface
      *
      * @var string
      */
-    private $userAgent = 'File Loader/%v';
+    private $userAgent = 'FileLoader/%v';
 
     /**
      * Options for the updater. The array should be overwritten,
@@ -92,19 +79,14 @@ class Loader implements LoaderInterface, LoadLinesInterface
      *
      * @var array
      */
-    private $options = array(
+    private $options = [
         'ProxyProtocol' => null,
         'ProxyHost'     => null,
         'ProxyPort'     => null,
         'ProxyAuth'     => null,
         'ProxyUser'     => null,
         'ProxyPassword' => null,
-    );
-
-    /**
-     * @var \FileLoader\Interfaces\LoaderInterface
-     */
-    private $loader = null;
+    ];
 
     /**
      * The path of the local version of the browscap.ini file from which to
@@ -126,24 +108,22 @@ class Loader implements LoaderInterface, LoadLinesInterface
      *
      * @var string
      */
-    private $remoteVerUrl = null;
+    private $remoteVersionUrl = null;
 
     /**
-     * the mode what defines which way the remote file is loaded
-     *
-     * @var null|string|\FileLoader\Interfaces\ConnectorInterface
+     * @var \FileLoader\Interfaces\LoaderInterface
      */
-    private $mode = null;
+    private $loader = null;
 
     /**
-     * @param array|null $options
+     * @param array|\Traversable|null $options
      *
      * @throws \FileLoader\Exception
      */
     public function __construct($options = null)
     {
         if ($options !== null) {
-            if (is_array($options)) {
+            if (is_array($options) || $options instanceof \Traversable) {
                 $this->setOptions($options);
             } else {
                 throw new Exception('Invalid value for "options", array expected.', Exception::INVALID_OPTION);
@@ -154,14 +134,14 @@ class Loader implements LoaderInterface, LoadLinesInterface
     /**
      * Sets multiple loader options at once
      *
-     * @param array $options
+     * @param array|\Traversable $options
      *
      * @return \FileLoader\Loader
      */
-    public function setOptions(array $options)
+    public function setOptions($options)
     {
-        foreach ($options as $option_key => $option_value) {
-            $this->setOption($option_key, $option_value);
+        foreach ($options as $optionKey => $optionValue) {
+            $this->setOption($optionKey, $optionValue);
         }
 
         return $this;
@@ -174,18 +154,17 @@ class Loader implements LoaderInterface, LoadLinesInterface
      * @param mixed  $value
      *
      * @throws \FileLoader\Exception
-     *
      * @return \FileLoader\Loader
      */
     public function setOption($key, $value)
     {
         if (array_key_exists($key, $this->options)) {
             $this->options[$key] = $value;
-        } else {
-            throw new Exception('Invalid option key "' . (string) $key . '".', Exception::INVALID_OPTION);
+
+            return $this;
         }
 
-        return $this;
+        throw new Exception('Invalid option key "' . (string) $key . '".', Exception::INVALID_OPTION);
     }
 
     /**
@@ -193,7 +172,8 @@ class Loader implements LoaderInterface, LoadLinesInterface
      *
      * @param string $key
      *
-     * @return mixed|null
+     * @throws \FileLoader\Exception
+     * @return mixed
      */
     public function getOption($key)
     {
@@ -201,7 +181,7 @@ class Loader implements LoaderInterface, LoadLinesInterface
             return $this->options[$key];
         }
 
-        return;
+        throw new Exception('Invalid option key "' . (string) $key . '".', Exception::INVALID_OPTION);
     }
 
     /**
@@ -220,6 +200,7 @@ class Loader implements LoaderInterface, LoadLinesInterface
         }
 
         $this->localFile = $filename;
+        $this->loader    = null;
 
         return $this;
     }
@@ -230,7 +211,6 @@ class Loader implements LoaderInterface, LoadLinesInterface
      * @param string $remoteDataUrl
      *
      * @throws \FileLoader\Exception
-     *
      * @return \FileLoader\Loader
      */
     public function setRemoteDataUrl($remoteDataUrl)
@@ -263,13 +243,13 @@ class Loader implements LoaderInterface, LoadLinesInterface
      *
      * @return \FileLoader\Loader
      */
-    public function setRemoteVerUrl($remoteVerUrl)
+    public function setRemoteVersionUrl($remoteVerUrl)
     {
         if (empty($remoteVerUrl)) {
             throw new Exception('the parameter ' . $remoteVerUrl . ' can not be empty', Exception::VERSION_URL_MISSING);
         }
 
-        $this->remoteVerUrl = $remoteVerUrl;
+        $this->remoteVersionUrl = $remoteVerUrl;
 
         return $this;
     }
@@ -279,9 +259,9 @@ class Loader implements LoaderInterface, LoadLinesInterface
      *
      * @return string
      */
-    public function getRemoteVerUrl()
+    public function getRemoteVersionUrl()
     {
-        return $this->remoteVerUrl;
+        return $this->remoteVersionUrl;
     }
 
     /**
@@ -309,27 +289,9 @@ class Loader implements LoaderInterface, LoadLinesInterface
     }
 
     /**
-     * sets the mode to load the remote file
-     *
-     * @param string|\FileLoader\Interfaces\ConnectorInterface $mode
-     *
-     * @return \FileLoader\Loader
-     */
-    public function setMode($mode = null)
-    {
-        if (empty($mode)) {
-            return $this;
-        }
-
-        $this->mode = $mode;
-
-        return $this;
-    }
-
-    /**
      * loads the file from a remote or local location and stores it into the cache
      *
-     * @return string the file content
+     * @return \Psr\Http\Message\ResponseInterface the file content
      */
     public function load()
     {
@@ -338,19 +300,9 @@ class Loader implements LoaderInterface, LoadLinesInterface
     }
 
     /**
-     * returns the uri, used for download
-     *
-     * @return string
-     */
-    public function getUri()
-    {
-        return $this->getLoader()->getUri();
-    }
-
-    /**
      * loads the file from a remote or local location and stores it into the cache
      *
-     * @return string the file content
+     * @return \Psr\Http\Message\ResponseInterface the file modification date or the remote version
      */
     public function getMTime()
     {
@@ -372,63 +324,36 @@ class Loader implements LoaderInterface, LoadLinesInterface
     /**
      * return the actual used loader
      *
-     * @return \FileLoader\Interfaces\LoaderInterface|\FileLoader\Interfaces\LoadLinesInterface
+     * @return \FileLoader\Interfaces\LoaderInterface
      */
-    public function getLoader()
+    private function getLoader()
     {
-        if (null === $this->loader) {
-            $this->loader = Loader\Factory::build($this, $this->mode, $this->localFile);
+        if (null !== $this->loader) {
+            return $this->loader;
         }
 
+        if ($this->localFile !== null) {
+            $this->loader = new Local($this->localFile);
+
+            return $this->loader;
+        }
+
+        if (extension_loaded('curl')) {
+            $this->loader = new Curl($this);
+
+            return $this->loader;
+        }
+
+        $streamHelper = new StreamCreator($this);
+
+        if (ini_get('allow_url_fopen')) {
+            $this->loader = new FopenLoader($this, $streamHelper);
+
+            return $this->loader;
+        }
+
+        $this->loader = new SocketLoader($this, $streamHelper);
+
         return $this->loader;
-    }
-    /**
-     * return TRUE, if this connector is able to return a file line per line
-     *
-     * @return bool
-     */
-    public function isSupportingLoadingLines()
-    {
-        return $this->getLoader()->isSupportingLoadingLines();
-    }
-
-    /**
-     * initialize the connection
-     *
-     * @param string $url the url of the data
-     *
-     * @return bool
-     */
-    public function init($url)
-    {
-        return $this->getLoader()->init($url);
-    }
-
-    /**
-     * checks if the end of the stream is reached
-     *
-     * @return bool
-     */
-    public function isValid()
-    {
-        return $this->getLoader()->isValid();
-    }
-
-    /**
-     * reads one line from the stream
-     *
-     * @return string
-     */
-    public function getLine()
-    {
-        return $this->getLoader()->getLine();
-    }
-
-    /**
-     * closes an open stream
-     */
-    public function close()
-    {
-        return $this->getLoader()->close();
     }
 }

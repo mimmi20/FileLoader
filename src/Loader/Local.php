@@ -35,8 +35,8 @@ namespace FileLoader\Loader;
 
 use FileLoader\Exception;
 use FileLoader\Interfaces\LoaderInterface;
-use FileLoader\Interfaces\LoadLinesInterface;
-use FileLoader\Loader;
+use FileLoader\Psr7\Stream;
+use GuzzleHttp\Psr7\Response;
 
 /**
  * class to load a file from a local source
@@ -50,7 +50,7 @@ use FileLoader\Loader;
  *
  * @link       https://github.com/mimmi20/FileLoader/
  */
-class Local implements LoaderInterface, LoadLinesInterface
+class Local implements LoaderInterface
 {
     /**
      * The path of the local version of the browscap.ini file from which to
@@ -58,14 +58,7 @@ class Local implements LoaderInterface, LoadLinesInterface
      *
      * @var string
      */
-    private $localFile = null;
-
-    /**
-     * a file handle created by fopen
-     *
-     * @var resource
-     */
-    private $stream = null;
+    private $file = null;
 
     /**
      * sets the name of the local file
@@ -73,36 +66,15 @@ class Local implements LoaderInterface, LoadLinesInterface
      * @param string $filename the file name
      *
      * @throws \FileLoader\Exception
-     *
      * @return \FileLoader\Loader\Local
      */
-    public function setLocalFile($filename)
+    public function __construct($filename)
     {
         if (empty($filename)) {
             throw new Exception('the filename can not be empty', Exception::LOCAL_FILE_MISSING);
         }
 
-        $this->localFile = $filename;
-
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getType()
-    {
-        return Loader::UPDATE_LOCAL;
-    }
-
-    /**
-     * return TRUE, if this connector is able to return a file line per line
-     *
-     * @return bool
-     */
-    public function isSupportingLoadingLines()
-    {
-        return true;
+        $this->file = $filename;
     }
 
     /**
@@ -110,91 +82,45 @@ class Local implements LoaderInterface, LoadLinesInterface
      * the cache dir, parses the ini file
      *
      * @throws \FileLoader\Exception
-     *
-     * @return string the content of the local ini file
+     * @return \GuzzleHttp\Psr7\Response
      */
     public function load()
     {
-        if (!is_file($this->localFile)) {
-            throw new Exception('The given Local file is not a file', Exception::LOCAL_FILE_NOT_READABLE);
+        if (false === strpos($this->file, '://')) {
+            if (!is_file($this->file)) {
+                throw new Exception('The given local file [' . $this->file . '] is not a file', Exception::LOCAL_FILE_NOT_READABLE);
+            }
+
+            if (!is_readable($this->file)) {
+                throw new Exception('The given local file [' . $this->file . '] is not readable', Exception::LOCAL_FILE_NOT_READABLE);
+            }
         }
 
-        if (!is_readable($this->localFile)) {
-            throw new Exception('Local file is not readable', Exception::LOCAL_FILE_NOT_READABLE);
+        $stream = fopen($this->file, 'rb', false);
+
+        if (false === $stream) {
+            throw new Exception('could not read content from the given local file  [' . $this->file . ']', Exception::LOCAL_FILE_NOT_READABLE);
         }
 
-        return file_get_contents($this->localFile);
-    }
-
-    /**
-     * returns the uri, used for download
-     *
-     * @return string
-     */
-    public function getUri()
-    {
-        return $this->localFile;
+        return new Response(200, [], new Stream($stream));
     }
 
     /**
      * Gets the local ini file update timestamp
      *
-     * @throws Exception
-     *
-     * @return int the local modification timestamp
+     * @throws \FileLoader\Exception
+     * @return \GuzzleHttp\Psr7\Response
      */
     public function getMTime()
     {
-        if (!is_readable($this->localFile) || !is_file($this->localFile)) {
-            throw new Exception('Local file is not readable', Exception::LOCAL_FILE_NOT_READABLE);
+        if (!is_file($this->file)) {
+            throw new Exception('The given Local file is not a file', Exception::LOCAL_FILE_NOT_READABLE);
         }
 
-        return filemtime($this->localFile);
-    }
-
-    /**
-     * initialize the connection
-     *
-     * @param string $url
-     *
-     * @return bool
-     */
-    public function init($url)
-    {
-        $this->stream = fopen($url, 'rb', false);
-
-        if (false === $this->stream) {
-            return false;
+        if (!is_readable($this->file)) {
+            throw new Exception('The given Local file is not readable', Exception::LOCAL_FILE_NOT_READABLE);
         }
 
-        return true;
-    }
-
-    /**
-     * checks if the end of the stream is reached
-     *
-     * @return bool
-     */
-    public function isValid()
-    {
-        return (!feof($this->stream));
-    }
-
-    /**
-     * reads one line from the stream
-     *
-     * @return string
-     */
-    public function getLine()
-    {
-        return stream_get_line($this->stream, 8192, "\n");
-    }
-
-    /**
-     * closes an open stream
-     */
-    public function close()
-    {
-        fclose($this->stream);
+        return new Response(200, [], date('r', filemtime($this->file)));
     }
 }

@@ -31,13 +31,13 @@
  * @link       https://github.com/mimmi20/FileLoader/
  */
 
-namespace FileLoader\Connector;
+namespace FileLoader\Loader;
 
 use FileLoader\Exception;
-use FileLoader\Helper\Http;
 use FileLoader\Helper\StreamCreator;
-use FileLoader\Interfaces\ConnectorInterface;
+use FileLoader\Interfaces\LoaderInterface;
 use FileLoader\Loader;
+use GuzzleHttp\Psr7\Response;
 
 /**
  * class to load a file from a remote source with the curl extension
@@ -51,7 +51,7 @@ use FileLoader\Loader;
  *
  * @link       https://github.com/mimmi20/FileLoader/
  */
-class Curl implements ConnectorInterface
+class Curl implements LoaderInterface
 {
     /**
      * an Loader instance
@@ -59,13 +59,6 @@ class Curl implements ConnectorInterface
      * @var \FileLoader\Loader
      */
     private $loader = null;
-
-    /**
-     * a HTTP Helper instance
-     *
-     * @var \FileLoader\Helper\Http
-     */
-    private $httpHelper = null;
 
     /**
      * a file handle created by fsockopen
@@ -77,63 +70,33 @@ class Curl implements ConnectorInterface
     /**
      * @param \FileLoader\Loader $loader
      *
-     * @return \FileLoader\Loader\RemoteLoader
+     * @return \FileLoader\Loader\Curl
      */
-    public function setLoader(Loader $loader)
+    public function __construct(Loader $loader)
     {
         $this->loader = $loader;
-
-        return $this;
     }
 
     /**
-     * @return \FileLoader\Loader
-     */
-    public function getLoader()
-    {
-        return $this->loader;
-    }
-
-    /**
-     * @return string
-     */
-    public function getType()
-    {
-        return Loader::UPDATE_CURL;
-    }
-
-    /**
-     * return TRUE, if this connector is able to return a file line per line
+     * loads the ini file from a remote location
      *
-     * @return bool
+     * @throws \FileLoader\Exception
+     * @return \GuzzleHttp\Psr7\Response
      */
-    public function isSupportingLoadingLines()
+    public function load()
     {
-        return false;
+        return $this->getRemoteData($this->loader->getRemoteDataUrl());
     }
 
     /**
-     * sets a http helper instance
+     * Gets the remote file update timestamp
      *
-     * @param \FileLoader\Helper\Http $helper
-     *
-     * @return \FileLoader\Loader\RemoteLoader
+     * @throws \FileLoader\Exception
+     * @return \GuzzleHttp\Psr7\Response
      */
-    public function setHttpHelper(Http $helper)
+    public function getMTime()
     {
-        $this->httpHelper = $helper;
-
-        return $this;
-    }
-
-    /**
-     * returns a http helper instance
-     *
-     * @return \FileLoader\Helper\Http
-     */
-    public function getHttpHelper()
-    {
-        return $this->httpHelper;
+        return $this->getRemoteData($this->loader->getRemoteVersionUrl());
     }
 
     /**
@@ -142,26 +105,38 @@ class Curl implements ConnectorInterface
      * @param string $url the url of the data
      *
      * @throws \FileLoader\Exception
-     *
-     * @return string|bool the retrieved data
+     * @return \GuzzleHttp\Psr7\Response
      */
-    public function getRemoteData($url)
+    private function getRemoteData($url)
     {
         $this->init($url);
+        $version = '1.1';
 
-        $response  = curl_exec($this->resource);
-        $http_code = curl_getinfo($this->resource, CURLINFO_HTTP_CODE);
+        $response   = curl_exec($this->resource);
+        $httpCode   = curl_getinfo($this->resource, CURLINFO_HTTP_CODE);
+        $headerSize = curl_getinfo($this->resource, CURLINFO_HEADER_SIZE);
 
         $this->close();
 
-        // check for HTTP error
-        $http_exception = $this->getHttpHelper()->getHttpErrorException($http_code);
+        $rawHeaders = explode("\r\n", trim(substr($response, 0, $headerSize)));
+        $headers    = [];
 
-        if ($http_exception !== null) {
-            throw $http_exception;
+        foreach ($rawHeaders as $rawHeader) {
+            $parts  = explode(':', $rawHeader, 2);
+            $header = $parts[0];
+
+            if (isset($parts[1])) {
+                $value = trim($parts[1]);
+            } else {
+                $value = '';
+            }
+
+            $headers[$header] = $value;
         }
 
-        return $response;
+        $body = substr($response, $headerSize);
+
+        return new Response($httpCode, $headers, $body, $version);
     }
 
     /**
@@ -170,7 +145,6 @@ class Curl implements ConnectorInterface
      * @param string $url
      *
      * @throws \FileLoader\Exception
-     *
      * @return resource
      */
     private function init($url)
@@ -178,18 +152,20 @@ class Curl implements ConnectorInterface
         $this->resource = curl_init($url);
 
         curl_setopt($this->resource, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($this->resource, CURLOPT_CONNECTTIMEOUT, $this->getLoader()->getTimeout());
-        curl_setopt($this->resource, CURLOPT_USERAGENT, $this->getLoader()->getUserAgent());
+        curl_setopt($this->resource, CURLOPT_CONNECTTIMEOUT, $this->loader->getTimeout());
+        curl_setopt($this->resource, CURLOPT_USERAGENT, $this->loader->getUserAgent());
+        curl_setopt($this->resource, CURLOPT_HEADER, true);
+        curl_setopt($this->resource, CURLINFO_HEADER_OUT, true);
 
         // check and set proxy settings
-        $proxy_host = $this->getLoader()->getOption('ProxyHost');
+        $proxy_host = $this->loader->getOption('ProxyHost');
 
         if ($proxy_host !== null) {
             // check for supported protocol
-            $proxy_protocol = $this->getLoader()->getOption('ProxyProtocol');
+            $proxy_protocol = $this->loader->getOption('ProxyProtocol');
 
             if ($proxy_protocol !== null) {
-                $allowedProtocolls = array(StreamCreator::PROXY_PROTOCOL_HTTP, StreamCreator::PROXY_PROTOCOL_HTTPS);
+                $allowedProtocolls = [StreamCreator::PROXY_PROTOCOL_HTTP, StreamCreator::PROXY_PROTOCOL_HTTPS];
 
                 if (!in_array($proxy_protocol, $allowedProtocolls)) {
                     throw new Exception(
@@ -201,7 +177,7 @@ class Curl implements ConnectorInterface
                 $proxy_protocol = StreamCreator::PROXY_PROTOCOL_HTTP;
             }
 
-            $proxy_port = $this->getLoader()->getOption('ProxyPort');
+            $proxy_port = $this->loader->getOption('ProxyPort');
 
             // set basic proxy options
             curl_setopt($this->resource, CURLOPT_PROXY, $proxy_protocol . '://' . $proxy_host);
@@ -210,15 +186,15 @@ class Curl implements ConnectorInterface
             }
 
             // check auth settings
-            $proxy_user = $this->getLoader()->getOption('ProxyUser');
+            $proxy_user = $this->loader->getOption('ProxyUser');
 
             // set proxy auth options
             if ($proxy_user !== null) {
-                $proxy_password = $this->getLoader()->getOption('ProxyPassword');
+                $proxy_password = $this->loader->getOption('ProxyPassword');
 
-                $proxy_auth = $this->getLoader()->getOption('ProxyAuth');
+                $proxy_auth = $this->loader->getOption('ProxyAuth');
                 if ($proxy_auth !== null) {
-                    $allowedAuth = array(StreamCreator::PROXY_AUTH_BASIC, StreamCreator::PROXY_AUTH_NTLM);
+                    $allowedAuth = [StreamCreator::PROXY_AUTH_BASIC, StreamCreator::PROXY_AUTH_NTLM];
 
                     if (!in_array($proxy_auth, $allowedAuth)) {
                         throw new Exception(
