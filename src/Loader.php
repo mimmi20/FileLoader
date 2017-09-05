@@ -1,36 +1,14 @@
 <?php
 /**
- * class to load a file from a local or remote source
+ * This file is part of the FileLoader package.
  *
- * Copyright (c) 2012-2014 Thomas Müller
+ * Copyright (c) 2012-2017, Thomas Mueller <mimmi20@live.de>
  *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included
- * in all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- *
- * @category   FileLoader
- *
- * @copyright  2012-2014 Thomas Müller
- * @author     Thomas Müller <t_mueller_stolzenhain@yahoo.de>
- * @license    http://www.opensource.org/licenses/MIT MIT License
- *
- * @link       https://github.com/mimmi20/FileLoader/
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
 
+declare(strict_types = 1);
 namespace FileLoader;
 
 use FileLoader\Helper\StreamCreator;
@@ -39,6 +17,7 @@ use FileLoader\Loader\Curl;
 use FileLoader\Loader\FopenLoader;
 use FileLoader\Loader\Local;
 use FileLoader\Loader\SocketLoader;
+use Psr\Http\Message\ResponseInterface;
 
 /**
  * class to load a file from a local or remote source
@@ -46,6 +25,7 @@ use FileLoader\Loader\SocketLoader;
  * @author     Thomas Müller <t_mueller_stolzenhain@yahoo.de>
  * @copyright  Copyright (c) 2012-2014 Thomas Müller
  * @license    http://www.opensource.org/licenses/MIT MIT License
+ *
  * @link       https://github.com/mimmi20/FileLoader/
  */
 class Loader implements LoaderInterface
@@ -62,6 +42,8 @@ class Loader implements LoaderInterface
 
     /**
      * The timeout for the requests.
+     *
+     * @var int
      */
     private $timeout = 5;
 
@@ -94,57 +76,49 @@ class Loader implements LoaderInterface
      *
      * @var string
      */
-    private $localFile = null;
+    private $localFile;
 
     /**
      * The Url where the remote file can be found
      *
      * @var string
      */
-    private $remoteDataUrl = null;
+    private $remoteDataUrl;
 
     /**
      * The Url where the version of the remote file can be found
      *
      * @var string
      */
-    private $remoteVersionUrl = null;
+    private $remoteVersionUrl;
 
     /**
-     * @var \FileLoader\Interfaces\LoaderInterface
+     * @var \FileLoader\Interfaces\LoaderInterface|null
      */
-    private $loader = null;
+    private $loader;
 
     /**
-     * @param array|\Traversable|null $options
+     * @param iterable|null $options
      *
      * @throws \FileLoader\Exception
      */
-    public function __construct($options = null)
+    public function __construct(?iterable $options = null)
     {
         if ($options !== null) {
-            if (is_array($options) || $options instanceof \Traversable) {
-                $this->setOptions($options);
-            } else {
-                throw new Exception('Invalid value for "options", array expected.', Exception::INVALID_OPTION);
-            }
+            $this->setOptions($options);
         }
     }
 
     /**
      * Sets multiple loader options at once
      *
-     * @param array|\Traversable $options
-     *
-     * @return \FileLoader\Loader
+     * @param iterable $options
      */
-    public function setOptions($options)
+    public function setOptions(iterable $options): void
     {
         foreach ($options as $optionKey => $optionValue) {
             $this->setOption($optionKey, $optionValue);
         }
-
-        return $this;
     }
 
     /**
@@ -154,17 +128,18 @@ class Loader implements LoaderInterface
      * @param mixed  $value
      *
      * @throws \FileLoader\Exception
+     *
      * @return \FileLoader\Loader
      */
-    public function setOption($key, $value)
+    public function setOption(string $key, $value): void
     {
         if (array_key_exists($key, $this->options)) {
             $this->options[$key] = $value;
 
-            return $this;
+            return;
         }
 
-        throw new Exception('Invalid option key "' . (string) $key . '".', Exception::INVALID_OPTION);
+        throw new Exception('Invalid option key "' . $key . '".', Exception::INVALID_OPTION);
     }
 
     /**
@@ -173,15 +148,16 @@ class Loader implements LoaderInterface
      * @param string $key
      *
      * @throws \FileLoader\Exception
+     *
      * @return mixed
      */
-    public function getOption($key)
+    public function getOption(string $key)
     {
         if (array_key_exists($key, $this->options)) {
             return $this->options[$key];
         }
 
-        throw new Exception('Invalid option key "' . (string) $key . '".', Exception::INVALID_OPTION);
+        throw new Exception('Invalid option key "' . $key . '".', Exception::INVALID_OPTION);
     }
 
     /**
@@ -190,10 +166,8 @@ class Loader implements LoaderInterface
      * @param string $filename the file name
      *
      * @throws \FileLoader\Exception
-     *
-     * @return \FileLoader\Loader
      */
-    public function setLocalFile($filename)
+    public function setLocalFile(string $filename): void
     {
         if (empty($filename)) {
             throw new Exception('the filename can not be empty', Exception::LOCAL_FILE_MISSING);
@@ -201,8 +175,6 @@ class Loader implements LoaderInterface
 
         $this->localFile = $filename;
         $this->loader    = null;
-
-        return $this;
     }
 
     /**
@@ -211,17 +183,14 @@ class Loader implements LoaderInterface
      * @param string $remoteDataUrl
      *
      * @throws \FileLoader\Exception
-     * @return \FileLoader\Loader
      */
-    public function setRemoteDataUrl($remoteDataUrl)
+    public function setRemoteDataUrl(string $remoteDataUrl): void
     {
         if (empty($remoteDataUrl)) {
-            throw new Exception('the parameter ' . $remoteDataUrl . ' can not be empty', Exception::DATA_URL_MISSING);
+            throw new Exception('the parameter $remoteDataUrl can not be empty', Exception::DATA_URL_MISSING);
         }
 
         $this->remoteDataUrl = $remoteDataUrl;
-
-        return $this;
     }
 
     /**
@@ -229,7 +198,7 @@ class Loader implements LoaderInterface
      *
      * @return string
      */
-    public function getRemoteDataUrl()
+    public function getRemoteDataUrl(): string
     {
         return $this->remoteDataUrl;
     }
@@ -240,18 +209,14 @@ class Loader implements LoaderInterface
      * @param string $remoteVerUrl
      *
      * @throws \FileLoader\Exception
-     *
-     * @return \FileLoader\Loader
      */
-    public function setRemoteVersionUrl($remoteVerUrl)
+    public function setRemoteVersionUrl(string $remoteVerUrl): void
     {
         if (empty($remoteVerUrl)) {
-            throw new Exception('the parameter ' . $remoteVerUrl . ' can not be empty', Exception::VERSION_URL_MISSING);
+            throw new Exception('the parameter $remoteVerUrl can not be empty', Exception::VERSION_URL_MISSING);
         }
 
         $this->remoteVersionUrl = $remoteVerUrl;
-
-        return $this;
     }
 
     /**
@@ -259,7 +224,7 @@ class Loader implements LoaderInterface
      *
      * @return string
      */
-    public function getRemoteVersionUrl()
+    public function getRemoteVersionUrl(): string
     {
         return $this->remoteVersionUrl;
     }
@@ -268,14 +233,10 @@ class Loader implements LoaderInterface
      * returns the timeout
      *
      * @param int $timeout
-     *
-     * @return \FileLoader\Loader
      */
-    public function setTimeout($timeout)
+    public function setTimeout(int $timeout): void
     {
-        $this->timeout = (int) $timeout;
-
-        return $this;
+        $this->timeout = $timeout;
     }
 
     /**
@@ -283,7 +244,7 @@ class Loader implements LoaderInterface
      *
      * @return int
      */
-    public function getTimeout()
+    public function getTimeout(): int
     {
         return $this->timeout;
     }
@@ -293,7 +254,7 @@ class Loader implements LoaderInterface
      *
      * @return \Psr\Http\Message\ResponseInterface the file content
      */
-    public function load()
+    public function load(): ResponseInterface
     {
         // Get file content
         return $this->getLoader()->load();
@@ -304,7 +265,7 @@ class Loader implements LoaderInterface
      *
      * @return \Psr\Http\Message\ResponseInterface the file modification date or the remote version
      */
-    public function getMTime()
+    public function getMTime(): ResponseInterface
     {
         // Get time of last modification
         return $this->getLoader()->getMTime();
@@ -316,7 +277,7 @@ class Loader implements LoaderInterface
      *
      * @return string the formatted user agent
      */
-    public function getUserAgent()
+    public function getUserAgent(): string
     {
         return str_replace('%v', self::VERSION, $this->userAgent);
     }
@@ -326,7 +287,7 @@ class Loader implements LoaderInterface
      *
      * @return \FileLoader\Interfaces\LoaderInterface
      */
-    private function getLoader()
+    private function getLoader(): LoaderInterface
     {
         if (null !== $this->loader) {
             return $this->loader;
