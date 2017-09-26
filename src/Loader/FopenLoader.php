@@ -38,21 +38,21 @@ class FopenLoader implements LoaderInterface
      *
      * @var \FileLoader\Loader
      */
-    private $loader = null;
+    private $loader;
 
     /**
      * a HTTP Helper instance
      *
      * @var \FileLoader\Helper\StreamCreator
      */
-    private $streamHelper = null;
+    private $streamHelper;
 
     /**
      * a file handle created by fopen
      *
      * @var resource
      */
-    private $stream = null;
+    private $stream;
 
     /**
      * @param \FileLoader\Loader               $loader
@@ -122,6 +122,7 @@ class FopenLoader implements LoaderInterface
                 if ('http/' === mb_substr(mb_strtolower($metaData), 0, 5)) {
                     $tmp_status_parts = explode(' ', $metaData, 3);
                     $code             = $tmp_status_parts[1];
+
                     break;
                 }
             }

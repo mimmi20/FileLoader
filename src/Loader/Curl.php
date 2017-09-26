@@ -37,14 +37,14 @@ class Curl implements LoaderInterface
      *
      * @var \FileLoader\Loader
      */
-    private $loader = null;
+    private $loader;
 
     /**
      * a file handle created by fsockopen
      *
      * @var resource
      */
-    private $resource = null;
+    private $resource;
 
     /**
      * @param \FileLoader\Loader $loader
@@ -141,11 +141,11 @@ class Curl implements LoaderInterface
         // check and set proxy settings
         $proxy_host = $this->loader->getOption('ProxyHost');
 
-        if ($proxy_host !== null) {
+        if (null !== $proxy_host) {
             // check for supported protocol
             $proxy_protocol = $this->loader->getOption('ProxyProtocol');
 
-            if ($proxy_protocol !== null) {
+            if (null !== $proxy_protocol) {
                 $allowedProtocolls = [StreamCreator::PROXY_PROTOCOL_HTTP, StreamCreator::PROXY_PROTOCOL_HTTPS];
 
                 if (!in_array($proxy_protocol, $allowedProtocolls)) {
@@ -162,7 +162,7 @@ class Curl implements LoaderInterface
 
             // set basic proxy options
             curl_setopt($this->resource, CURLOPT_PROXY, $proxy_protocol . '://' . $proxy_host);
-            if ($proxy_port !== null) {
+            if (null !== $proxy_port) {
                 curl_setopt($this->resource, CURLOPT_PROXYPORT, $proxy_port);
             }
 
@@ -170,11 +170,11 @@ class Curl implements LoaderInterface
             $proxy_user = $this->loader->getOption('ProxyUser');
 
             // set proxy auth options
-            if ($proxy_user !== null) {
+            if (null !== $proxy_user) {
                 $proxy_password = $this->loader->getOption('ProxyPassword');
 
                 $proxy_auth = $this->loader->getOption('ProxyAuth');
-                if ($proxy_auth !== null) {
+                if (null !== $proxy_auth) {
                     $allowedAuth = [StreamCreator::PROXY_AUTH_BASIC, StreamCreator::PROXY_AUTH_NTLM];
 
                     if (!in_array($proxy_auth, $allowedAuth)) {
@@ -187,7 +187,7 @@ class Curl implements LoaderInterface
                     $proxy_auth = StreamCreator::PROXY_AUTH_BASIC;
                 }
 
-                if ($proxy_auth === StreamCreator::PROXY_AUTH_NTLM) {
+                if (StreamCreator::PROXY_AUTH_NTLM === $proxy_auth) {
                     curl_setopt($this->resource, CURLOPT_PROXYAUTH, CURLAUTH_NTLM);
                 }
                 curl_setopt($this->resource, CURLOPT_PROXYUSERPWD, $proxy_user . ':' . $proxy_password);

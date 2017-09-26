@@ -41,7 +41,7 @@ class SocketLoaderTest extends \PHPUnit\Framework\TestCase
         return stream_context_create($config);
     }
 
-    public function testLoad()
+    public function testLoad(): void
     {
         $loader = $this->getMockBuilder(\FileLoader\Loader::class)
             ->disableOriginalConstructor()
@@ -85,7 +85,7 @@ class SocketLoaderTest extends \PHPUnit\Framework\TestCase
         self::assertInternalType('string', $content);
     }
 
-    public function testGetMtime()
+    public function testGetMtime(): void
     {
         $loader = $this->getMockBuilder(\FileLoader\Loader::class)
             ->disableOriginalConstructor()

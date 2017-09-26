@@ -33,12 +33,12 @@ class Loader implements LoaderInterface
     /**
      * The library version
      */
-    const VERSION = '3.0.0';
+    public const VERSION = '3.0.0';
 
     /**
      * The headers to be sent for checking the version and requesting the file.
      */
-    const REQUEST_HEADERS = "GET %s HTTP/1.0\r\nHost: %s\r\nUser-Agent: %s\r\nConnection: Close\r\n\r\n";
+    public const REQUEST_HEADERS = "GET %s HTTP/1.0\r\nHost: %s\r\nUser-Agent: %s\r\nConnection: Close\r\n\r\n";
 
     /**
      * The timeout for the requests.
@@ -104,7 +104,7 @@ class Loader implements LoaderInterface
      */
     public function __construct(?iterable $options = null)
     {
-        if ($options !== null) {
+        if (null !== $options) {
             $this->setOptions($options);
         }
     }
@@ -293,7 +293,7 @@ class Loader implements LoaderInterface
             return $this->loader;
         }
 
-        if ($this->localFile !== null) {
+        if (null !== $this->localFile) {
             $this->loader = new Local($this->localFile);
 
             return $this->loader;

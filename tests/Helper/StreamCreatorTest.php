@@ -25,7 +25,7 @@ use FileLoader\Helper\StreamCreator;
  */
 class StreamCreatorTest extends \PHPUnit\Framework\TestCase
 {
-    public function testGetStreamContextWithoutProxy()
+    public function testGetStreamContextWithoutProxy(): void
     {
         $loader = $this->getMockBuilder(\FileLoader\Loader::class)
             ->disableOriginalConstructor()
@@ -41,7 +41,7 @@ class StreamCreatorTest extends \PHPUnit\Framework\TestCase
         self::assertTrue(is_resource($object->getStreamContext()));
     }
 
-    public function testGetStreamContextWithProxyWithoutAuthAndUser()
+    public function testGetStreamContextWithProxyWithoutAuthAndUser(): void
     {
         $map = [
             ['ProxyHost', 'example.org'],
@@ -65,7 +65,7 @@ class StreamCreatorTest extends \PHPUnit\Framework\TestCase
         self::assertTrue(is_resource($object->getStreamContext()));
     }
 
-    public function testGetStreamContextWithProxyWithoutAuthUserPortAndProtocol()
+    public function testGetStreamContextWithProxyWithoutAuthUserPortAndProtocol(): void
     {
         $map = [
             ['ProxyHost', 'example.org'],
@@ -89,7 +89,7 @@ class StreamCreatorTest extends \PHPUnit\Framework\TestCase
         self::assertTrue(is_resource($object->getStreamContext()));
     }
 
-    public function testGetStreamContextWithProxyWithAuthAndUser()
+    public function testGetStreamContextWithProxyWithAuthAndUser(): void
     {
         $map = [
             ['ProxyHost', 'example.org'],
@@ -114,7 +114,7 @@ class StreamCreatorTest extends \PHPUnit\Framework\TestCase
         self::assertTrue(is_resource($object->getStreamContext()));
     }
 
-    public function testGetStreamContextWithProxyWithAuthAndUserWithoutPassword()
+    public function testGetStreamContextWithProxyWithAuthAndUserWithoutPassword(): void
     {
         $map = [
             ['ProxyHost', 'example.org'],
@@ -139,7 +139,7 @@ class StreamCreatorTest extends \PHPUnit\Framework\TestCase
         self::assertTrue(is_resource($object->getStreamContext()));
     }
 
-    public function testGetStreamContextWithWrongProtocol()
+    public function testGetStreamContextWithWrongProtocol(): void
     {
         $this->expectException('\FileLoader\Exception');
         $this->expectExceptionMessage('Invalid/unsupported value "htt" for option "ProxyProtocol".');
@@ -167,7 +167,7 @@ class StreamCreatorTest extends \PHPUnit\Framework\TestCase
         $object->getStreamContext();
     }
 
-    public function testGetStreamContextWithWrongProxyAuthMethod()
+    public function testGetStreamContextWithWrongProxyAuthMethod(): void
     {
         $this->expectException('\FileLoader\Exception');
         $this->expectExceptionMessage('Invalid/unsupported value "ntlm" for option "ProxyAuth".');

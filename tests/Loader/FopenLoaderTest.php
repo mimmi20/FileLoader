@@ -29,7 +29,7 @@ class FopenLoaderTest extends \PHPUnit\Framework\TestCase
      * Sets up the fixture, for example, opens a network connection.
      * This method is called before a test is executed.
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         if (!ini_get('allow_url_fopen')) {
             self::markTestSkipped('"allow_url_fopen" has to be activated in the php.ini');
@@ -52,7 +52,7 @@ class FopenLoaderTest extends \PHPUnit\Framework\TestCase
         return stream_context_create($config);
     }
 
-    public function testLoad()
+    public function testLoad(): void
     {
         $loader = $this->getMockBuilder(\FileLoader\Loader::class)
             ->disableOriginalConstructor()
@@ -96,7 +96,7 @@ class FopenLoaderTest extends \PHPUnit\Framework\TestCase
         self::assertInternalType('string', $content);
     }
 
-    public function testGetMtime()
+    public function testGetMtime(): void
     {
         $loader = $this->getMockBuilder(\FileLoader\Loader::class)
             ->disableOriginalConstructor()
