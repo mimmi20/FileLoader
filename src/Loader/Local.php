@@ -37,7 +37,7 @@ class Local implements LoaderInterface
      *
      * @var string
      */
-    private $file = null;
+    private $file;
 
     /**
      * sets the name of the local file

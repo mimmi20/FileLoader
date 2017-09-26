@@ -25,7 +25,7 @@ use FileLoader\Loader\Local;
  */
 class LocalTest extends \PHPUnit\Framework\TestCase
 {
-    public function testSetLocalFileException()
+    public function testSetLocalFileException(): void
     {
         $this->expectException('\FileLoader\Exception');
         $this->expectExceptionMessage('the filename can not be empty');
@@ -33,7 +33,7 @@ class LocalTest extends \PHPUnit\Framework\TestCase
         new Local('');
     }
 
-    public function testLoad()
+    public function testLoad(): void
     {
         $object = new Local(__DIR__ . '/../data/test.txt');
 
@@ -52,7 +52,7 @@ class LocalTest extends \PHPUnit\Framework\TestCase
         self::assertInternalType('string', $content);
     }
 
-    public function testGetMtime()
+    public function testGetMtime(): void
     {
         $object = new Local(__DIR__ . '/../data/test.txt');
 

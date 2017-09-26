@@ -28,20 +28,20 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
     /**
      * @var Loader
      */
-    private $object = null;
+    private $object;
 
     /**
      * Sets up the fixture, for example, opens a network connection.
      * This method is called before a test is executed.
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
 
         $this->object = new Loader();
     }
 
-    public function testSetInvalidOption()
+    public function testSetInvalidOption(): void
     {
         $this->expectException('\FileLoader\Exception');
         $this->expectExceptionMessage('Invalid option key "InvalidOption".');
@@ -50,7 +50,7 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
         $object->setOption('InvalidOption', 'test');
     }
 
-    public function testGetInvalidOption()
+    public function testGetInvalidOption(): void
     {
         $this->expectException('\FileLoader\Exception');
         $this->expectExceptionMessage('Invalid option key "InvalidOption".');
@@ -59,21 +59,21 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
         $object->getOption('InvalidOption');
     }
 
-    public function testSetGetOption()
+    public function testSetGetOption(): void
     {
         $object = new Loader();
         $object->setOption('ProxyProtocol', 'http');
         self::assertSame('http', $object->getOption('ProxyProtocol'));
     }
 
-    public function testConstructWithValidOption()
+    public function testConstructWithValidOption(): void
     {
         $options = ['ProxyProtocol' => 'http'];
         $object  = new Loader($options);
         self::assertSame('http', $object->getOption('ProxyProtocol'));
     }
 
-    public function testSetLocalFileException()
+    public function testSetLocalFileException(): void
     {
         $this->expectException('\FileLoader\Exception');
         $this->expectExceptionMessage('the filename can not be empty');
@@ -81,7 +81,7 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
         $this->object->setLocalFile('');
     }
 
-    public function testSetLocalFile()
+    public function testSetLocalFile(): void
     {
         $this->object->setLocalFile('x');
 
@@ -91,7 +91,7 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
         self::assertSame('x', $property->getValue($this->object));
     }
 
-    public function testSetRemoteDataUrlExceptiom()
+    public function testSetRemoteDataUrlExceptiom(): void
     {
         $this->expectException('\FileLoader\Exception');
         $this->expectExceptionMessage('the parameter $remoteDataUrl can not be empty');
@@ -99,14 +99,14 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
         $this->object->setRemoteDataUrl('');
     }
 
-    public function testSetRemoteDataUrl()
+    public function testSetRemoteDataUrl(): void
     {
         $remoteDataUrl = 'aa';
         $this->object->setRemoteDataUrl($remoteDataUrl);
         self::assertSame($remoteDataUrl, $this->object->getRemoteDataUrl());
     }
 
-    public function testSetRemoteVerUrlException()
+    public function testSetRemoteVerUrlException(): void
     {
         $this->expectException('\FileLoader\Exception');
         $this->expectExceptionMessage('the parameter $remoteVerUrl can not be empty');
@@ -114,27 +114,27 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
         $this->object->setRemoteVersionUrl('');
     }
 
-    public function testSetRemoteVerUrl()
+    public function testSetRemoteVerUrl(): void
     {
         $remoteVerUrl = 'aa';
         $this->object->setRemoteVersionUrl($remoteVerUrl);
         self::assertSame($remoteVerUrl, $this->object->getRemoteVersionUrl());
     }
 
-    public function testSetTimeout()
+    public function testSetTimeout(): void
     {
         $timeout = 900;
         $this->object->setTimeout($timeout);
         self::assertSame($timeout, $this->object->getTimeout());
     }
 
-    public function testGetUserAgent()
+    public function testGetUserAgent(): void
     {
         $userAgent = $this->object->getUserAgent();
         self::assertSame('FileLoader/3.0.0', $userAgent);
     }
 
-    public function testLoad()
+    public function testLoad(): void
     {
         $this->object->setLocalFile(__DIR__ . '/data/test.txt');
 
@@ -143,7 +143,7 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
         self::assertInstanceOf('\Psr\Http\Message\ResponseInterface', $result);
     }
 
-    public function testGetMtime()
+    public function testGetMtime(): void
     {
         $this->object->setLocalFile(__DIR__ . '/data/test.txt');
 

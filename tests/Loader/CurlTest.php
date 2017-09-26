@@ -29,14 +29,14 @@ class CurlTest extends \PHPUnit\Framework\TestCase
      * Sets up the fixture, for example, opens a network connection.
      * This method is called before a test is executed.
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         if (!extension_loaded('curl')) {
             self::markTestSkipped('PHP must have cURL support.');
         }
     }
 
-    public function testLoad()
+    public function testLoad(): void
     {
         $loader = $this->getMockBuilder(\FileLoader\Loader::class)
             ->disableOriginalConstructor()
@@ -70,7 +70,7 @@ class CurlTest extends \PHPUnit\Framework\TestCase
         self::assertInternalType('string', $content);
     }
 
-    public function testGetMtime()
+    public function testGetMtime(): void
     {
         $loader = $this->getMockBuilder(\FileLoader\Loader::class)
             ->disableOriginalConstructor()

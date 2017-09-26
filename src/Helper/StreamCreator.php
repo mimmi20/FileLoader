@@ -16,18 +16,18 @@ use FileLoader\Loader;
 
 class StreamCreator
 {
-    const PROXY_PROTOCOL_HTTP  = 'http';
-    const PROXY_PROTOCOL_HTTPS = 'https';
+    public const PROXY_PROTOCOL_HTTP  = 'http';
+    public const PROXY_PROTOCOL_HTTPS = 'https';
 
-    const PROXY_AUTH_BASIC = 'basic';
-    const PROXY_AUTH_NTLM  = 'ntlm';
+    public const PROXY_AUTH_BASIC = 'basic';
+    public const PROXY_AUTH_NTLM  = 'ntlm';
 
     /**
      * an Loader instance
      *
      * @var \FileLoader\Loader
      */
-    private $loader = null;
+    private $loader;
 
     /**
      * sets a loader instance
@@ -62,10 +62,10 @@ class StreamCreator
 
         // check and set proxy settings
         $proxy_host = $this->loader->getOption('ProxyHost');
-        if ($proxy_host !== null) {
+        if (null !== $proxy_host) {
             // check for supported protocol
             $proxy_protocol = $this->loader->getOption('ProxyProtocol');
-            if ($proxy_protocol !== null) {
+            if (null !== $proxy_protocol) {
                 if (!in_array($proxy_protocol, [self::PROXY_PROTOCOL_HTTP, self::PROXY_PROTOCOL_HTTPS])) {
                     throw new Exception(
                         'Invalid/unsupported value "' . $proxy_protocol . '" for option "ProxyProtocol".',
@@ -78,7 +78,7 @@ class StreamCreator
 
             // prepare port for the proxy server address
             $proxy_port = $this->loader->getOption('ProxyPort');
-            if ($proxy_port !== null) {
+            if (null !== $proxy_port) {
                 $proxy_port = ':' . $proxy_port;
             } else {
                 $proxy_port = '';
@@ -86,7 +86,7 @@ class StreamCreator
 
             // check auth settings
             $proxy_auth = $this->loader->getOption('ProxyAuth');
-            if ($proxy_auth !== null) {
+            if (null !== $proxy_auth) {
                 if (!in_array($proxy_auth, [self::PROXY_AUTH_BASIC])) {
                     throw new Exception(
                         'Invalid/unsupported value "' . $proxy_auth . '" for option "ProxyAuth".',
@@ -104,16 +104,16 @@ class StreamCreator
 
             // add authorization header if required
             $proxy_user = $this->loader->getOption('ProxyUser');
-            if ($proxy_user !== null) {
+            if (null !== $proxy_user) {
                 $proxy_password = $this->loader->getOption('ProxyPassword');
-                if ($proxy_password === null) {
+                if (null === $proxy_password) {
                     $proxy_password = '';
                 }
                 $auth                     = base64_encode($proxy_user . ':' . $proxy_password);
                 $config['http']['header'] = 'Proxy-Authorization: Basic ' . $auth;
             }
 
-            if ($proxy_protocol === self::PROXY_PROTOCOL_HTTPS) {
+            if (self::PROXY_PROTOCOL_HTTPS === $proxy_protocol) {
                 // @todo Add SSL context options
                 // @see  http://www.php.net/manual/en/context.ssl.php
             }

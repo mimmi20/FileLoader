@@ -111,9 +111,9 @@ class Stream implements StreamInterface
      * @throws \RuntimeException
      * @throws \BadMethodCallException
      */
-    public function __get($name)
+    public function __get($name): void
     {
-        if ($name === 'stream') {
+        if ('stream' === $name) {
             throw new \RuntimeException('The stream is detached');
         }
 
@@ -166,7 +166,7 @@ class Stream implements StreamInterface
     {
         $contents = stream_get_contents($this->stream);
 
-        if ($contents === false) {
+        if (false === $contents) {
             throw new \RuntimeException('Unable to read stream contents');
         }
 
@@ -215,7 +215,7 @@ class Stream implements StreamInterface
      */
     public function getSize(): ?int
     {
-        if ($this->size !== null) {
+        if (null !== $this->size) {
             return $this->size;
         }
 
@@ -289,7 +289,7 @@ class Stream implements StreamInterface
     {
         $result = ftell($this->stream);
 
-        if ($result === false) {
+        if (false === $result) {
             throw new \RuntimeException('Unable to determine stream position');
         }
 
@@ -383,7 +383,7 @@ class Stream implements StreamInterface
         $this->size = null;
         $result     = fwrite($this->stream, $string);
 
-        if ($result === false) {
+        if (false === $result) {
             throw new \RuntimeException('Unable to write to stream');
         }
 

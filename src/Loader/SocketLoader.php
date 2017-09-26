@@ -37,21 +37,21 @@ class SocketLoader implements LoaderInterface
      *
      * @var \FileLoader\Loader
      */
-    private $loader = null;
+    private $loader;
 
     /**
      * a HTTP Helper instance
      *
      * @var \FileLoader\Helper\StreamCreator
      */
-    private $streamHelper = null;
+    private $streamHelper;
 
     /**
      * a file handle created by fsockopen
      *
      * @var resource
      */
-    private $stream = null;
+    private $stream;
 
     /**
      * holds the parts of the target url
@@ -185,7 +185,7 @@ class SocketLoader implements LoaderInterface
             return (int) $this->urlParts['port'];
         }
 
-        if (isset($this->urlParts['scheme']) && $this->urlParts['scheme'] === 'https') {
+        if (isset($this->urlParts['scheme']) && 'https' === $this->urlParts['scheme']) {
             return 443;
         }
 
