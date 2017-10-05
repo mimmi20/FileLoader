@@ -25,6 +25,9 @@ use FileLoader\Helper\StreamCreator;
  */
 class StreamCreatorTest extends \PHPUnit\Framework\TestCase
 {
+    /**
+     * @return void
+     */
     public function testGetStreamContextWithoutProxy(): void
     {
         $loader = $this->getMockBuilder(\FileLoader\Loader::class)
@@ -41,6 +44,9 @@ class StreamCreatorTest extends \PHPUnit\Framework\TestCase
         self::assertTrue(is_resource($object->getStreamContext()));
     }
 
+    /**
+     * @return void
+     */
     public function testGetStreamContextWithProxyWithoutAuthAndUser(): void
     {
         $map = [
@@ -65,6 +71,9 @@ class StreamCreatorTest extends \PHPUnit\Framework\TestCase
         self::assertTrue(is_resource($object->getStreamContext()));
     }
 
+    /**
+     * @return void
+     */
     public function testGetStreamContextWithProxyWithoutAuthUserPortAndProtocol(): void
     {
         $map = [
@@ -89,6 +98,9 @@ class StreamCreatorTest extends \PHPUnit\Framework\TestCase
         self::assertTrue(is_resource($object->getStreamContext()));
     }
 
+    /**
+     * @return void
+     */
     public function testGetStreamContextWithProxyWithAuthAndUser(): void
     {
         $map = [
@@ -114,6 +126,9 @@ class StreamCreatorTest extends \PHPUnit\Framework\TestCase
         self::assertTrue(is_resource($object->getStreamContext()));
     }
 
+    /**
+     * @return void
+     */
     public function testGetStreamContextWithProxyWithAuthAndUserWithoutPassword(): void
     {
         $map = [
@@ -139,6 +154,9 @@ class StreamCreatorTest extends \PHPUnit\Framework\TestCase
         self::assertTrue(is_resource($object->getStreamContext()));
     }
 
+    /**
+     * @return void
+     */
     public function testGetStreamContextWithWrongProtocol(): void
     {
         $this->expectException('\FileLoader\Exception');
@@ -167,6 +185,9 @@ class StreamCreatorTest extends \PHPUnit\Framework\TestCase
         $object->getStreamContext();
     }
 
+    /**
+     * @return void
+     */
     public function testGetStreamContextWithWrongProxyAuthMethod(): void
     {
         $this->expectException('\FileLoader\Exception');

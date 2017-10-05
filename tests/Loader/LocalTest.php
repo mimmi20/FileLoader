@@ -25,6 +25,9 @@ use FileLoader\Loader\Local;
  */
 class LocalTest extends \PHPUnit\Framework\TestCase
 {
+    /**
+     * @return void
+     */
     public function testSetLocalFileException(): void
     {
         $this->expectException('\FileLoader\Exception');
@@ -33,6 +36,9 @@ class LocalTest extends \PHPUnit\Framework\TestCase
         new Local('');
     }
 
+    /**
+     * @return void
+     */
     public function testLoad(): void
     {
         $object = new Local(__DIR__ . '/../data/test.txt');
@@ -52,6 +58,9 @@ class LocalTest extends \PHPUnit\Framework\TestCase
         self::assertInternalType('string', $content);
     }
 
+    /**
+     * @return void
+     */
     public function testGetMtime(): void
     {
         $object = new Local(__DIR__ . '/../data/test.txt');

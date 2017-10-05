@@ -113,6 +113,8 @@ class Loader implements LoaderInterface
      * Sets multiple loader options at once
      *
      * @param iterable $options
+     *
+     * @return void
      */
     public function setOptions(iterable $options): void
     {
@@ -129,7 +131,7 @@ class Loader implements LoaderInterface
      *
      * @throws \FileLoader\Exception
      *
-     * @return \FileLoader\Loader
+     * @return void
      */
     public function setOption(string $key, $value): void
     {
@@ -166,6 +168,8 @@ class Loader implements LoaderInterface
      * @param string $filename the file name
      *
      * @throws \FileLoader\Exception
+     *
+     * @return void
      */
     public function setLocalFile(string $filename): void
     {
@@ -183,6 +187,8 @@ class Loader implements LoaderInterface
      * @param string $remoteDataUrl
      *
      * @throws \FileLoader\Exception
+     *
+     * @return void
      */
     public function setRemoteDataUrl(string $remoteDataUrl): void
     {
@@ -209,6 +215,8 @@ class Loader implements LoaderInterface
      * @param string $remoteVerUrl
      *
      * @throws \FileLoader\Exception
+     *
+     * @return void
      */
     public function setRemoteVersionUrl(string $remoteVerUrl): void
     {
@@ -233,6 +241,8 @@ class Loader implements LoaderInterface
      * returns the timeout
      *
      * @param int $timeout
+     *
+     * @return void
      */
     public function setTimeout(int $timeout): void
     {

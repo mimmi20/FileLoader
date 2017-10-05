@@ -75,7 +75,7 @@ class SocketLoader implements LoaderInterface
      *
      * @throws \FileLoader\Exception
      *
-     * @return \GuzzleHttp\Psr7\Response
+     * @return \Psr\Http\Message\ResponseInterface
      */
     public function load(): ResponseInterface
     {
@@ -87,7 +87,7 @@ class SocketLoader implements LoaderInterface
      *
      * @throws \FileLoader\Exception
      *
-     * @return \GuzzleHttp\Psr7\Response
+     * @return \Psr\Http\Message\ResponseInterface
      */
     public function getMTime(): ResponseInterface
     {
@@ -101,7 +101,7 @@ class SocketLoader implements LoaderInterface
      *
      * @throws \FileLoader\Exception
      *
-     * @return \GuzzleHttp\Psr7\Response
+     * @return \Psr\Http\Message\ResponseInterface
      */
     private function getRemoteData(string $url): ResponseInterface
     {
@@ -214,6 +214,8 @@ class SocketLoader implements LoaderInterface
 
     /**
      * closes an open stream
+     *
+     * @return void
      */
     private function close(): void
     {

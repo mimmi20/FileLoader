@@ -110,8 +110,10 @@ class Stream implements StreamInterface
      *
      * @throws \RuntimeException
      * @throws \BadMethodCallException
+     *
+     * @return void
      */
-    public function __get($name): void
+    public function __get(string $name): void
     {
         if ('stream' === $name) {
             throw new \RuntimeException('The stream is detached');
@@ -175,6 +177,8 @@ class Stream implements StreamInterface
 
     /**
      * Closes the stream and any underlying resources.
+     *
+     * @return void
      */
     public function close(): void
     {
@@ -306,6 +310,8 @@ class Stream implements StreamInterface
      * @link http://www.php.net/manual/en/function.fseek.php
      *
      * @throws \RuntimeException on failure.
+     *
+     * @return void
      */
     public function rewind(): void
     {
@@ -315,18 +321,15 @@ class Stream implements StreamInterface
     /**
      * Read data from the stream.
      *
-     * @param int   $length Read up to $length bytes from the object and return
-     *                      them. Fewer than $length bytes may be returned if underlying stream
-     *                      call returns fewer bytes.
-     * @param mixed $offset
-     * @param mixed $whence
+     * @param int $offset
+     * @param int $whence
      *
      * @throws \RuntimeException if an error occurs.
      *
      * @return string Returns the data read from the stream, or an empty string
      *                if no bytes are available.
      */
-    public function seek($offset, $whence = SEEK_SET)
+    public function seek($offset, $whence = SEEK_SET): string
     {
         if (!$this->seekable) {
             throw new \RuntimeException('Stream is not seekable');
@@ -355,7 +358,7 @@ class Stream implements StreamInterface
      * @return string Returns the data read from the stream, or an empty string
      *                if no bytes are available.
      */
-    public function read($length)
+    public function read($length): string
     {
         if (!$this->readable) {
             throw new \RuntimeException('Cannot read from non-readable stream');
@@ -373,7 +376,7 @@ class Stream implements StreamInterface
      *
      * @return int Returns the number of bytes written to the stream.
      */
-    public function write($string)
+    public function write($string): int
     {
         if (!$this->writable) {
             throw new \RuntimeException('Cannot write to a non-writable stream');
@@ -398,7 +401,7 @@ class Stream implements StreamInterface
      *
      * @link http://php.net/manual/en/function.stream-get-meta-data.php
      *
-     * @param string $key Specific metadata to retrieve.
+     * @param string|null $key Specific metadata to retrieve.
      *
      * @return array|mixed|null Returns an associative array if no key is
      *                          provided. Returns a specific key value if a key is provided and the

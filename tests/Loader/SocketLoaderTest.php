@@ -25,6 +25,9 @@ use FileLoader\Loader\SocketLoader;
  */
 class SocketLoaderTest extends \PHPUnit\Framework\TestCase
 {
+    /**
+     * @return resource
+     */
     private function createContext()
     {
         $config = [
@@ -41,6 +44,9 @@ class SocketLoaderTest extends \PHPUnit\Framework\TestCase
         return stream_context_create($config);
     }
 
+    /**
+     * @return void
+     */
     public function testLoad(): void
     {
         $loader = $this->getMockBuilder(\FileLoader\Loader::class)
@@ -85,6 +91,9 @@ class SocketLoaderTest extends \PHPUnit\Framework\TestCase
         self::assertInternalType('string', $content);
     }
 
+    /**
+     * @return void
+     */
     public function testGetMtime(): void
     {
         $loader = $this->getMockBuilder(\FileLoader\Loader::class)

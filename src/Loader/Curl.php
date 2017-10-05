@@ -61,7 +61,7 @@ class Curl implements LoaderInterface
      *
      * @throws \FileLoader\Exception
      *
-     * @return \GuzzleHttp\Psr7\Response
+     * @return \Psr\Http\Message\ResponseInterface
      */
     public function load(): ResponseInterface
     {
@@ -73,7 +73,7 @@ class Curl implements LoaderInterface
      *
      * @throws \FileLoader\Exception
      *
-     * @return \GuzzleHttp\Psr7\Response
+     * @return \Psr\Http\Message\ResponseInterface
      */
     public function getMTime(): ResponseInterface
     {
@@ -87,14 +87,19 @@ class Curl implements LoaderInterface
      *
      * @throws \FileLoader\Exception
      *
-     * @return \GuzzleHttp\Psr7\Response
+     * @return \Psr\Http\Message\ResponseInterface
      */
-    private function getRemoteData($url): ResponseInterface
+    private function getRemoteData(string $url): ResponseInterface
     {
         $this->init($url);
         $version = '1.1';
 
-        $response   = curl_exec($this->resource);
+        $response = curl_exec($this->resource);
+
+        if (false === $response) {
+            throw new Exception('could not initialize the connection to load the data');
+        }
+
         $httpCode   = curl_getinfo($this->resource, CURLINFO_HTTP_CODE);
         $headerSize = curl_getinfo($this->resource, CURLINFO_HEADER_SIZE);
 
@@ -127,8 +132,10 @@ class Curl implements LoaderInterface
      * @param string $url
      *
      * @throws \FileLoader\Exception
+     *
+     * @return void
      */
-    private function init($url): void
+    private function init(string $url): void
     {
         $this->resource = curl_init($url);
 
@@ -197,6 +204,8 @@ class Curl implements LoaderInterface
 
     /**
      * closes an open stream
+     *
+     * @return void
      */
     private function close(): void
     {
