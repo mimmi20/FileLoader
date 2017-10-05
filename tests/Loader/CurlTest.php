@@ -28,6 +28,8 @@ class CurlTest extends \PHPUnit\Framework\TestCase
     /**
      * Sets up the fixture, for example, opens a network connection.
      * This method is called before a test is executed.
+     *
+     * @return void
      */
     protected function setUp(): void
     {
@@ -36,6 +38,9 @@ class CurlTest extends \PHPUnit\Framework\TestCase
         }
     }
 
+    /**
+     * @return void
+     */
     public function testLoad(): void
     {
         $loader = $this->getMockBuilder(\FileLoader\Loader::class)
@@ -70,6 +75,9 @@ class CurlTest extends \PHPUnit\Framework\TestCase
         self::assertInternalType('string', $content);
     }
 
+    /**
+     * @return void
+     */
     public function testGetMtime(): void
     {
         $loader = $this->getMockBuilder(\FileLoader\Loader::class)

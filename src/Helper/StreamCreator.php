@@ -112,11 +112,6 @@ class StreamCreator
                 $auth                     = base64_encode($proxy_user . ':' . $proxy_password);
                 $config['http']['header'] = 'Proxy-Authorization: Basic ' . $auth;
             }
-
-            if (self::PROXY_PROTOCOL_HTTPS === $proxy_protocol) {
-                // @todo Add SSL context options
-                // @see  http://www.php.net/manual/en/context.ssl.php
-            }
         }
 
         return stream_context_create($config);

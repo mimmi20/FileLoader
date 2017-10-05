@@ -33,6 +33,8 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
     /**
      * Sets up the fixture, for example, opens a network connection.
      * This method is called before a test is executed.
+     *
+     * @return void
      */
     protected function setUp(): void
     {
@@ -41,6 +43,9 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
         $this->object = new Loader();
     }
 
+    /**
+     * @return void
+     */
     public function testSetInvalidOption(): void
     {
         $this->expectException('\FileLoader\Exception');
@@ -50,6 +55,9 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
         $object->setOption('InvalidOption', 'test');
     }
 
+    /**
+     * @return void
+     */
     public function testGetInvalidOption(): void
     {
         $this->expectException('\FileLoader\Exception');
@@ -59,6 +67,9 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
         $object->getOption('InvalidOption');
     }
 
+    /**
+     * @return void
+     */
     public function testSetGetOption(): void
     {
         $object = new Loader();
@@ -66,6 +77,9 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
         self::assertSame('http', $object->getOption('ProxyProtocol'));
     }
 
+    /**
+     * @return void
+     */
     public function testConstructWithValidOption(): void
     {
         $options = ['ProxyProtocol' => 'http'];
@@ -73,6 +87,9 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
         self::assertSame('http', $object->getOption('ProxyProtocol'));
     }
 
+    /**
+     * @return void
+     */
     public function testSetLocalFileException(): void
     {
         $this->expectException('\FileLoader\Exception');
@@ -81,6 +98,9 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
         $this->object->setLocalFile('');
     }
 
+    /**
+     * @return void
+     */
     public function testSetLocalFile(): void
     {
         $this->object->setLocalFile('x');
@@ -91,6 +111,9 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
         self::assertSame('x', $property->getValue($this->object));
     }
 
+    /**
+     * @return void
+     */
     public function testSetRemoteDataUrlExceptiom(): void
     {
         $this->expectException('\FileLoader\Exception');
@@ -99,6 +122,9 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
         $this->object->setRemoteDataUrl('');
     }
 
+    /**
+     * @return void
+     */
     public function testSetRemoteDataUrl(): void
     {
         $remoteDataUrl = 'aa';
@@ -106,6 +132,9 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
         self::assertSame($remoteDataUrl, $this->object->getRemoteDataUrl());
     }
 
+    /**
+     * @return void
+     */
     public function testSetRemoteVerUrlException(): void
     {
         $this->expectException('\FileLoader\Exception');
@@ -114,6 +143,9 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
         $this->object->setRemoteVersionUrl('');
     }
 
+    /**
+     * @return void
+     */
     public function testSetRemoteVerUrl(): void
     {
         $remoteVerUrl = 'aa';
@@ -121,6 +153,9 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
         self::assertSame($remoteVerUrl, $this->object->getRemoteVersionUrl());
     }
 
+    /**
+     * @return void
+     */
     public function testSetTimeout(): void
     {
         $timeout = 900;
@@ -128,12 +163,18 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
         self::assertSame($timeout, $this->object->getTimeout());
     }
 
+    /**
+     * @return void
+     */
     public function testGetUserAgent(): void
     {
         $userAgent = $this->object->getUserAgent();
         self::assertSame('FileLoader/3.0.0', $userAgent);
     }
 
+    /**
+     * @return void
+     */
     public function testLoad(): void
     {
         $this->object->setLocalFile(__DIR__ . '/data/test.txt');
@@ -143,6 +184,9 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
         self::assertInstanceOf('\Psr\Http\Message\ResponseInterface', $result);
     }
 
+    /**
+     * @return void
+     */
     public function testGetMtime(): void
     {
         $this->object->setLocalFile(__DIR__ . '/data/test.txt');

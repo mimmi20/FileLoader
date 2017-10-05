@@ -69,7 +69,7 @@ class FopenLoader implements LoaderInterface
      *
      * @throws \FileLoader\Exception
      *
-     * @return \GuzzleHttp\Psr7\Response
+     * @return \Psr\Http\Message\ResponseInterface
      */
     public function load(): ResponseInterface
     {
@@ -81,7 +81,7 @@ class FopenLoader implements LoaderInterface
      *
      * @throws \FileLoader\Exception
      *
-     * @return \GuzzleHttp\Psr7\Response
+     * @return \Psr\Http\Message\ResponseInterface
      */
     public function getMTime(): ResponseInterface
     {
@@ -95,9 +95,9 @@ class FopenLoader implements LoaderInterface
      *
      * @throws \FileLoader\Exception
      *
-     * @return \GuzzleHttp\Psr7\Response
+     * @return \Psr\Http\Message\ResponseInterface
      */
-    private function getRemoteData($url): ResponseInterface
+    private function getRemoteData(string $url): ResponseInterface
     {
         $context      = $this->streamHelper->getStreamContext();
         $stream       = @fopen($url, 'rb', false, $context);

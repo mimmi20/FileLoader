@@ -28,6 +28,8 @@ class FopenLoaderTest extends \PHPUnit\Framework\TestCase
     /**
      * Sets up the fixture, for example, opens a network connection.
      * This method is called before a test is executed.
+     *
+     * @return void
      */
     protected function setUp(): void
     {
@@ -36,6 +38,9 @@ class FopenLoaderTest extends \PHPUnit\Framework\TestCase
         }
     }
 
+    /**
+     * @return resource
+     */
     private function createContext()
     {
         $config = [
@@ -52,6 +57,9 @@ class FopenLoaderTest extends \PHPUnit\Framework\TestCase
         return stream_context_create($config);
     }
 
+    /**
+     * @return void
+     */
     public function testLoad(): void
     {
         $loader = $this->getMockBuilder(\FileLoader\Loader::class)
@@ -96,6 +104,9 @@ class FopenLoaderTest extends \PHPUnit\Framework\TestCase
         self::assertInternalType('string', $content);
     }
 
+    /**
+     * @return void
+     */
     public function testGetMtime(): void
     {
         $loader = $this->getMockBuilder(\FileLoader\Loader::class)
