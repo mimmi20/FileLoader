@@ -209,7 +209,13 @@ class SocketLoader implements LoaderInterface
      */
     private function getLine(): string
     {
-        return stream_get_line($this->stream, 8192, "\n");
+        $result = stream_get_line($this->stream, 65535, "\n");
+
+        if (false === $result) {
+            return '';
+        }
+
+        return $result;
     }
 
     /**
