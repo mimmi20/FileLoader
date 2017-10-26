@@ -319,17 +319,23 @@ class Stream implements StreamInterface
     }
 
     /**
-     * Read data from the stream.
+     * Seek to a position in the stream.
      *
-     * @param int $offset
-     * @param int $whence
+     * @link http://www.php.net/manual/en/function.fseek.php
      *
-     * @throws \RuntimeException if an error occurs.
+     * @param int $offset Stream offset
+     * @param int $whence Specifies how the cursor position will be calculated
+     *                    based on the seek offset. Valid values are identical to the built-in
+     *                    PHP $whence values for `fseek()`.  SEEK_SET: Set position equal to
+     *                    offset bytes SEEK_CUR: Set position to current location plus offset
+     *                    SEEK_END: Set position to end-of-stream plus offset.
      *
-     * @return string Returns the data read from the stream, or an empty string
-     *                if no bytes are available.
+     * @throws \RuntimeException on failure.
+     *
+     * @return int Returns the data read from the stream, or an empty string
+     *             if no bytes are available.
      */
-    public function seek($offset, $whence = SEEK_SET): string
+    public function seek($offset, $whence = SEEK_SET): int
     {
         if (!$this->seekable) {
             throw new \RuntimeException('Stream is not seekable');
@@ -364,7 +370,13 @@ class Stream implements StreamInterface
             throw new \RuntimeException('Cannot read from non-readable stream');
         }
 
-        return fgets($this->stream, $length);
+        $result = fgets($this->stream, $length);
+
+        if (false === $result) {
+            return '';
+        }
+
+        return $result;
     }
 
     /**
