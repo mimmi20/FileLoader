@@ -1,7 +1,9 @@
-vendor/
-.idea/
-.buildpath
+*~
 .settings
+.buildpath
 .project
+.idea/
+vendor/
 composer.phar
 composer.lock
+.php_cs.cache
